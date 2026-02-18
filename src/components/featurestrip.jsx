@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Code2, Zap, Cpu, LayoutDashboard, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import featureOpenSource from '../assets/feature-open-source.svg'
+import featureMethodology from '../assets/feature-methodology.svg'
+import featureAi from '../assets/feature-ai.svg'
+import featureInterface from '../assets/feature-interface.svg'
 
 const MotionDiv = motion.div
 
@@ -13,7 +17,7 @@ const features = [
     color: 'text-neonCyan',
     description:
       'Transparência total é nosso pilar. Você tem controle total sobre seus dados e a comunidade pode auditar a segurança a qualquer momento. Contribua, faça forks ou hospede você mesmo.',
-    image: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=2076&auto=format&fit=crop',
+    image: featureOpenSource,
   },
   {
     id: 'methodology',
@@ -23,7 +27,7 @@ const features = [
     color: 'text-purple-400',
     description:
       'Utilizamos os melhores princípios do Scrum e Agile, mas sem a burocracia excessiva. Removemos cerimonias desnecessárias para focar estritamente no que gera valor e na entrega contínua.',
-    image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2070&auto=format&fit=crop',
+    image: featureMethodology,
   },
   {
     id: 'ai',
@@ -33,7 +37,7 @@ const features = [
     color: 'text-hotPink',
     description:
       'Nossos algoritmos analisam seu padrão de trabalho para sugerir prioridades e estimar prazos. A IA não substitui sua decisão, ela elimina a fadiga de decisão organizando o caos inicial.',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop',
+    image: featureAi,
   },
   {
     id: 'interface',
@@ -43,7 +47,7 @@ const features = [
     color: 'text-white',
     description:
       'Interface desenhada para reduzir a carga cognitiva. Cores, contrastes e disposição de elementos focados em manter você no estado de fluxo (Flow) por mais tempo, sem distrações visuais.',
-    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=2055&auto=format&fit=crop',
+    image: featureInterface,
   },
 ]
 

@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import integrationCalendar from '../assets/integration-calendar.svg'
+import integrationWhatsapp from '../assets/integration-whatsapp.svg'
 
 const MotionDiv = motion.div
 const MotionH2 = motion.h2
@@ -30,7 +32,7 @@ const NewFeatures = () => {
             <div className="mb-6 w-full relative group">
               <div className="absolute inset-0 bg-neonCyan/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8YIQvD1hRb3oZGj4PCIlQ8YCNSnrRYAk4Ij8rPPP-p64GzK0msBC28Sw5RhAcI25mRgkHGOO9svkGOrnkd-gTtpPRMF_0Vi-fACsqkTvlro8brzeNdQisaoAEfnTnbJCIcJS_QGtJzc-PBitOMcwjOb-a-u_rAF4znGephXmgAHGQ3-tdSZ1eO_aQcd7EbnmuMa90FkL0WE7L9SnzSD21uZutPIvnXn1CvY9yCC4PwIZc15eyx1UPvjZSChcYbwtNuNqkemi2qQ"
+                src={integrationCalendar}
                 alt="Calendar UI"
                 className="relative z-10 w-full rounded-xl border border-white/10 shadow-lg"
               />
@@ -52,7 +54,7 @@ const NewFeatures = () => {
             <div className="mb-6 w-full relative group">
               <div className="absolute inset-0 bg-neonPurple/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHa7QRlr8Q7bkRefldP3D3js7lO6L05Gwy5IGsHuhIrnZ56rdqQYpkzw2oYTqXW1xwwWtGCRXvX44BeT9p6yiCyI3cqgdwL-AzALrLNTVb0tUdTbYZ6cUjPNPzBe3ZwrDiu7gXa6ujNKjAs-gqD1qAOpgUQF2m7EHiyyVfT16WFHemlhVKSjB7m8mp4SeegaCOB9EPja_9vdv-6poL5P1A0fHBS0joKUvgihHU7DUDFeBuK3yD9G5ozwX6P3uzLIGNjkOety143g"
+                src={integrationWhatsapp}
                 alt="WhatsApp UI"
                 className="relative z-10 w-full rounded-xl border border-white/10 shadow-lg"
               />

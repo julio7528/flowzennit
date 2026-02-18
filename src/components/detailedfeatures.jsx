@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import Header from './header.jsx'
 import Footer from './footer.jsx'
+import dashboardPreview from '../assets/dashboard-preview.svg'
 
 /* ───────────────────── animation variants ───────────────────── */
 const fadeUp = {
@@ -96,7 +97,7 @@ const HeroSection = () => (
             <img
               alt="Futuristic dashboard interface displaying glowing data analytics, burndown charts in neon cyan and purple on a dark background"
               className="w-full rounded-lg opacity-90 shadow-2xl"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXEMxhOKM_lAM16uQjmb5w0nrvIPL64GaYlaDmUnUzSKnHPrSbXSKTE4yQAKPK8wTlSHpdBZ6yYSokSgmdKRdclNkAdetrAZVHzAa6E82xd5pEbLNP3qHw1kedbKoM6R5k9UmycYN52k7Uk5usKJRFsB84CbtWpnlJn-DNFBhVcAiSfHqkZfLuNfSnllPzWjDBl9IAEHJMTiEcCg5NuTH6LO6gguhUAnGA4t6mCIdVEhC_E8DS2e4MqDngJHECcLrDiOG9ZfK5zQ"
+              src={dashboardPreview}
             />
             <div className="absolute top-[20%] left-[15%] w-[200px] h-[100px] bg-primary/10 blur-xl rounded-full mix-blend-screen animate-pulse-glow" />
             <div className="absolute bottom-[30%] right-[10%] w-[150px] h-[80px] bg-secondary/10 blur-xl rounded-full mix-blend-screen animate-pulse-glow" />

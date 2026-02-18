@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 const MotionH2 = motion.h2
@@ -6,6 +7,41 @@ const MotionForm = motion.form
 const MotionButton = motion.button
 
 const Contacts = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  })
+  const [status, setStatus] = useState('idle')
+  const contactApiUrl = import.meta.env.VITE_CONTACT_API_URL || '/api/contact'
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((current) => ({ ...current, [name]: value }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setStatus('loading')
+
+    try {
+      const response = await fetch(contactApiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to submit contact form')
+      }
+
+      setStatus('success')
+      setFormData({ name: '', email: '', message: '' })
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
     <section id="contato" className="relative overflow-hidden py-32 scroll-mt-24">
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-hotPink/10 blur-[100px] -z-10"></div>
@@ -39,6 +75,7 @@ const Contacts = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="space-y-6"
+          onSubmit={handleSubmit}
         >
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-2">
@@ -47,7 +84,11 @@ const Contacts = () => {
             <input
               type="text"
               id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Seu nome"
+              required
               className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-neonPurple focus:ring-1 focus:ring-neonPurple transition-all"
             />
           </div>
@@ -58,7 +99,11 @@ const Contacts = () => {
             <input
               type="email"
               id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="voce@empresa.com"
+              required
               className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-neonPurple focus:ring-1 focus:ring-neonPurple transition-all"
             />
           </div>
@@ -68,18 +113,33 @@ const Contacts = () => {
             </label>
             <textarea
               id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               rows={4}
               placeholder="Como podemos ajudar?"
+              required
               className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-neonPurple focus:ring-1 focus:ring-neonPurple transition-all"
             ></textarea>
           </div>
+          {status === 'success' && (
+            <p className="text-sm text-green-400" role="status">
+              Mensagem enviada com sucesso. Entraremos em contato em breve.
+            </p>
+          )}
+          {status === 'error' && (
+            <p className="text-sm text-red-400" role="alert">
+              Não foi possível enviar sua mensagem. Tente novamente.
+            </p>
+          )}
           <MotionButton
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            type="button"
+            type="submit"
+            disabled={status === 'loading'}
             className="w-full py-4 rounded-lg bg-gradient-primary text-white font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all"
           >
-            Enviar Mensagem
+            {status === 'loading' ? 'Enviando...' : 'Enviar Mensagem'}
           </MotionButton>
         </MotionForm>
       </div>
