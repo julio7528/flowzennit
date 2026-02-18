@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bgDark: #0b0b16;
+  --color-bgCard: #120b1f;
+  --color-footerBg: #0a0a14;
+  --color-hotPink: #ff4fd8;
+  --color-neonCyan: #67e8f9;
+  --color-neonPurple: #8b5cf6;
+  --color-primary: #0addf5;
+  --color-secondary: #8b5cf6;
+  --color-accent: #ff4fd8;
+  --color-surfaceDark: #120b1f;
+  --color-textLight: #f8fafc;
+  --color-textMuted: #94a3b8;
+  --color-neonPink: #ff4fd8;
+  --font-family-display: "Space Grotesk", sans-serif;
+  --font-family-mono: "JetBrains Mono", monospace;
+  --font-family-body: "Inter", sans-serif;
+}
+
+@layer utilities {
+  .bg-gradient-primary {
+    background-image: linear-gradient(90deg, #7c3aed, #8b5cf6, #7c3aed);
+  }
+  .bg-grid-pattern {
+    background-image: linear-gradient(to right, rgba(148, 163, 184, 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.18) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .text-gradient {
+    background-image: linear-gradient(90deg, #ff4fd8 0%, #8b5cf6 50%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-accent {
+    background: linear-gradient(90deg, #0addf5 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .text-gradient-main {
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Glass Effects */
+.glass-panel {
+  background: rgba(18, 11, 31, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(10, 221, 245, 0.3);
+  box-shadow: 0 0 30px -10px rgba(139, 92, 246, 0.2);
+  transform: translateY(-5px);
+}
+
+/* Hero Dashboard */
+.hero-dashboard {
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(10deg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(10, 221, 245, 0.1);
+  will-change: transform;
+}
+
+/* Ambient Glow */
+.ambient-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, rgba(11, 11, 22, 0) 70%);
+}
+
+/* Beam animations */
+@keyframes flowBeam {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 200%; }
+}
+
+.connector-beam {
+  background: linear-gradient(180deg,
+    rgba(10, 221, 245, 0) 0%,
+    #0addf5 50%,
+    rgba(10, 221, 245, 0) 100%
+  );
+  background-size: 100% 200%;
+  animation: flowBeam 3s linear infinite;
+}
+
+@keyframes floatSlow {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: perspective(1000px) rotateX(10deg) translateY(0); }
+  50% { transform: perspective(1000px) rotateX(12deg) translateY(-20px); }
+}
+
+.animate-hero-float {
+  animation: heroFloat 6s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes beamGrow {
+  0% { height: 0%; opacity: 0; }
+  100% { height: 100%; opacity: 1; }
+}
+
+.animate-beam-grow {
+  animation: beamGrow 2s ease-out forwards;
+}
+
+/* Gantt bar effects */
+.gantt-bar {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gantt-bar:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transform: scaleY(1.1);
+  z-index: 10;
+}
+
+/* SVG connection dash animation */
+@keyframes dashAnim {
+  to { stroke-dashoffset: -1000; }
+}
+.connection-line {
+  stroke-dasharray: 10;
+  animation: dashAnim 30s linear infinite;
+}
+
+/* Glass popover for calendar */
+.glass-popover {
+  background: rgba(30, 30, 45, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  box-shadow: 0 0 40px -10px rgba(103, 232, 249, 0.15);
+}
+
+/* Neon border gradient */
+.neon-border-gradient {
+  position: relative;
+}
+.neon-border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(103, 232, 249, 0.4), rgba(139, 92, 246, 0.1), rgba(255, 79, 216, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #0b0b16;
+  color: #f8fafc;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
