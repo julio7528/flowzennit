@@ -6,7 +6,7 @@ import logofull from '../assets/logofull.png'
 
 const MotionHeader = motion.header
 
-const Header = () => {
+const Header = ({ offsetTop = 0 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleMenu = () => setIsOpen(!isOpen)
@@ -15,7 +15,7 @@ const Header = () => {
     { label: 'Metodologia', href: '/metodologia', isRoute: true },
     { label: 'Ciência', href: '/ciencia', isRoute: true },
     { label: 'Blog', href: '#blog' },
-    { label: 'Sobre', href: '#sobre' },
+    { label: 'Sobre', href: '/sobre', isRoute: true },
   ]
 
   return (
@@ -23,7 +23,8 @@ const Header = () => {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: 'easeOut' }}
-      className="fixed top-0 left-0 w-full z-50 bg-bgDark/80 backdrop-blur-md border-b border-white/5"
+      style={{ top: `${offsetTop}px` }}
+      className="fixed left-0 w-full z-40 bg-bgDark/80 backdrop-blur-md border-b border-white/5"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">

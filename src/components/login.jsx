@@ -1,12 +1,32 @@
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Lock, LockKeyhole, Mail, X } from 'lucide-react'
+import { isSupabaseConfigured, supabase } from '../lib/supabase.js'
 import Header from './header.jsx'
+import Footer from './footer.jsx'
 
 const Login = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [isSignUpOpen, setIsSignUpOpen] = useState(false)
   const [isForgotOpen, setIsForgotOpen] = useState(false)
-  const [feedbackType, setFeedbackType] = useState(null)
+  const [feedbackType, setFeedbackType] = useState(() => (location.state?.accessDenied ? 'error' : null))
+  const [feedbackMessage, setFeedbackMessage] = useState(() => (location.state?.accessDenied ? 'Acesso Negado' : ''))
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  // Signup fields
+  const [signUpName, setSignUpName] = useState('')
+  const [signUpEmail, setSignUpEmail] = useState('')
+  const [signUpPassword, setSignUpPassword] = useState('')
+  const [signUpConfirm, setSignUpConfirm] = useState('')
+  const [signUpLoading, setSignUpLoading] = useState(false)
+
+  // Forgot password field
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
 
   useEffect(() => {
     const handleEsc = (event) => {
@@ -21,29 +41,162 @@ const Login = () => {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [])
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!isSupabaseConfigured) return
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate('/dashboard', { replace: true })
+      }
+    })
+  }, [navigate])
+
   const feedbackConfig =
     feedbackType === 'success'
       ? {
-          title: 'Email enviado',
-          message: 'Enviamos um link de recuperação para o seu email. Verifique sua caixa de entrada.',
-          primary: 'Voltar ao login',
-          secondary: 'Não recebeu o email?',
-        }
+        title: 'Sucesso',
+        message: feedbackMessage || 'Operação realizada com sucesso.',
+        primary: 'Voltar ao login',
+        secondary: 'Fechar',
+      }
       : feedbackType === 'error'
         ? {
-            title: 'Falha ao enviar',
-            message: 'Não foi possível enviar o link de recuperação. Verifique o email e tente novamente.',
-            primary: 'Tentar novamente',
-            secondary: 'Fechar',
-          }
+          title: 'Erro',
+          message: feedbackMessage || 'Ocorreu um erro. Tente novamente.',
+          primary: 'Tentar novamente',
+          secondary: 'Fechar',
+        }
         : null
 
-  const handleFeedbackOpen = () => {
-    setFeedbackType(email.trim() ? 'success' : 'error')
+  const showFeedback = (type, message) => {
+    setFeedbackMessage(message)
+    setFeedbackType(type)
+  }
+
+  useEffect(() => {
+    if (location.state?.accessDenied) {
+      navigate('/login', { replace: true })
+    }
+  }, [location.state, navigate])
+
+  const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+
+  const handleLogin = async (event) => {
+    event.preventDefault()
+    if (!isSupabaseConfigured) {
+      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      return
+    }
+    if (!isValidEmail(email)) {
+      showFeedback('error', 'Por favor, insira um email válido.')
+      return
+    }
+    if (password.length < 8) {
+      showFeedback('error', 'A senha deve ter no mínimo 8 caracteres.')
+      return
+    }
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    setLoading(false)
+    if (error) {
+      showFeedback('error', error.message)
+      return
+    }
+    navigate('/dashboard')
+  }
+
+  const handleGoogleLogin = async () => {
+    if (!isSupabaseConfigured) {
+      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      return
+    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/auth/callback' },
+    })
+    if (error) {
+      showFeedback('error', error.message)
+    }
+  }
+
+  const handleSignUp = async () => {
+    if (!isSupabaseConfigured) {
+      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      return
+    }
+    if (!isValidEmail(signUpEmail)) {
+      showFeedback('error', 'Por favor, insira um email válido.')
+      return
+    }
+    if (signUpPassword.length < 8) {
+      showFeedback('error', 'A senha deve ter no mínimo 8 caracteres.')
+      return
+    }
+    if (signUpPassword !== signUpConfirm) {
+      showFeedback('error', 'As senhas não conferem.')
+      return
+    }
+    setSignUpLoading(true)
+    const { data, error } = await supabase.auth.signUp({
+      email: signUpEmail,
+      password: signUpPassword,
+      options: { data: { full_name: signUpName } },
+    })
+    if (error) {
+      setSignUpLoading(false)
+      showFeedback('error', error.message)
+      return
+    }
+    const userId = data.user?.id
+    if (userId) {
+      const displayName = signUpName.trim() || signUpEmail.split('@')[0]
+      const { error: insertError } = await supabase
+        .from('tbf_controle_usuario')
+        .upsert(
+          {
+            uid: userId,
+            display_name: displayName,
+            role: 'user',
+            ativo: true,
+          },
+          { onConflict: 'uid' },
+        )
+      if (insertError) {
+        setSignUpLoading(false)
+        showFeedback('error', 'Cadastro criado, mas não foi possível registrar o usuário no controle.')
+        return
+      }
+    }
+    setSignUpLoading(false)
+    setIsSignUpOpen(false)
+    showFeedback('success', 'Verifique seu email para confirmar o cadastro.')
+  }
+
+  const handleForgotPassword = async (event) => {
+    event.preventDefault()
+    if (!isSupabaseConfigured) {
+      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      return
+    }
+    if (!isValidEmail(forgotEmail)) {
+      showFeedback('error', 'Por favor, insira um email válido.')
+      return
+    }
+    setForgotLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: window.location.origin + '/auth/reset-password',
+    })
+    setForgotLoading(false)
+    if (error) {
+      showFeedback('error', error.message)
+      return
+    }
+    setIsForgotOpen(false)
+    showFeedback('success', 'Enviamos um link de recuperação para o seu email. Verifique sua caixa de entrada.')
   }
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#0b0b16] font-body text-[#f8fafc] selection:bg-[#67e8f9] selection:text-[#0b0b16]">
+    <div className="min-h-screen overflow-x-hidden bg-[#0b0b16] font-body text-[#f8fafc] selection:bg-[#67e8f9] selection:text-[#0b0b16]">
       <style>{`
         .login-noise {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
@@ -89,6 +242,7 @@ const Login = () => {
 
           <button
             type="button"
+            onClick={handleGoogleLogin}
             className="group relative mb-7 flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/5 text-base font-display font-medium text-[#f8fafc] transition-all duration-300 hover:scale-[1.01] hover:border-white/20 hover:bg-white/10 active:scale-[0.99]"
           >
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -102,7 +256,7 @@ const Login = () => {
             <div className="h-px flex-1 bg-white/10" />
           </div>
 
-          <form className="flex flex-col gap-6" onSubmit={(event) => event.preventDefault()}>
+          <form className="flex flex-col gap-6" onSubmit={handleLogin}>
             <div className="group flex flex-col gap-2">
               <label htmlFor="email" className="pl-1 text-xs font-medium uppercase tracking-wider text-[#94a3b8] transition-colors group-focus-within:text-[#67e8f9]">
                 Email
@@ -129,6 +283,9 @@ const Login = () => {
                   id="password"
                   type="password"
                   placeholder="........"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   className="h-12 w-full rounded-xl border-0 bg-black/30 px-4 text-[#f8fafc] placeholder:text-white/20 outline-none transition-all duration-300 focus:ring-1 focus:ring-[#67e8f9]"
                 />
                 <Lock className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]/50 transition-colors group-focus-within:text-[#67e8f9]" />
@@ -137,12 +294,12 @@ const Login = () => {
 
             <button
               type="submit"
+              disabled={loading}
               className="relative mt-2 flex h-[52px] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-primary text-lg font-display font-semibold text-white shadow-[0_4px_20px_rgba(255,79,216,0.4)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,79,216,0.6)] active:scale-[0.98]"
             >
-              <span className="relative z-10">Acessar</span>
+              <span className="relative z-10">{loading ? 'Entrando...' : 'Acessar'}</span>
               <div
                 className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100"
-                onClick={handleFeedbackOpen}
               />
             </button>
           </form>
@@ -172,6 +329,8 @@ const Login = () => {
         </section>
       </main>
 
+      <Footer />
+
       {isSignUpOpen && (
         <div
           className="fixed inset-0 z-40 flex items-center justify-center bg-[#0B0B16]/60 p-4 backdrop-blur-[2px]"
@@ -195,12 +354,14 @@ const Login = () => {
               <p className="text-[15px] text-[#94a3b8]">Crie sua conta e entre no cockpit.</p>
             </div>
 
-            <form className="mt-6 flex flex-col gap-5" onSubmit={(event) => event.preventDefault()}>
+            <form className="mt-6 flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); handleSignUp() }}>
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">Nome Completo</label>
                 <input
                   type="text"
                   placeholder="Seu nome"
+                  value={signUpName}
+                  onChange={(event) => setSignUpName(event.target.value)}
                   className="h-12 rounded-xl border border-transparent bg-black/30 px-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
                 />
               </div>
@@ -210,6 +371,8 @@ const Login = () => {
                 <input
                   type="email"
                   placeholder="seu@email.com"
+                  value={signUpEmail}
+                  onChange={(event) => setSignUpEmail(event.target.value)}
                   className="h-12 rounded-xl border border-transparent bg-black/30 px-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
                 />
               </div>
@@ -220,6 +383,9 @@ const Login = () => {
                   <input
                     type="password"
                     placeholder="........"
+                    autoComplete="new-password"
+                    value={signUpPassword}
+                    onChange={(event) => setSignUpPassword(event.target.value)}
                     className="h-12 rounded-xl border border-transparent bg-black/30 px-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
                   />
                 </div>
@@ -228,6 +394,9 @@ const Login = () => {
                   <input
                     type="password"
                     placeholder="........"
+                    autoComplete="new-password"
+                    value={signUpConfirm}
+                    onChange={(event) => setSignUpConfirm(event.target.value)}
                     className="h-12 rounded-xl border border-transparent bg-black/30 px-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
                   />
                 </div>
@@ -254,10 +423,11 @@ const Login = () => {
               </div>
 
               <button
-                type="button"
+                type="submit"
+                disabled={signUpLoading}
                 className="mt-4 flex h-[52px] w-full items-center justify-center rounded-xl bg-gradient-primary text-[16px] font-display font-semibold text-white shadow-[0_4px_20px_rgba(255,79,216,0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                Criar Conta
+                {signUpLoading ? 'Criando...' : 'Criar Conta'}
               </button>
             </form>
 
@@ -307,7 +477,7 @@ const Login = () => {
                 </p>
               </div>
 
-              <form className="flex flex-col gap-6" onSubmit={(event) => event.preventDefault()}>
+              <form className="flex flex-col gap-6" onSubmit={handleForgotPassword}>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="forgot-email" className="pl-1 text-[11px] font-medium uppercase tracking-[0.05em] text-[#94a3b8]">
                     Email
@@ -319,6 +489,8 @@ const Login = () => {
                       type="email"
                       required
                       placeholder="nome@exemplo.com"
+                      value={forgotEmail}
+                      onChange={(event) => setForgotEmail(event.target.value)}
                       className="h-12 w-full rounded-xl border border-transparent bg-black/30 pl-11 pr-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
                     />
                   </div>
@@ -326,9 +498,10 @@ const Login = () => {
 
                 <button
                   type="submit"
+                  disabled={forgotLoading}
                   className="relative mt-2 flex h-[52px] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-primary text-[16px] font-display font-bold tracking-wide text-white shadow-[0_4px_20px_rgba(255,79,216,0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span className="relative z-10">Enviar Link de Recuperação</span>
+                  <span className="relative z-10">{forgotLoading ? 'Enviando...' : 'Enviar Link de Recuperação'}</span>
                   <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 hover:translate-y-0" />
                 </button>
 
@@ -361,14 +534,12 @@ const Login = () => {
           >
             <div className="mb-8 relative flex items-center justify-center">
               <div
-                className={`absolute inset-0 rounded-full blur-xl scale-150 animate-pulse ${
-                  feedbackType === 'success' ? 'bg-[#67e8f9]/20' : 'bg-[#ff4fd8]/20'
-                }`}
+                className={`absolute inset-0 rounded-full blur-xl scale-150 animate-pulse ${feedbackType === 'success' ? 'bg-[#67e8f9]/20' : 'bg-[#ff4fd8]/20'
+                  }`}
               />
               <div
-                className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border ${
-                  feedbackType === 'success' ? 'border-[#67e8f9]/40 text-[#67e8f9]' : 'border-[#ff4fd8]/40 text-[#ff4fd8]'
-                }`}
+                className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border ${feedbackType === 'success' ? 'border-[#67e8f9]/40 text-[#67e8f9]' : 'border-[#ff4fd8]/40 text-[#ff4fd8]'
+                  }`}
               >
                 {feedbackType === 'success' ? (
                   <svg className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -392,11 +563,10 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setFeedbackType(null)}
-                className={`w-full h-[52px] rounded-xl font-display font-semibold text-base text-white transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                  feedbackType === 'success'
-                    ? 'bg-gradient-to-r from-[#8b5cf6] to-[#ff4fd8] shadow-[0_4px_20px_rgba(255,79,216,0.4)]'
-                    : 'bg-gradient-to-r from-[#ff4fd8] to-[#8b5cf6] shadow-[0_4px_20px_rgba(255,79,216,0.35)]'
-                }`}
+                className={`w-full h-[52px] rounded-xl font-display font-semibold text-base text-white transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] ${feedbackType === 'success'
+                  ? 'bg-gradient-to-r from-[#8b5cf6] to-[#ff4fd8] shadow-[0_4px_20px_rgba(255,79,216,0.4)]'
+                  : 'bg-gradient-to-r from-[#ff4fd8] to-[#8b5cf6] shadow-[0_4px_20px_rgba(255,79,216,0.35)]'
+                  }`}
               >
                 {feedbackConfig.primary}
               </button>

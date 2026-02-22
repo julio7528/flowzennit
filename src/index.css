@@ -15,6 +15,18 @@
   --color-textMuted: #94a3b8;
   --color-textGray: #94a3b8;
   --color-neonPink: #ff4fd8;
+  /* Zen Tech Dashboard tokens */
+  --color-zen-blue: #3B82F6;
+  --color-zen-bg: #0F1012;
+  --color-zen-surface: #1A1C1E;
+  --color-zen-surface-hl: #25282C;
+  --color-zen-border: #27272A;
+  --color-zen-sidebar: #111418;
+  --color-zen-text: #EBEBEB;
+  --color-zen-text-sec: #A1A1AA;
+  --color-zen-text-tri: #52525B;
+  --color-zen-success: #10B981;
+  --color-zen-error: #EF4444;
   --font-family-display: "Space Grotesk", sans-serif;
   --font-family-mono: "JetBrains Mono", monospace;
   --font-family-body: "Inter", sans-serif;

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Flowzenit Dashboard v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00F0FF", // Overridden to Cyan as requested for main accents
+                        "secondary": "#BD00FF", // Electric Purple
+                        "void": "#050508", // Deep Void Black
+                        "surface": "#0E1016", // Dark Surface
+                        "surface-highlight": "#1A1D26",
+                        "terminal-green": "#00FF41",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    boxShadow: {
+                        'neon': '0 0 10px rgba(0, 240, 255, 0.3)',
+                        'neon-purple': '0 0 10px rgba(189, 0, 255, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #050508;
+            color: #ffffff;
+        }
+        .scrolling-text {
+            animation: scroll 20s linear infinite;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .crt-line {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="font-display bg-void text-white min-h-screen flex flex-col antialiased selection:bg-primary selection:text-black overflow-x-hidden">
+<!-- Header / Status Bar -->
+<header class="border-b border-surface-highlight bg-void/90 backdrop-blur-sm sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-terminal-green opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-terminal-green"></span>
+</div>
+<h2 class="font-mono text-sm tracking-widest text-primary font-bold">FLOWZENIT // SYSTEM STATUS: ONLINE</h2>
+</div>
+<div class="hidden md:flex items-center gap-4 font-mono text-xs text-gray-400">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface border border-surface-highlight">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span>v4.0.2_STABLE</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface border border-surface-highlight">
+<span class="material-symbols-outlined text-sm">wifi</span>
+<span>12ms LATENCY</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface border border-surface-highlight">
+<span class="material-symbols-outlined text-sm">memory</span>
+<span>64GB ALLOCATED</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col gap-12">
+<!-- Hero Section -->
+<section class="@container">
+<div class="grid lg:grid-cols-2 gap-8 items-center">
+<!-- Left: Profile Image & Name -->
+<div class="flex flex-col gap-6">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden border border-surface-highlight group">
+<!-- Abstract technical visualization pattern -->
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&amp;w=2070&amp;auto=format&amp;fit=crop')] bg-cover bg-center opacity-40 mix-blend-luminosity" data-alt="Abstract cyber security data visualization pattern"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6">
+<h1 class="text-4xl md:text-6xl font-black tracking-tighter text-white mb-2 leading-none uppercase">
+                                Júlio<br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Gomes</span>
+</h1>
+<p class="font-mono text-primary text-sm tracking-widest uppercase">Full Stack Architect // Level 99</p>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 bg-primary text-void hover:bg-white transition-colors font-mono font-bold py-3 px-6 rounded text-sm uppercase flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined group-hover:animate-bounce">download</span>
+                            Initiate_Sequence
+                        </button>
+<button class="flex-1 bg-surface border border-primary/30 text-primary hover:bg-primary/10 transition-colors font-mono font-bold py-3 px-6 rounded text-sm uppercase flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">code</span>
+                            Source_Code
+                        </button>
+</div>
+</div>
+<!-- Right: Code Terminal -->
+<div class="h-full bg-surface border border-surface-highlight rounded-xl p-6 font-mono text-xs md:text-sm overflow-hidden relative shadow-neon-purple/10 shadow-lg">
+<div class="flex items-center gap-2 mb-4 border-b border-surface-highlight pb-2">
+<div class="w-3 h-3 rounded-full bg-red-500"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+<div class="w-3 h-3 rounded-full bg-green-500"></div>
+<span class="ml-2 text-gray-500">founder_profile.js</span>
+</div>
+<div class="text-gray-300 leading-relaxed">
+<span class="text-secondary">const</span> <span class="text-primary">founderProfile</span> = {<br/>
+                          <span class="text-gray-400">role:</span> <span class="text-terminal-green">'Architect'</span>,<br/>
+                          <span class="text-gray-400">level:</span> <span class="text-blue-400">99</span>,<br/>
+                          <span class="text-gray-400">stack:</span> [<br/>
+                            <span class="text-terminal-green">'React'</span>,<br/>
+                            <span class="text-terminal-green">'Node.js'</span>,<br/>
+                            <span class="text-terminal-green">'Next.js'</span>,<br/>
+                            <span class="text-terminal-green">'TypeScript'</span><br/>
+                          ],<br/>
+                          <span class="text-gray-400">status:</span> <span class="text-terminal-green">'OPEN_TO_WORK'</span>,<br/>
+                          <span class="text-gray-400">mission:</span> <span class="text-terminal-green">'Optimize global workflows.'</span><br/>
+                        };<br/>
+<br/>
+<span class="text-gray-500">// Executing initialization...</span><br/>
+<span class="animate-pulse">_</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Dashboard Grid -->
+<section class="grid lg:grid-cols-12 gap-6">
+<!-- Origin Log (Timeline) -->
+<div class="lg:col-span-3 flex flex-col gap-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary">history</span>
+<h3 class="font-mono text-sm font-bold text-gray-400 uppercase">Origin Log</h3>
+</div>
+<div class="space-y-4 relative pl-4 border-l border-surface-highlight">
+<!-- Item 1 -->
+<div class="relative group">
+<div class="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-surface border border-gray-600 group-hover:border-secondary transition-colors"></div>
+<div class="flex flex-col gap-1 p-3 rounded hover:bg-surface-highlight/30 transition-colors">
+<span class="font-mono text-xs text-gray-500">[INIT] :: 2018</span>
+<h4 class="font-bold text-sm text-gray-200">AUTOMATION DEV</h4>
+<span class="text-xs text-terminal-green">+100% Efficiency</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="relative group">
+<div class="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-surface border border-gray-600 group-hover:border-secondary transition-colors"></div>
+<div class="flex flex-col gap-1 p-3 rounded hover:bg-surface-highlight/30 transition-colors">
+<span class="font-mono text-xs text-gray-500">[UPDATE] :: 2021</span>
+<h4 class="font-bold text-sm text-gray-200">FULL STACK TRANSITION</h4>
+<span class="text-xs text-terminal-green">+Optimization</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="relative group">
+<div class="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-void border-2 border-primary shadow-[0_0_8px_rgba(0,240,255,0.6)] animate-pulse"></div>
+<div class="flex flex-col gap-1 p-3 rounded bg-surface/50 border border-surface-highlight">
+<span class="font-mono text-xs text-primary">[DEPLOY] :: 2024</span>
+<h4 class="font-bold text-sm text-white">FLOWZENIT LAUNCH</h4>
+<span class="text-xs text-terminal-green">&gt;&gt; Launch Successful</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Center Feature Card (Dark) -->
+<div class="lg:col-span-5 flex flex-col">
+<div class="bg-surface rounded-xl p-8 h-full flex flex-col justify-between relative overflow-hidden border border-surface-highlight group hover:border-primary/50 transition-colors shadow-2xl">
+<!-- Background Grid Pattern -->
+<div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="relative z-10 flex flex-col gap-6">
+<div class="flex justify-between items-start">
+<span class="font-mono text-xs text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">PRIORITY: CRITICAL</span>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-primary transition-colors">hub</span>
+</div>
+<h2 class="text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+                            OPEN SOURCE.<br/>
+                            PRIORITY FOCUSED.<br/>
+<span class="text-gray-500">BRUTALLY SIMPLE.</span>
+</h2>
+<div class="mt-auto pt-8 flex items-end justify-between">
+<div class="flex flex-col gap-1">
+<span class="font-mono text-xs text-gray-400">SYSTEM OPTIMIZED</span>
+<span class="font-bold text-xl text-white">READY FOR DEPLOYMENT</span>
+</div>
+<!-- Circular Chart -->
+<div class="relative w-24 h-24 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle cx="48" cy="48" fill="transparent" r="40" stroke="#1A1D26" stroke-width="8"></circle>
+<circle class="drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]" cx="48" cy="48" fill="transparent" r="40" stroke="#00F0FF" stroke-dasharray="251.2" stroke-dashoffset="0" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-lg font-bold text-white">100%</span>
+<span class="text-[0.6rem] font-mono text-primary">EFFICIENCY</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Grid (User Personas) -->
+<div class="lg:col-span-4 grid grid-cols-2 gap-3 h-full">
+<!-- Freelancers -->
+<div class="bg-surface border border-surface-highlight p-4 rounded-lg flex flex-col gap-2 hover:border-secondary/50 transition-all hover:-translate-y-1 group">
+<div class="w-8 h-8 rounded bg-secondary/10 flex items-center justify-center text-secondary mb-2 group-hover:bg-secondary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">bolt</span>
+</div>
+<h4 class="font-bold text-sm text-white">FREELANCERS</h4>
+<p class="text-xs text-gray-400">Streamlined workflows for gig economy.</p>
+</div>
+<!-- Students -->
+<div class="bg-surface border border-surface-highlight p-4 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-all hover:-translate-y-1 group">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary mb-2 group-hover:bg-primary group-hover:text-void transition-colors">
+<span class="material-symbols-outlined text-lg">school</span>
+</div>
+<h4 class="font-bold text-sm text-white">STUDENTS</h4>
+<p class="text-xs text-gray-400">Academic tracking &amp; resource mgmt.</p>
+</div>
+<!-- Developers -->
+<div class="bg-surface border border-surface-highlight p-4 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-all hover:-translate-y-1 group">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary mb-2 group-hover:bg-primary group-hover:text-void transition-colors">
+<span class="material-symbols-outlined text-lg">code_blocks</span>
+</div>
+<h4 class="font-bold text-sm text-white">DEVELOPERS</h4>
+<p class="text-xs text-gray-400">Code management &amp; snippets library.</p>
+</div>
+<!-- Organized Minds -->
+<div class="bg-surface border border-surface-highlight p-4 rounded-lg flex flex-col gap-2 hover:border-secondary/50 transition-all hover:-translate-y-1 group">
+<div class="w-8 h-8 rounded bg-secondary/10 flex items-center justify-center text-secondary mb-2 group-hover:bg-secondary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">psychology</span>
+</div>
+<h4 class="font-bold text-sm text-white">ORGANIZED MINDS</h4>
+<p class="text-xs text-gray-400">Systematic thinking frameworks.</p>
+</div>
+</div>
+</section>
+<!-- Bottom Flow -->
+<section class="border-t border-b border-surface-highlight py-8 relative bg-surface/30">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-primary to-transparent opacity-50"></div>
+<div class="grid md:grid-cols-3 gap-8 items-center relative">
+<!-- Step 1 -->
+<div class="flex flex-col gap-2 px-4 relative group">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary">keyboard</span>
+<h4 class="font-mono font-bold text-white">INPUT_STREAM</h4>
+</div>
+<p class="text-sm text-gray-400">Admin Principles &amp; Raw Data</p>
+<div class="h-0.5 w-full bg-surface-highlight mt-2 overflow-hidden">
+<div class="h-full w-1/2 bg-primary animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+<!-- Connector Arrow (Mobile hidden) -->
+<div class="hidden md:block absolute left-[33%] top-1/2 -translate-y-1/2 text-gray-700">
+<span class="material-symbols-outlined text-4xl animate-pulse">arrow_right_alt</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col gap-2 px-4 relative group border-l md:border-l-0 border-surface-highlight md:pl-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-secondary">computer</span>
+<h4 class="font-mono font-bold text-white">PROCESSING</h4>
+</div>
+<p class="text-sm text-gray-400">Tech Stack Integration</p>
+<div class="h-0.5 w-full bg-surface-highlight mt-2 overflow-hidden">
+<div class="h-full w-2/3 bg-secondary animate-[shimmer_2s_infinite_0.5s]"></div>
+</div>
+</div>
+<!-- Connector Arrow (Mobile hidden) -->
+<div class="hidden md:block absolute left-[66%] top-1/2 -translate-y-1/2 text-gray-700">
+<span class="material-symbols-outlined text-4xl animate-pulse">arrow_right_alt</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col gap-2 px-4 border-l md:border-l-0 border-surface-highlight md:pl-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-terminal-green">monitor_heart</span>
+<h4 class="font-mono font-bold text-white">OUTPUT_RENDER</h4>
+</div>
+<p class="text-sm text-gray-400">Flowzenit Platform</p>
+<div class="h-0.5 w-full bg-surface-highlight mt-2 overflow-hidden">
+<div class="h-full w-full bg-terminal-green animate-[shimmer_2s_infinite_1s]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="grid md:grid-cols-4 gap-8 pb-12 pt-4 border-t border-surface-highlight/50 text-sm">
+<div class="md:col-span-2 flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 bg-primary rounded-sm"></div>
+<h5 class="font-bold tracking-wider">FLOWZENIT SYSTEMS</h5>
+</div>
+<p class="text-gray-500 max-w-sm">
+                     A brutalist, open-source approach to system architecture and personal efficiency. Built for the modern mind.
+                 </p>
+</div>
+<div>
+<h6 class="font-mono text-xs text-gray-400 mb-4 uppercase">Directives</h6>
+<ul class="space-y-2 text-gray-300">
+<li class="hover:text-primary cursor-pointer transition-colors">&gt;&gt; Mission Statement</li>
+<li class="hover:text-primary cursor-pointer transition-colors">&gt;&gt; Vision Board</li>
+<li class="hover:text-primary cursor-pointer transition-colors">&gt;&gt; Changelog</li>
+</ul>
+</div>
+<div>
+<h6 class="font-mono text-xs text-gray-400 mb-4 uppercase">Integrity Check</h6>
+<ul class="space-y-2 font-mono text-xs text-gray-500">
+<li class="flex items-center gap-2">
+<span class="text-terminal-green">[x]</span> Simplicity
+                    </li>
+<li class="flex items-center gap-2">
+<span class="text-terminal-green">[x]</span> Performance
+                    </li>
+<li class="flex items-center gap-2">
+<span class="text-terminal-green">[x]</span> Scalability
+                    </li>
+</ul>
+</div>
+</footer>
+</main>
+<!-- CRT Overlay Effect (Subtle) -->
+<div class="fixed inset-0 pointer-events-none z-[100] mix-blend-overlay opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4=')]"></div>
+<style>
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</body></html>
