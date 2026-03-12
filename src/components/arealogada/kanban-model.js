@@ -1,5 +1,3 @@
-import maspContextRaw from '../../../codexcontext.md?raw'
-
 export const EXCLUDED_ALOCADO_CLAUSE = '("Stuff","Trash","Referencia","Incubado")'
 export const BACKLOG_STATE = 'backlog'
 
@@ -59,99 +57,10 @@ export const normalizeKey = (value) =>
 
 export const stripHtml = (value) => normalizeState(typeof value === 'string' ? value.replace(/<[^>]+>/g, ' ') : '')
 
-const extractListItem = (line) => {
-    const cleaned = normalizeState(line).replace(/\*\*/g, '').replace(/`/g, '')
-    const numbered = cleaned.match(/^\d+\.\s+(.+)$/)
-    if (numbered) return normalizeState(numbered[1])
-    const bulleted = cleaned.match(/^[-*]\s+(.+)$/)
-    if (bulleted) return normalizeState(bulleted[1])
-    const tree = cleaned.match(/^[├└]──\s+(.+)$/)
-    if (tree) return normalizeState(tree[1])
-    return ''
-}
-
-const parseMaspStagesFromContext = (rawText) => {
-    if (!rawText || !rawText.trim()) return []
-    const lines = rawText.split(/\r?\n/)
-
-    const macroHeaderIdx = lines.findIndex((line) => {
-        const key = normalizeKey(line)
-        return key.includes('macrocolunas') || key.includes('nivel 1') || key.includes('fluxo principal')
-    })
-    const statesHeaderIdx = lines.findIndex((line) => {
-        const key = normalizeKey(line)
-        return key.includes('estados internos') || key.includes('nivel 2')
-    })
-    const transitionsHeaderIdx = lines.findIndex((line) => {
-        const key = normalizeKey(line)
-        return key.includes('regras de transicao') || key.includes('nivel 3')
-    })
-
-    const collectList = (startIdx, endIdx) =>
-        startIdx < 0
-            ? []
-            : lines
-                  .slice(startIdx + 1, endIdx > startIdx ? endIdx : lines.length)
-                  .map((line) => extractListItem(line))
-                  .filter(Boolean)
-
-    let macros = collectList(macroHeaderIdx, statesHeaderIdx)
-    if (macros.length === 0) {
-        const fallbackHeaderIdx = lines.findIndex((line) => normalizeKey(line).includes('blocos principais do quadro'))
-        macros = collectList(fallbackHeaderIdx, statesHeaderIdx)
-    }
-    if (macros.length === 0) return []
-
-    const stateLines = lines.slice(statesHeaderIdx + 1, transitionsHeaderIdx > statesHeaderIdx ? transitionsHeaderIdx : lines.length)
-    const statesByMacro = new Map()
-    let currentMacro = ''
-
-    stateLines.forEach((line) => {
-        const trimmed = line.trim()
-        if (!trimmed) return
-
-        const heading = trimmed.match(/^#{1,6}\s+(.+)$/)
-        if (heading) {
-            currentMacro = normalizeState(heading[1].replace(/\*\*/g, '').replace(/`/g, ''))
-            if (!statesByMacro.has(currentMacro)) statesByMacro.set(currentMacro, [])
-            return
-        }
-
-        const item = extractListItem(trimmed)
-        if (!item || !currentMacro) return
-        const list = statesByMacro.get(currentMacro) || []
-        if (!list.includes(item)) list.push(item)
-        statesByMacro.set(currentMacro, list)
-    })
-
-    const findStatesForMacro = (macro) => {
-        const macroKey = normalizeKey(macro)
-        for (const [candidate, states] of statesByMacro.entries()) {
-            const candidateKey = normalizeKey(candidate)
-            if (candidateKey === macroKey || candidateKey.includes(macroKey) || macroKey.includes(candidateKey)) {
-                return Array.from(new Map(states.map((state) => [normalizeKey(state), state])).values())
-            }
-        }
-        return []
-    }
-
-    return macros.map((macro) => {
-        const states = findStatesForMacro(macro)
-        if (states.length > 0) return { stage: macro, states }
-        if (normalizeKey(macro).includes('backlog')) return { stage: macro, states: [BACKLOG_STATE] }
-        return { stage: macro, states: [macro] }
-    })
-}
-
-const groupsFromContext = parseMaspStagesFromContext(maspContextRaw)
-
-export const KANBAN_GROUPS =
-    groupsFromContext.length > 0
-        ? groupsFromContext
-        : DEFAULT_MACRO_COLUMNS.map((stage) => ({
-              stage,
-              states: normalizeKey(stage).includes('backlog') ? [BACKLOG_STATE] : [stage],
-          }))
+export const KANBAN_GROUPS = DEFAULT_MACRO_COLUMNS.map((stage) => ({
+    stage,
+    states: normalizeKey(stage).includes('backlog') ? [BACKLOG_STATE] : [stage],
+}))
 
 export const PROJECT_KANBAN_GROUPS = [
     {
