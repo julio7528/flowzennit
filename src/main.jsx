@@ -15,6 +15,10 @@ import DashboardHome from './components/arealogada/DashboardHome.jsx'
 import CadCategorias from './components/arealogada/CadCategorias.jsx'
 import CadSubcategoria from './components/arealogada/CadSubcategoria.jsx'
 import CadParticipantes from './components/arealogada/CadParticipantes.jsx'
+import Stuff from './components/arealogada/stuff.jsx'
+import Tarefas from './components/arealogada/Tarefas.jsx'
+import Reports from './components/arealogada/reports.jsx'
+import Projetos from './components/arealogada/projetos.jsx'
 
 const ScrollToTop = () => {
   const { pathname } = useLocation()
@@ -47,9 +51,15 @@ createRoot(document.getElementById('root')).render(
             <Route path="/cad-categorias" element={<CadCategorias />} />
             <Route path="/cad-subcategorias" element={<CadSubcategoria />} />
             <Route path="/cad-participantes" element={<CadParticipantes />} />
+            <Route path="/boxes/stuff" element={<Stuff />} />
+            <Route path="/boxes/trash" element={<Stuff />} />
+            <Route path="/boxes/algum-dia" element={<Stuff />} />
+            <Route path="/boxes/referencia" element={<Stuff />} />
+            <Route path="/tarefas" element={<Tarefas />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/projetos" element={<Projetos />} />
             {/* Futuras páginas da área logada: */}
             {/* <Route path="/projetos" element={<Projetos />} /> */}
-            {/* <Route path="/tarefas" element={<Tarefas />} /> */}
             {/* <Route path="/analytics" element={<Analytics />} /> */}
           </Route>
         </Route>

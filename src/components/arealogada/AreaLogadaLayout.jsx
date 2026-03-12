@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
+import CadAtividades from './CadAtividades.jsx'
 import { supabase } from '../../lib/supabase.js'
 import logominimal from '../../assets/logominimal.png'
+import {
+    DashboardAnalyticsContext,
+    getPulseToneClass,
+    useWorkspaceAnalytics,
+} from './dashboard-analytics.js'
 import {
     LayoutDashboard,
     FolderOpen,
     Kanban,
-    BarChart3,
-    Settings,
+    CheckCircle2,
     LogOut,
     PanelLeftClose,
     PanelLeftOpen,
@@ -16,13 +21,18 @@ import {
     Menu,
     X,
     Plus,
+    Cloud,
+    Trash2,
+    Lightbulb,
+    Folder,
+    RefreshCw,
 } from 'lucide-react'
 
 const workspaceItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { label: 'Projetos', icon: FolderOpen, path: '/projetos' },
-    { label: 'Tarefas', icon: Kanban, path: '/tarefas' },
-    { label: 'Analytics', icon: BarChart3, path: '/analytics' },
+    { label: 'Tarefas', icon: CheckCircle2, path: '/tarefas' },
+    { label: 'Kanban', icon: Kanban, path: '/reports' },
 ]
 
 const favoriteItems = [
@@ -31,12 +41,27 @@ const favoriteItems = [
     { label: 'Participantes', color: 'bg-rose-500', path: '/cad-participantes' },
 ]
 
+const boxesItems = [
+    { label: 'Stuff', icon: Cloud, path: '/boxes/stuff' },
+    { label: 'Trash', icon: Trash2, path: '/boxes/trash' },
+    { label: 'Algum dia/ Talvez', icon: Lightbulb, path: '/boxes/algum-dia' },
+    { label: 'Referência Futura', icon: Folder, path: '/boxes/referencia' },
+]
+
+const LayoutMetricPill = ({ label, value, tone }) => (
+    <div className={`rounded-md border px-3 py-1.5 text-xs ${tone}`}>
+        <span className="text-zen-text-tri">{label}</span>
+        <span className="ml-2 font-semibold text-white">{value}</span>
+    </div>
+)
+
 const AreaLogadaLayout = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const [mobileOpen, setMobileOpen] = useState(false)
     const [collapsed, setCollapsed] = useState(false)
     const [user, setUser] = useState(null)
+    const [atividadeModalOpen, setAtividadeModalOpen] = useState(false)
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {
@@ -50,6 +75,9 @@ const AreaLogadaLayout = () => {
         return () => clearTimeout(timer)
     }, [location.pathname, mobileOpen])
 
+    const atividadeSeedData = location.state?.atividadeSeed ?? null
+    const isSeedOpen = Boolean(atividadeSeedData)
+
     const handleLogout = async () => {
         await supabase.auth.signOut()
         navigate('/login', { replace: true })
@@ -58,6 +86,54 @@ const AreaLogadaLayout = () => {
     const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'
     const displayEmail = user?.email || ''
     const avatarUrl = user?.user_metadata?.avatar_url || null
+    const analytics = useWorkspaceAnalytics(user?.id || null)
+    const analyticsValue = useMemo(() => ({ ...analytics, user }), [analytics, user])
+    const pulseToneClass = getPulseToneClass(analytics.summary.pulse.level)
+    const notificationCount = analytics.summary.notifications.total
+    const workspaceItemsWithBadges = useMemo(
+        () =>
+            workspaceItems.map((item) => {
+                if (item.path === '/projetos') {
+                    return { ...item, badge: analytics.summary.counts.projectActive }
+                }
+                if (item.path === '/tarefas') {
+                    return { ...item, badge: analytics.summary.counts.operationalTotal }
+                }
+                if (item.path === '/reports') {
+                    return { ...item, badge: analytics.summary.risks.alertCount }
+                }
+                return { ...item, badge: null }
+            }),
+        [analytics.summary.counts.operationalTotal, analytics.summary.counts.projectActive, analytics.summary.risks.alertCount]
+    )
+    const cadastroItemsWithBadges = useMemo(
+        () =>
+            favoriteItems.map((item) => {
+                if (item.path === '/cad-categorias') {
+                    return { ...item, badge: analytics.summary.counts.categoriesTotal }
+                }
+                if (item.path === '/cad-subcategorias') {
+                    return { ...item, badge: analytics.summary.counts.subcategoriesTotal }
+                }
+                if (item.path === '/cad-participantes') {
+                    return { ...item, badge: analytics.summary.counts.participantsTotal }
+                }
+                return { ...item, badge: null }
+            }),
+        [
+            analytics.summary.counts.categoriesTotal,
+            analytics.summary.counts.participantsTotal,
+            analytics.summary.counts.subcategoriesTotal,
+        ]
+    )
+    const headerMetrics = [
+        { label: 'Ativos', value: analytics.summary.counts.activeTotal },
+        { label: 'Alertas', value: analytics.summary.risks.alertCount },
+        {
+            label: 'Portfolio',
+            value: `${analytics.summary.projects.epics}/${analytics.summary.projects.features}/${analytics.summary.projects.userStories}`,
+        },
+    ]
 
     // Build breadcrumb from pathname
     const pathSegments = location.pathname.split('/').filter(Boolean)
@@ -67,7 +143,8 @@ const AreaLogadaLayout = () => {
     }))
 
     return (
-        <div className="flex h-screen overflow-hidden bg-zen-bg text-zen-text font-body antialiased selection:bg-zen-blue/30 selection:text-white">
+        <DashboardAnalyticsContext.Provider value={analyticsValue}>
+            <div className="flex h-screen overflow-hidden bg-zen-bg text-zen-text font-body antialiased selection:bg-zen-blue/30 selection:text-white">
             <style>{`
         /* Zen scrollbar */
         .zen-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -102,7 +179,9 @@ const AreaLogadaLayout = () => {
                             <img src={logominimal} alt="FlowZenit" className="h-7 w-7 object-contain" />
                         </div>
                         {(!collapsed || mobileOpen) && (
-                            <h1 className="text-white font-display font-bold text-lg tracking-tight">FlowZenit</h1>
+                            <div className="min-w-0">
+                                <h1 className="text-white font-display font-bold text-lg tracking-tight">FlowZenit</h1>
+                            </div>
                         )}
                     </div>
                     {/* Close on mobile */}
@@ -123,53 +202,99 @@ const AreaLogadaLayout = () => {
                         {(!collapsed || mobileOpen) && (
                             <div className="text-xs font-medium text-zen-text-tri px-3 uppercase tracking-wider mb-2">Workspace</div>
                         )}
-                        {workspaceItems.map((item) => (
+                        {workspaceItemsWithBadges.map((item) => (
                             <NavLink
                                 key={item.path}
                                 to={item.path}
                                 end={item.path === '/dashboard'}
                                 title={collapsed && !mobileOpen ? item.label : undefined}
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors group ${collapsed && !mobileOpen ? 'justify-center' : ''
-                                    } ${isActive
-                                        ? 'bg-zen-blue/10 text-zen-blue'
-                                        : 'text-zen-text-sec hover:bg-zen-surface-hl hover:text-white'
+                                    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors group ${
+                                        collapsed && !mobileOpen ? 'justify-center' : ''
+                                    } ${
+                                        isActive
+                                            ? 'bg-zen-blue/10 text-zen-blue'
+                                            : 'text-zen-text-sec hover:bg-zen-surface-hl hover:text-white'
                                     }`
                                 }
                             >
                                 <item.icon className="h-5 w-5 shrink-0" />
-                                {(!collapsed || mobileOpen) && <span>{item.label}</span>}
+                                {(!collapsed || mobileOpen) && (
+                                    <>
+                                        <span className="flex-1">{item.label}</span>
+                                        {item.badge > 0 && (
+                                            <span className="rounded-md border border-zen-border bg-zen-bg px-2 py-0.5 text-[10px] text-white">
+                                                {item.badge}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
                             </NavLink>
                         ))}
                     </div>
 
-                    {/* Favorites Group */}
                     {(!collapsed || mobileOpen) && (
                         <div className="flex flex-col gap-1">
-                            <div className="text-xs font-medium text-zen-text-tri px-3 uppercase tracking-wider mb-2">Cadastros</div>
-                            {favoriteItems.map((item) => (
+                            <div className="text-xs font-medium text-zen-text-tri px-3 uppercase tracking-wider mb-2">BOXES</div>
+                            {boxesItems.map((item) => (
                                 <NavLink
                                     key={item.label}
                                     to={item.path}
                                     className="flex items-center gap-3 px-3 py-2 rounded-lg text-zen-text-sec hover:bg-zen-surface-hl hover:text-white transition-colors text-sm font-medium"
                                 >
-                                    <span className={`w-2 h-2 rounded-full ${item.color}`} />
+                                    <item.icon className="h-4 w-4 shrink-0" />
                                     <span>{item.label}</span>
                                 </NavLink>
                             ))}
                         </div>
                     )}
 
+                    {/* Favorites Group */}
+                    {(!collapsed || mobileOpen) && (
+                        <div className="flex flex-col gap-1">
+                            <div className="text-xs font-medium text-zen-text-tri px-3 uppercase tracking-wider mb-2">Cadastros</div>
+                            {cadastroItemsWithBadges.map((item) => (
+                                <NavLink
+                                    key={item.label}
+                                    to={item.path}
+                                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-zen-text-sec hover:bg-zen-surface-hl hover:text-white transition-colors text-sm font-medium"
+                                >
+                                    <span className={`w-2 h-2 rounded-full ${item.color}`} />
+                                    <span className="flex-1">{item.label}</span>
+                                    {item.badge > 0 && (
+                                        <span className="rounded-md border border-zen-border bg-zen-bg px-2 py-0.5 text-[10px] text-white">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </NavLink>
+                            ))}
+                        </div>
+                    )}
+
                     {/* New Item button */}
-                    <div className="mt-auto px-0">
+                    <div className="mt-auto px-0 space-y-2">
                         <button
-                            className={`bg-zen-blue hover:bg-blue-600 text-white text-sm font-bold py-1.5 rounded shadow-lg shadow-blue-900/20 transition-all flex items-center gap-2 w-full justify-center ${collapsed && !mobileOpen ? 'px-2' : 'px-4'
-                                }`}
+                            onClick={() => setAtividadeModalOpen(true)}
+                            className={`bg-zen-blue hover:bg-blue-600 text-white text-sm font-bold py-1.5 rounded shadow-lg shadow-blue-900/20 transition-all flex items-center gap-2 w-full justify-center ${
+                                collapsed && !mobileOpen ? 'px-2' : 'px-4'
+                            }`}
                             title={collapsed && !mobileOpen ? 'Novo Item' : undefined}
                         >
                             <Plus className="h-4 w-4 shrink-0" />
                             {(!collapsed || mobileOpen) && <span>Novo Item</span>}
                         </button>
+                        {(!collapsed || mobileOpen) && (
+                            <button
+                                type="button"
+                                onClick={() => analytics.refresh()}
+                                className="w-full rounded-lg border border-zen-border bg-zen-surface px-3 py-2 text-sm text-zen-text-sec transition-colors hover:bg-zen-surface-hl hover:text-white"
+                            >
+                                <span className="inline-flex items-center gap-2">
+                                    <RefreshCw className={`h-4 w-4 ${analytics.refreshing ? 'animate-spin' : ''}`} />
+                                    Atualizar indicadores
+                                </span>
+                            </button>
+                        )}
                     </div>
                 </nav>
 
@@ -210,9 +335,9 @@ const AreaLogadaLayout = () => {
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 bg-zen-bg">
                 {/* Header */}
-                <header className="h-16 flex items-center justify-between px-6 border-b border-zen-border bg-zen-bg/80 backdrop-blur-md sticky top-0 z-20">
+                <header className="min-h-16 flex items-center justify-between px-6 py-3 border-b border-zen-border bg-zen-bg/80 backdrop-blur-md sticky top-0 z-20">
                     {/* Left: hamburger + breadcrumbs */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                         <button
                             onClick={() => setMobileOpen(true)}
                             className="md:hidden p-1.5 rounded-lg text-zen-text-sec hover:bg-zen-surface-hl hover:text-white transition-colors"
@@ -228,21 +353,33 @@ const AreaLogadaLayout = () => {
                                 {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
                             </button>
                         )}
-                        <nav className="flex items-center gap-2 text-sm">
-                            {breadcrumbs.map((crumb, i) => (
-                                <span key={i} className="flex items-center gap-2">
-                                    {i > 0 && <span className="text-zen-text-tri">/</span>}
-                                    <span className={crumb.isLast ? 'text-white font-display font-medium' : 'text-zen-text-sec font-display'}>
-                                        {crumb.label}
+                        <div className="min-w-0">
+                            <nav className="flex items-center gap-2 text-sm min-w-0">
+                                {breadcrumbs.map((crumb, i) => (
+                                    <span key={i} className="flex items-center gap-2 min-w-0">
+                                        {i > 0 && <span className="text-zen-text-tri">/</span>}
+                                        <span className={crumb.isLast ? 'text-white font-display font-medium truncate' : 'text-zen-text-sec font-display truncate'}>
+                                            {crumb.label}
+                                        </span>
                                     </span>
-                                </span>
-                            ))}
-                        </nav>
+                                ))}
+                            </nav>
+                            <div className="mt-1 text-xs text-zen-text-sec truncate">{analytics.summary.headline}</div>
+                        </div>
                     </div>
 
-                    {/* Right: search + notifications */}
-                    <div className="flex items-center gap-4">
-                        {/* Search */}
+                    <div className="flex items-center gap-3">
+                        <div className="hidden xl:flex items-center gap-2">
+                            {headerMetrics.map((item) => (
+                                <LayoutMetricPill
+                                    key={item.label}
+                                    label={item.label}
+                                    value={item.value}
+                                    tone={item.label === 'Alertas' && Number(item.value) > 0 ? pulseToneClass : 'border-zen-border bg-zen-surface text-white'}
+                                />
+                            ))}
+                        </div>
+
                         <div className="relative group hidden sm:block">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search className="h-4 w-4 text-zen-text-tri" />
@@ -257,12 +394,23 @@ const AreaLogadaLayout = () => {
                             </div>
                         </div>
 
-                        <div className="h-6 w-px bg-zen-border hidden sm:block" />
+                        <button
+                            type="button"
+                            onClick={() => analytics.refresh()}
+                            className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-zen-border px-3 py-2 text-sm text-zen-text-sec transition-colors hover:bg-zen-surface-hl hover:text-white"
+                            title="Atualizar indicadores"
+                        >
+                            <RefreshCw className={`h-4 w-4 ${analytics.refreshing ? 'animate-spin' : ''}`} />
+                            <span className="hidden lg:inline">Atualizar</span>
+                        </button>
 
-                        {/* Notifications */}
                         <button className="relative p-2 text-zen-text-sec hover:text-white rounded-lg hover:bg-zen-surface-hl transition-colors">
                             <Bell className="h-5 w-5" />
-                            <span className="absolute top-2 right-2 size-2 bg-zen-blue rounded-full border-2 border-zen-bg" />
+                            {notificationCount > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-rose-500 text-[10px] font-semibold text-white flex items-center justify-center border border-zen-bg">
+                                    {notificationCount}
+                                </span>
+                            )}
                         </button>
                     </div>
                 </header>
@@ -272,7 +420,21 @@ const AreaLogadaLayout = () => {
                     <Outlet />
                 </div>
             </main>
-        </div>
+
+            {/* Modal Cadastro de Atividades */}
+            <CadAtividades
+                open={atividadeModalOpen || isSeedOpen}
+                onClose={() => {
+                    setAtividadeModalOpen(false)
+                    if (isSeedOpen) {
+                        navigate(location.pathname, { replace: true })
+                    }
+                }}
+                onSaved={() => analytics.refresh()}
+                seedData={atividadeSeedData}
+            />
+            </div>
+        </DashboardAnalyticsContext.Provider>
     )
 }
 

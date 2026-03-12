@@ -17,6 +17,9 @@ dist-ssr
 .stylelintcache
 .vite
 coverage
+codexcontext.md
+codexprojectcontext.md
+Screenshot *.png
 
 # Editor directories and files
 .vscode/*
