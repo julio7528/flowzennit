@@ -14,7 +14,9 @@ import {
     ListTodo,
     Pencil,
     RefreshCw,
+    Settings2,
     Target,
+    Trash2,
     Workflow,
     X,
 } from 'lucide-react'
@@ -268,6 +270,8 @@ const OverviewRail = ({ upcomingItems, metrics }) => {
 
 // ─── GanttPanel ───────────────────────────────────────────────────────────────
 const GanttPanel = ({ items, onOpenCard }) => {
+    const [todayReferenceMs] = useState(() => Date.now())
+
     if (items.length === 0) {
         return (
             <EmptyPanel
@@ -295,7 +299,7 @@ const GanttPanel = ({ items, onOpenCard }) => {
         label: `Sprint ${String(i + 1).padStart(2, '0')}`,
         span: Math.min(7, totalDays - i * 7),
     }))
-    const todayOffset = Math.floor((Date.now() - timelineStartMs) / DAY_IN_MS)
+    const todayOffset = Math.floor((todayReferenceMs - timelineStartMs) / DAY_IN_MS)
     const todayLeft = todayOffset >= 0 && todayOffset < totalDays ? (todayOffset / totalDays) * 100 : null
 
     const clampProgress = (percent) => Math.max(0, Math.min(100, Number(percent) || 0))
@@ -304,7 +308,7 @@ const GanttPanel = ({ items, onOpenCard }) => {
         dayBoundary.setHours(24, 0, 0, 0)
         return dayBoundary.getTime()
     }
-    const getBarMetrics = (item, index) => {
+    const getBarMetrics = (item) => {
         const safeStartMs = Math.max(item.startMs, timelineStartMs)
         const naturalEndMs = Math.max(item.endMs, safeStartMs)
         const renderEndMs = Math.min(
@@ -326,7 +330,7 @@ const GanttPanel = ({ items, onOpenCard }) => {
         }
     }
 
-    const rowMetrics = items.map((item, index) => getBarMetrics(item, index))
+    const rowMetrics = items.map((item) => getBarMetrics(item))
 
     return (
         <article className="overflow-hidden rounded-xl border border-zen-border bg-zen-surface">
@@ -647,6 +651,198 @@ const BacklogPanel = ({
     )
 }
 
+const CadastroControlModal = ({
+    open,
+    onClose,
+    epics,
+    featuresByEpic,
+    storiesByFeature,
+    onCreate,
+    onEdit,
+    onDelete,
+    deletingKey,
+}) => {
+    const [search, setSearch] = useState('')
+
+    const normalizedSearch = normalizeKey(search)
+    const filteredEpics = useMemo(() => {
+        if (!normalizedSearch) return epics
+        return epics.filter((epic) => {
+            const epicMatch = normalizeKey(epic.nome_epic).includes(normalizedSearch)
+            if (epicMatch) return true
+            const featureList = featuresByEpic.get(epic.id) || []
+            return featureList.some((feature) => {
+                const featureMatch = normalizeKey(feature.nome_feature).includes(normalizedSearch)
+                if (featureMatch) return true
+                const storyList = storiesByFeature.get(feature.id) || []
+                return storyList.some((story) => normalizeKey(story.nome_userstory).includes(normalizedSearch))
+            })
+        })
+    }, [epics, featuresByEpic, normalizedSearch, storiesByFeature])
+
+    if (!open) return null
+
+    return (
+        <div className="fixed inset-0 z-[88] flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-2xl border border-zen-border bg-zen-surface shadow-2xl">
+                <div className="flex items-start justify-between gap-4 border-b border-zen-border px-6 py-5">
+                    <div>
+                        <h2 className="font-display text-lg font-semibold text-white">Painel de manutenção de cadastros</h2>
+                        <p className="mt-1 text-sm text-zen-text-sec">CRUD de Epic, Feature e User Story com visão hierárquica.</p>
+                    </div>
+                    <button type="button" onClick={onClose} className="rounded-lg border border-zen-border p-2 text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+
+                <div className="border-b border-zen-border px-6 py-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <input
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
+                            placeholder="Buscar por nome de Epic, Feature ou User Story..."
+                            className="min-w-[260px] flex-1 rounded-lg border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white placeholder:text-zen-text-tri outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => onCreate('epic')}
+                            className="inline-flex items-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500/20"
+                        >
+                            <BadgePlus className="h-3.5 w-3.5 text-blue-300" />
+                            Novo Epic
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onCreate('feature')}
+                            className="inline-flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-cyan-500/20"
+                        >
+                            <BadgePlus className="h-3.5 w-3.5 text-cyan-300" />
+                            Nova Feature
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onCreate('user-story')}
+                            className="inline-flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-amber-500/20"
+                        >
+                            <BadgePlus className="h-3.5 w-3.5 text-amber-300" />
+                            Nova User Story
+                        </button>
+                    </div>
+                </div>
+
+                <div className="space-y-4 p-6">
+                    {filteredEpics.length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-zen-border bg-zen-bg/40 px-5 py-8 text-center text-sm text-zen-text-sec">
+                            Nenhum cadastro encontrado para o filtro informado.
+                        </div>
+                    ) : (
+                        filteredEpics.map((epic) => {
+                            const featureList = featuresByEpic.get(epic.id) || []
+                            return (
+                                <article key={epic.id} className="overflow-hidden rounded-xl border border-zen-border bg-zen-bg/20">
+                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zen-border bg-blue-500/5 px-4 py-3">
+                                        <div className="flex min-w-0 items-center gap-2.5">
+                                            <TypePill type="epic" />
+                                            <h3 className="truncate text-sm font-semibold text-white">{epic.nome_epic}</h3>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => onEdit('epic', epic)}
+                                                className="inline-flex items-center gap-1 rounded-lg border border-zen-border px-2.5 py-1.5 text-xs font-semibold text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
+                                            >
+                                                <Pencil className="h-3.5 w-3.5" />
+                                                Editar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => onDelete('epic', epic)}
+                                                disabled={deletingKey === `epic-${epic.id}`}
+                                                className="inline-flex items-center gap-1 rounded-lg border border-rose-500/40 px-2.5 py-1.5 text-xs font-semibold text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
+                                            >
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                                {deletingKey === `epic-${epic.id}` ? 'Excluindo...' : 'Excluir'}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="divide-y divide-zen-border/50">
+                                        {featureList.length === 0 ? (
+                                            <div className="px-4 py-3 text-xs text-zen-text-tri">Sem features vinculadas.</div>
+                                        ) : (
+                                            featureList.map((feature) => {
+                                                const storyList = storiesByFeature.get(feature.id) || []
+                                                return (
+                                                    <div key={feature.id} className="px-4 py-3">
+                                                        <div className="flex flex-wrap items-center justify-between gap-3">
+                                                            <div className="flex min-w-0 items-center gap-2">
+                                                                <TypePill type="feature" />
+                                                                <span className="truncate text-sm font-medium text-white">{feature.nome_feature}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => onEdit('feature', feature)}
+                                                                    className="inline-flex items-center gap-1 rounded-lg border border-zen-border px-2 py-1 text-[11px] font-semibold text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
+                                                                >
+                                                                    <Pencil className="h-3 w-3" />
+                                                                    Editar
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => onDelete('feature', feature)}
+                                                                    disabled={deletingKey === `feature-${feature.id}`}
+                                                                    className="inline-flex items-center gap-1 rounded-lg border border-rose-500/40 px-2 py-1 text-[11px] font-semibold text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
+                                                                >
+                                                                    <Trash2 className="h-3 w-3" />
+                                                                    {deletingKey === `feature-${feature.id}` ? 'Excluindo...' : 'Excluir'}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="mt-2 flex flex-wrap gap-2">
+                                                            {storyList.length === 0 ? (
+                                                                <span className="text-[11px] text-zen-text-tri">Sem User Stories vinculadas.</span>
+                                                            ) : (
+                                                                storyList.map((story) => (
+                                                                    <div key={story.id} className="inline-flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5">
+                                                                        <span className="text-xs text-amber-100">{story.nome_userstory}</span>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => onEdit('user-story', story)}
+                                                                            className="inline-flex items-center gap-1 rounded-md border border-zen-border/70 px-1.5 py-0.5 text-[10px] text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
+                                                                        >
+                                                                            <Pencil className="h-3 w-3" />
+                                                                            Editar
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => onDelete('user-story', story)}
+                                                                            disabled={deletingKey === `user-story-${story.id}`}
+                                                                            className="inline-flex items-center gap-1 rounded-md border border-rose-500/40 px-1.5 py-0.5 text-[10px] text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
+                                                                        >
+                                                                            <Trash2 className="h-3 w-3" />
+                                                                            {deletingKey === `user-story-${story.id}` ? 'Excluindo...' : 'Excluir'}
+                                                                        </button>
+                                                                    </div>
+                                                                ))
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                        )}
+                                    </div>
+                                </article>
+                            )
+                        })
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 // ─── Projetos (componente raiz) ───────────────────────────────────────────────
 const Projetos = () => {
     const [userId, setUserId]           = useState(null)
@@ -655,6 +851,8 @@ const Projetos = () => {
     const [refreshToken, setRefreshToken] = useState(0)
     const [cadastroAberto, setCadastroAberto] = useState(null)
     const [editingSeed, setEditingSeed] = useState(null)
+    const [cadastroManagerOpen, setCadastroManagerOpen] = useState(false)
+    const [deletingCadastroKey, setDeletingCadastroKey] = useState('')
     const [activeTab, setActiveTab]     = useState('backlog')
     const [backlogSearch, setBacklogSearch] = useState('')
     const [backlogOpenOnly, setBacklogOpenOnly] = useState(false)
@@ -734,8 +932,10 @@ const Projetos = () => {
     }, [loadWorkspace, refreshToken])
 
     const handleModalSaved = useCallback(() => { setRefreshToken((c) => c + 1) }, [])
-    const openCadastro  = (id) => { setEditingSeed(null); setCadastroAberto(id) }
+    const openCadastro  = (id, seed = null) => { setEditingSeed(seed); setCadastroAberto(id) }
     const closeCadastro = ()   => { setCadastroAberto(null); setEditingSeed(null) }
+    const openCadastroManager = () => setCadastroManagerOpen(true)
+    const closeCadastroManager = () => setCadastroManagerOpen(false)
     const toggleRow     = useCallback((rowId) => { setCollapsedRows((c) => ({ ...c, [rowId]: !c[rowId] })) }, [])
 
     const cadastroAtual  = useMemo(() => ACOES_CADASTRO.find((i) => i.id === cadastroAberto) || null, [cadastroAberto])
@@ -831,6 +1031,33 @@ const Projetos = () => {
         setCadastroAberto(normalizeKey(atividade.alocado) === 'bugproj' ? 'bug' : 'task')
     }, [])
 
+    const handleDeleteCadastro = useCallback(async (type, item) => {
+        if (!item?.id) return
+        const mapByType = {
+            epic: { table: 'tbf_epic', field: 'nome_epic', label: 'Epic', id: 'epic' },
+            feature: { table: 'tbf_feature', field: 'nome_feature', label: 'Feature', id: 'feature' },
+            'user-story': { table: 'tbf_userstory', field: 'nome_userstory', label: 'User Story', id: 'user-story' },
+        }
+        const config = mapByType[type]
+        if (!config) return
+        const itemName = item[config.field] || 'Sem nome'
+        const confirmed = window.confirm(`Excluir ${config.label} "${itemName}"?`)
+        if (!confirmed) return
+
+        const key = `${config.id}-${item.id}`
+        setDeletingCadastroKey(key)
+        const { error } = await supabase.from(config.table).delete().eq('id', item.id)
+        setDeletingCadastroKey('')
+
+        if (error) {
+            setFeedback({ type: 'error', message: `Nao foi possivel excluir ${config.label}.` })
+            return
+        }
+
+        setFeedback({ type: 'success', message: `${config.label} excluido com sucesso.` })
+        setRefreshToken((c) => c + 1)
+    }, [])
+
     // ── Loading state ──────────────────────────────────────────────────────────
     if (loading) {
         return (
@@ -849,9 +1076,11 @@ const Projetos = () => {
 
             {/* Toast flutuante */}
             {feedback && (
-                <div className="fixed bottom-5 right-5 z-50 flex max-w-sm items-start gap-3 rounded-xl border border-rose-500/30 bg-zen-surface px-4 py-3 shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-3 duration-300">
-                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
-                    <span className="flex-1 text-sm text-rose-300">{feedback.message}</span>
+                <div className={`fixed bottom-5 right-5 z-50 flex max-w-sm items-start gap-3 rounded-xl border bg-zen-surface px-4 py-3 shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-3 duration-300 ${
+                    feedback.type === 'success' ? 'border-emerald-500/30' : 'border-rose-500/30'
+                }`}>
+                    <AlertCircle className={`mt-0.5 h-4 w-4 shrink-0 ${feedback.type === 'success' ? 'text-emerald-400' : 'text-rose-400'}`} />
+                    <span className={`flex-1 text-sm ${feedback.type === 'success' ? 'text-emerald-300' : 'text-rose-300'}`}>{feedback.message}</span>
                     <button type="button" onClick={() => setFeedback(null)} className="shrink-0 text-zen-text-tri transition-colors hover:text-white">
                         <X className="h-3.5 w-3.5" />
                     </button>
@@ -888,6 +1117,14 @@ const Projetos = () => {
 
                         {/* Direita: botões de cadastro compactos */}
                         <div className="flex flex-wrap gap-2 lg:justify-end lg:pt-1">
+                            <button
+                                type="button"
+                                onClick={openCadastroManager}
+                                className="inline-flex items-center gap-2 rounded-lg border border-zen-border bg-zen-bg/50 px-3 py-2 text-xs font-semibold text-zen-text-sec transition-all hover:bg-zen-border/30 hover:text-white"
+                            >
+                                <Settings2 className="h-3.5 w-3.5" />
+                                Manter Cadastros
+                            </button>
                             {acoesOrdenadas.map((acao) => {
                                 const Icone = acao.icone
                                 return (
@@ -1016,6 +1253,17 @@ const Projetos = () => {
                 seedData={editingSeed}
                 onClose={closeCadastro}
                 onSaved={handleModalSaved}
+            />
+            <CadastroControlModal
+                open={cadastroManagerOpen}
+                onClose={closeCadastroManager}
+                epics={epics}
+                featuresByEpic={featuresByEpic}
+                storiesByFeature={storiesByFeature}
+                deletingKey={deletingCadastroKey}
+                onCreate={(type) => openCadastro(type)}
+                onEdit={(type, item) => openCadastro(type, item)}
+                onDelete={handleDeleteCadastro}
             />
         </div>
     )

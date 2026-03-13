@@ -74,16 +74,23 @@ const computeTimeWeight = (deadlineValue, nowMs) => {
 }
 
 const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
-    if (!cadastro) return null
-
-    const safeCadastro = cadastro
+    const safeCadastro = cadastro || {
+        id: '',
+        titulo: '',
+        descricao: '',
+        icone: X,
+        borda: 'border-zen-border',
+        cor: 'from-zen-bg to-zen-bg',
+        destaque: 'text-zen-text-sec',
+    }
     const Icone = safeCadastro.icone
     const isTaskOrBug = safeCadastro.id === 'task' || safeCadastro.id === 'bug'
     const isEpic = safeCadastro.id === 'epic'
     const isFeature = safeCadastro.id === 'feature'
     const isUserStory = safeCadastro.id === 'user-story'
     const editingId = seedData?.id ?? null
-    const isEditing = Boolean(editingId) && isTaskOrBug
+    const isEditingTaskBug = Boolean(editingId) && isTaskOrBug
+    const isEditingEntity = Boolean(editingId) && !isTaskOrBug
 
     const [step, setStep] = useState('basic')
     const [userId, setUserId] = useState(null)
@@ -241,13 +248,11 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     }, [resetToolbar])
 
     useEffect(() => {
-        setFeedback(null)
-        setSaving(false)
         if (!isTaskOrBug) return
 
         if (!seedData) {
             if (appliedSeedIdRef.current !== 'new') {
-                resetTaskBugForm()
+                queueMicrotask(() => resetTaskBugForm())
                 appliedSeedIdRef.current = 'new'
             }
             return
@@ -255,41 +260,56 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
 
         if (appliedSeedIdRef.current === seedData.id) return
 
-        setStep('basic')
-        setNometarefa(seedData.nometarefa || '')
-        setDescricao(seedData.descricao || '')
-        setCharCount(getTextLength(seedData.descricao || ''))
-        setResponsavel(seedData.participanteNome || '')
-        setSelectedParticipant(null)
-        setSelectedCategoriaId(seedData.idcategoria ? String(seedData.idcategoria) : '')
-        setSelectedSubcategoriaId(seedData.idsubcategoria ? String(seedData.idsubcategoria) : '')
-        setDataInicio(toDateTimeLocalValue(seedData.data_inicio))
-        setDataFim(toDateTimeLocalValue(seedData.data_fim))
-        setSelectedUserStoryIdForTask(seedData.userhistory ? String(seedData.userhistory) : '')
-        setPredecessor(seedData.predecessor ? String(seedData.predecessor) : '')
-        setSucessor(seedData.sucessor ? String(seedData.sucessor) : '')
-        setPercentualProgresso(String(seedData.percentual_progresso ?? 0))
-        setGutGravidade(String(seedData.gravidade ?? 5))
-        setGutUrgencia(String(seedData.urgencia ?? 5))
-        setGutTendencia(String(seedData.tendencia ?? 5))
-        setReferenceNowMs(Date.now())
+        const nextDescricao = seedData.descricao || ''
+        queueMicrotask(() => {
+            setStep('basic')
+            setNometarefa(seedData.nometarefa || '')
+            setDescricao(nextDescricao)
+            setCharCount(getTextLength(nextDescricao))
+            setResponsavel(seedData.participanteNome || '')
+            setSelectedParticipant(null)
+            setSelectedCategoriaId(seedData.idcategoria ? String(seedData.idcategoria) : '')
+            setSelectedSubcategoriaId(seedData.idsubcategoria ? String(seedData.idsubcategoria) : '')
+            setDataInicio(toDateTimeLocalValue(seedData.data_inicio))
+            setDataFim(toDateTimeLocalValue(seedData.data_fim))
+            setSelectedUserStoryIdForTask(seedData.userhistory ? String(seedData.userhistory) : '')
+            setPredecessor(seedData.predecessor ? String(seedData.predecessor) : '')
+            setSucessor(seedData.sucessor ? String(seedData.sucessor) : '')
+            setPercentualProgresso(String(seedData.percentual_progresso ?? 0))
+            setGutGravidade(String(seedData.gravidade ?? 5))
+            setGutUrgencia(String(seedData.urgencia ?? 5))
+            setGutTendencia(String(seedData.tendencia ?? 5))
+            setReferenceNowMs(Date.now())
+        })
 
         if (editorRef.current) {
-            editorRef.current.innerHTML = seedData.descricao || ''
+            editorRef.current.innerHTML = nextDescricao
         }
 
         appliedSeedIdRef.current = seedData.id
     }, [getTextLength, isTaskOrBug, resetTaskBugForm, seedData])
 
     useEffect(() => {
-        if (!seedData?.participante || !participants.length || !isTaskOrBug) return
-        const match = participants.find((item) => String(item.id) === String(seedData.participante))
-        if (!match) return
-        setSelectedParticipant(match)
-        if (!responsavel) {
-            setResponsavel(match.nomeparticipante)
-        }
-    }, [isTaskOrBug, participants, responsavel, seedData?.id, seedData?.participante])
+        if (isTaskOrBug) return
+        const currentSeedId = seedData?.id ? String(seedData.id) : 'new'
+        if (appliedSeedIdRef.current === currentSeedId) return
+
+        const nextNomeEpic = isEpic && seedData ? seedData.nome_epic || '' : ''
+        const nextNomeFeature = isFeature && seedData ? seedData.nome_feature || '' : ''
+        const nextSelectedEpicIdForFeature = isFeature && seedData && seedData.id_epic ? String(seedData.id_epic) : ''
+        const nextNomeUserStory = isUserStory && seedData ? seedData.nome_userstory || '' : ''
+        const nextSelectedFeatureIdForUserStory = isUserStory && seedData && seedData.id_feature ? String(seedData.id_feature) : ''
+
+        queueMicrotask(() => {
+            setNomeEpic(nextNomeEpic)
+            setNomeFeature(nextNomeFeature)
+            setSelectedEpicIdForFeature(nextSelectedEpicIdForFeature)
+            setNomeUserStory(nextNomeUserStory)
+            setSelectedFeatureIdForUserStory(nextSelectedFeatureIdForUserStory)
+        })
+
+        appliedSeedIdRef.current = currentSeedId
+    }, [isEpic, isFeature, isTaskOrBug, isUserStory, seedData])
 
     const updateToolbar = useCallback(() => {
         const editor = editorRef.current
@@ -435,12 +455,12 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             tendencia: Number(gutTendencia),
         }
 
-        const result = isEditing
+        const result = isEditingTaskBug
             ? await supabase.from('tbf_atividades').update(payload).eq('id', editingId).eq('idusuario', userId)
             : await supabase.from('tbf_atividades').insert({ idusuario: userId, 'posicao Kanban': 'backlog', ...payload })
 
         if (result.error) {
-            setFeedback({ type: 'error', message: isEditing ? 'Nao foi possivel atualizar o cadastro.' : 'Nao foi possivel salvar o cadastro.' })
+            setFeedback({ type: 'error', message: isEditingTaskBug ? 'Nao foi possivel atualizar o cadastro.' : 'Nao foi possivel salvar o cadastro.' })
             setSaving(false)
             return
         }
@@ -449,7 +469,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
         onSaved?.()
         setFeedback({
             type: 'success',
-            message: isEditing ? `${safeCadastro.titulo.replace('Cadastrar ', '')} atualizado com sucesso.` : `${safeCadastro.titulo} salvo com sucesso.`,
+            message: isEditingTaskBug ? `${safeCadastro.titulo.replace('Cadastrar ', '')} atualizado com sucesso.` : `${safeCadastro.titulo} salvo com sucesso.`,
         })
         setTimeout(() => {
             handleClose()
@@ -462,9 +482,12 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         setSaving(true)
-        const { error } = await supabase.from('tbf_epic').insert({ nome_epic: nomeEpic.trim() })
+        const query = isEditingEntity
+            ? supabase.from('tbf_epic').update({ nome_epic: nomeEpic.trim() }).eq('id', editingId)
+            : supabase.from('tbf_epic').insert({ nome_epic: nomeEpic.trim() })
+        const { error } = await query
         if (error) {
-            setFeedback({ type: 'error', message: 'Nao foi possivel cadastrar o Epic.' })
+            setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar o Epic.' : 'Nao foi possivel cadastrar o Epic.' })
             setSaving(false)
             return
         }
@@ -483,12 +506,16 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         setSaving(true)
-        const { error } = await supabase.from('tbf_feature').insert({
+        const payload = {
             nome_feature: nomeFeature.trim(),
             id_epic: Number(selectedEpicIdForFeature),
-        })
+        }
+        const query = isEditingEntity
+            ? supabase.from('tbf_feature').update(payload).eq('id', editingId)
+            : supabase.from('tbf_feature').insert(payload)
+        const { error } = await query
         if (error) {
-            setFeedback({ type: 'error', message: 'Nao foi possivel cadastrar a Feature.' })
+            setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar a Feature.' : 'Nao foi possivel cadastrar a Feature.' })
             setSaving(false)
             return
         }
@@ -507,12 +534,16 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         setSaving(true)
-        const { error } = await supabase.from('tbf_userstory').insert({
+        const payload = {
             nome_userstory: nomeUserStory.trim(),
             id_feature: Number(selectedFeatureIdForUserStory),
-        })
+        }
+        const query = isEditingEntity
+            ? supabase.from('tbf_userstory').update(payload).eq('id', editingId)
+            : supabase.from('tbf_userstory').insert(payload)
+        const { error } = await query
         if (error) {
-            setFeedback({ type: 'error', message: 'Nao foi possivel cadastrar a User Story.' })
+            setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar a User Story.' : 'Nao foi possivel cadastrar a User Story.' })
             setSaving(false)
             return
         }
@@ -520,6 +551,8 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
         onSaved?.()
         setTimeout(() => handleClose(), 350)
     }
+
+    if (!cadastro) return null
 
     return (
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -537,7 +570,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         <div>
                             <h2 className="font-display text-lg font-semibold text-white">
                                 {isTaskOrBug
-                                    ? isEditing
+                                    ? isEditingTaskBug
                                         ? safeCadastro.id === 'task'
                                             ? 'Editar Task de Projeto'
                                             : 'Editar Bug de Projeto'
@@ -550,7 +583,9 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                                             : step === 'progresso'
                                               ? 'Progresso da Atividade'
                                               : 'Priorizacao GUT'
-                                    : safeCadastro.titulo}
+                                    : isEditingEntity
+                                      ? `Editar ${safeCadastro.titulo}`
+                                      : safeCadastro.titulo}
                             </h2>
                             <p className="mt-1 text-sm text-zen-text-sec">
                                 {isTaskOrBug
@@ -597,7 +632,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
                             <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
                             <button type="button" onClick={handleSaveEpic} disabled={saving} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? 'Salvando...' : 'Cadastrar'}
+                                {saving ? 'Salvando...' : isEditingEntity ? 'Salvar alteracoes' : 'Cadastrar'}
                             </button>
                         </div>
                     </>
@@ -633,7 +668,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
                             <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
                             <button type="button" onClick={handleSaveFeature} disabled={saving} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? 'Salvando...' : 'Cadastrar'}
+                                {saving ? 'Salvando...' : isEditingEntity ? 'Salvar alteracoes' : 'Cadastrar'}
                             </button>
                         </div>
                     </>
@@ -669,7 +704,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
                             <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
                             <button type="button" onClick={handleSaveUserStory} disabled={saving} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? 'Salvando...' : 'Cadastrar'}
+                                {saving ? 'Salvando...' : isEditingEntity ? 'Salvar alteracoes' : 'Cadastrar'}
                             </button>
                         </div>
                     </>
@@ -880,7 +915,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                             <div className="flex items-center gap-3 pt-2">
                                 <button type="button" onClick={() => setStep('progresso')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Voltar</button>
                                 <button type="button" onClick={handleSaveTaskBug} disabled={saving} className="min-w-[140px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                    {saving ? 'Salvando...' : isEditing ? 'Salvar alteracoes' : 'Finalizar'}
+                                    {saving ? 'Salvando...' : isEditingTaskBug ? 'Salvar alteracoes' : 'Finalizar'}
                                 </button>
                                 <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Cancelar</button>
                             </div>
