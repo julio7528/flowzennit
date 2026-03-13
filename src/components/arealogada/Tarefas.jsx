@@ -198,6 +198,26 @@ const Tarefas = () => {
         })
     }
 
+    const handleDelete = async (atividade) => {
+        if (!atividade?.id || !userId) return
+        const confirmed = window.confirm(`Excluir a tarefa "${atividade.nometarefa || 'Sem nome'}"?`)
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('tbf_atividades')
+            .delete()
+            .eq('id', atividade.id)
+            .eq('idusuario', userId)
+
+        if (error) {
+            setFeedback({ type: 'error', message: 'Nao foi possivel excluir a tarefa.' })
+            return
+        }
+
+        setAtividades((current) => current.filter((item) => item.id !== atividade.id))
+        setFeedback({ type: 'success', message: 'Tarefa excluida com sucesso.' })
+    }
+
     const sortedAtividades = useMemo(
         () =>
             atividades.slice().sort((a, b) => {
@@ -362,13 +382,20 @@ const Tarefas = () => {
                                             <span className="text-sm text-zen-text-sec">{formatDate(atividade.data_fim)}</span>
                                             <span className="text-sm text-white font-medium">{formatGut(atividade)}</span>
                                             <span className="text-sm text-zen-text-sec">{formatDate(atividade.created_at)}</span>
-                                            <div className="flex justify-end">
+                                            <div className="flex justify-end gap-2">
                                                 <button
                                                     type="button"
                                                     onClick={() => handleEdit(atividade)}
                                                     className="text-sm font-semibold px-3 py-2 rounded-lg border border-zen-border text-zen-text-sec hover:text-white hover:bg-zen-border/30 transition-colors"
                                                 >
                                                     Editar
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDelete(atividade)}
+                                                    className="text-sm font-semibold px-3 py-2 rounded-lg border border-rose-500/40 text-rose-200 hover:text-white hover:bg-rose-500/20 transition-colors"
+                                                >
+                                                    Excluir
                                                 </button>
                                             </div>
                                         </div>
@@ -395,13 +422,22 @@ const Tarefas = () => {
                                                     <span className="truncate">{categoria?.nomecategoria || 'Sem categoria'}</span>
                                                 </div>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleEdit(atividade)}
-                                                className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-zen-border text-zen-text-sec hover:text-white hover:bg-zen-border/30 transition-colors shrink-0"
-                                            >
-                                                Editar
-                                            </button>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleEdit(atividade)}
+                                                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-zen-border text-zen-text-sec hover:text-white hover:bg-zen-border/30 transition-colors shrink-0"
+                                                >
+                                                    Editar
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDelete(atividade)}
+                                                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-rose-500/40 text-rose-200 hover:text-white hover:bg-rose-500/20 transition-colors shrink-0"
+                                                >
+                                                    Excluir
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="flex items-center gap-2">
