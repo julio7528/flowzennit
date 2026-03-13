@@ -162,6 +162,15 @@ const Tarefas = () => {
         return () => clearTimeout(timer)
     }, [loadAtividades, userId])
 
+    useEffect(() => {
+        if (!userId) return undefined
+        const handleWorkspaceRefresh = () => {
+            loadAtividades(userId)
+        }
+        window.addEventListener('workspace-refresh-request', handleWorkspaceRefresh)
+        return () => window.removeEventListener('workspace-refresh-request', handleWorkspaceRefresh)
+    }, [loadAtividades, userId])
+
     const formatDate = (value) => {
         if (!value) return '-'
         const date = new Date(value)
@@ -180,19 +189,26 @@ const Tarefas = () => {
         return score > 0 ? score : '-'
     }
 
-    const handleEdit = (atividade) => {
+    const handleEdit = async (atividade) => {
+        if (!atividade?.id || !userId) return
+        const { data, error } = await supabase
+            .from('tbf_atividades')
+            .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, idcategoria, idsubcategoria')
+            .eq('id', atividade.id)
+            .eq('idusuario', userId)
+            .maybeSingle()
+
+        if (error || !data) {
+            setFeedback({ type: 'error', message: 'Nao foi possivel carregar os dados para edicao.' })
+            return
+        }
+
+        const participanteNome = participantsById[data.participante]?.nomeparticipante || ''
         navigate('/tarefas', {
             state: {
                 atividadeSeed: {
-                    id: atividade.id,
-                    nometarefa: atividade.nometarefa,
-                    descricao: atividade.descricao,
-                    alocado: atividade.alocado,
-                    data_inicio: atividade.data_inicio,
-                    data_fim: atividade.data_fim,
-                    gravidade: atividade.gravidade,
-                    urgencia: atividade.urgencia,
-                    tendencia: atividade.tendencia,
+                    ...data,
+                    participanteNome,
                 },
             },
         })

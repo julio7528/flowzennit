@@ -14,6 +14,14 @@ const DELEGAR_DB_VALUE_BY_MODE = {
     Delegar: 'delegar',
 }
 
+const toDateTimeLocalValue = (value) => {
+    if (!value) return ''
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    const offset = date.getTimezoneOffset() * 60000
+    return new Date(date.getTime() - offset).toISOString().slice(0, 16)
+}
+
 const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
     const navigate = useNavigate()
     const [userId, setUserId] = useState(null)
@@ -286,7 +294,7 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
         1: 'Autolimitada — desaparece sem intervenção.',
     }
 
-    const computeTimeWeight = (deadlineValue, nowMs) => {
+    const computeTimeWeight = useCallback((deadlineValue, nowMs) => {
         const minWeight = 1.01
         const maxWeight = 2.0
         const maxHours = 168
@@ -299,7 +307,7 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
         const clamped = Math.min(Math.max(diffHours / maxHours, 0), 1)
         const weight = minWeight + (maxWeight - minWeight) * (1 - clamped)
         return Number(weight.toFixed(2))
-    }
+    }, [])
 
     const resetToolbar = useCallback(() => {
         setIsBold(false)
@@ -310,33 +318,78 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
         setIsLink(false)
     }, [])
 
-    const getTextLength = (html) => {
-        if (typeof document === 'undefined') return 0
-        const container = document.createElement('div')
-        container.innerHTML = html || ''
-        return (container.innerText || '').replace(/\n/g, '').length
-    }
+    const applySeedData = useCallback((source) => {
+        if (!source) return
+        const nextDescricao = source.descricao || ''
+        const nextInicio = toDateTimeLocalValue(source.data_inicio)
+        const nextFim = toDateTimeLocalValue(source.data_fim)
+        const participanteNome = source.participanteNome || ''
+        const participanteId = source.participante || null
+        const alocadoNormalizado = (source.alocado || '').toLowerCase()
+        const textLength = (() => {
+            if (typeof document === 'undefined') return 0
+            const container = document.createElement('div')
+            container.innerHTML = nextDescricao
+            return (container.innerText || '').replace(/\n/g, '').length
+        })()
+
+        setNometarefa(source.nometarefa || '')
+        setDescricao(nextDescricao)
+        setCharCount(textLength)
+        setStep('form')
+        setIsAcionavel(null)
+        setScheduleOpen(false)
+        setDelegarOpen(false)
+        setDelegarStep('form')
+        setDataInicio(nextInicio)
+        setDataFim(nextFim)
+        setDelegarInicio(nextInicio)
+        setDelegarFim(nextFim)
+        setSelectedCategoriaId(source.idcategoria ? String(source.idcategoria) : '')
+        setSelectedSubcategoriaId(source.idsubcategoria ? String(source.idsubcategoria) : '')
+        setGutGravidade(String(source.gravidade ?? 5))
+        setGutUrgencia(String(source.urgencia ?? 5))
+        setGutTendencia(String(source.tendencia ?? 5))
+        setTimeWeight(computeTimeWeight(source.data_fim, Date.now()))
+        setResponsavel(participanteNome)
+        setSelectedParticipant(participanteId ? { id: participanteId, nomeparticipante: participanteNome } : null)
+        setDelegarMode(alocadoNormalizado === 'agendar' ? 'Agendar' : 'Delegar')
+        setFeedback(null)
+        setDelegarFeedback(null)
+        resetToolbar()
+        if (editorRef.current) {
+            editorRef.current.innerHTML = nextDescricao
+        }
+    }, [computeTimeWeight, resetToolbar])
 
     useEffect(() => {
         if (!open || !seedData) return
-        const timer = setTimeout(() => {
-            setNometarefa(seedData.nometarefa || '')
-            setDescricao(seedData.descricao || '')
-            setCharCount(getTextLength(seedData.descricao || ''))
-            setStep('form')
-            setIsAcionavel(null)
-            setScheduleOpen(false)
-            setDelegarOpen(false)
-            setDelegarStep('form')
-            setDataInicio('')
-            setDataFim('')
-            resetToolbar()
-            if (editorRef.current) {
-                editorRef.current.innerHTML = seedData.descricao || ''
-            }
-        }, 0)
+        const timer = setTimeout(() => applySeedData(seedData), 0)
         return () => clearTimeout(timer)
-    }, [seedData, open, resetToolbar])
+    }, [applySeedData, seedData, open])
+
+    useEffect(() => {
+        if (!open || !isEditing || !userId) return
+        let cancelled = false
+        const loadSeedFromDatabase = async () => {
+            const { data, error } = await supabase
+                .from('tbf_atividades')
+                .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, idcategoria, idsubcategoria')
+                .eq('id', editingId)
+                .eq('idusuario', userId)
+                .maybeSingle()
+
+            if (cancelled || error || !data) return
+
+            const participanteNome = data.participante ? seedData?.participanteNome || '' : ''
+
+            applySeedData({ ...data, participanteNome })
+        }
+        loadSeedFromDatabase()
+        return () => {
+            cancelled = true
+        }
+    }, [applySeedData, editingId, isEditing, open, seedData?.participanteNome, userId])
 
     const resetForm = () => {
         setNometarefa('')

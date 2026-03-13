@@ -90,6 +90,12 @@ const AreaLogadaLayout = () => {
     const analyticsValue = useMemo(() => ({ ...analytics, user }), [analytics, user])
     const pulseToneClass = getPulseToneClass(analytics.summary.pulse.level)
     const notificationCount = analytics.summary.notifications.total
+    const handleRefreshWorkspace = () => {
+        analytics.refresh()
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('workspace-refresh-request'))
+        }
+    }
     const workspaceItemsWithBadges = useMemo(
         () =>
             workspaceItems.map((item) => {
@@ -286,7 +292,7 @@ const AreaLogadaLayout = () => {
                         {(!collapsed || mobileOpen) && (
                             <button
                                 type="button"
-                                onClick={() => analytics.refresh()}
+                                onClick={handleRefreshWorkspace}
                                 className="w-full rounded-lg border border-zen-border bg-zen-surface px-3 py-2 text-sm text-zen-text-sec transition-colors hover:bg-zen-surface-hl hover:text-white"
                             >
                                 <span className="inline-flex items-center gap-2">
@@ -396,7 +402,7 @@ const AreaLogadaLayout = () => {
 
                         <button
                             type="button"
-                            onClick={() => analytics.refresh()}
+                            onClick={handleRefreshWorkspace}
                             className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-zen-border px-3 py-2 text-sm text-zen-text-sec transition-colors hover:bg-zen-surface-hl hover:text-white"
                             title="Atualizar indicadores"
                         >
@@ -430,7 +436,7 @@ const AreaLogadaLayout = () => {
                         navigate(location.pathname, { replace: true })
                     }
                 }}
-                onSaved={() => analytics.refresh()}
+                onSaved={handleRefreshWorkspace}
                 seedData={atividadeSeedData}
             />
             </div>

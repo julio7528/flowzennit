@@ -215,12 +215,12 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
         setIsLink(false)
     }, [])
 
-    const getTextLength = (html) => {
+    const getTextLength = useCallback((html) => {
         if (typeof document === 'undefined') return 0
         const container = document.createElement('div')
         container.innerHTML = html || ''
         return (container.innerText || '').replace(/\n/g, '').length
-    }
+    }, [])
 
     const resetTaskBugForm = useCallback(() => {
         setStep('basic')
@@ -349,7 +349,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
         const nextHtml = editorRef.current?.innerHTML || ''
         setDescricao(nextHtml)
         setCharCount(getTextLength(nextHtml))
-    }, [])
+    }, [getTextLength])
 
     const handleEditorKeyDown = useCallback(
         (event) => {
@@ -362,7 +362,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                 event.preventDefault()
             }
         },
-        []
+        [getTextLength]
     )
 
     useEffect(() => {
