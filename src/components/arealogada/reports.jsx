@@ -84,6 +84,7 @@ const Reports = () => {
     const [feedback, setFeedback] = useState(null)
     const [atividades, setAtividades] = useState([])
     const [categoriesById, setCategoriesById] = useState({})
+    const [subcategoriesById, setSubcategoriesById] = useState({})
     const [participantsById, setParticipantsById] = useState({})
     const [showKanbanBoard, setShowKanbanBoard] = useState(false)
     const [draggedCardId, setDraggedCardId] = useState(null)
@@ -138,6 +139,7 @@ const Reports = () => {
         const [
             { data: atividadesData, error: atividadesError },
             { data: categoriasData, error: categoriasError },
+            { data: subcategoriasData, error: subcategoriasError },
             { data: participantesData, error: participantesError },
         ] = await Promise.all([
             supabase
@@ -149,6 +151,10 @@ const Reports = () => {
             supabase
                 .from('tbf_categorias')
                 .select('id, nomecategoria, corcategoria')
+                .eq('idusuario', userId),
+            supabase
+                .from('tbf_subcategorias')
+                .select('id, nomecategoria, corsubcategoria, idcategorias')
                 .eq('idusuario', userId),
             supabase
                 .from('tbf_participantes')
@@ -171,6 +177,16 @@ const Reports = () => {
             setCategoriesById(nextCategories)
         } else {
             setCategoriesById({})
+        }
+
+        if (!subcategoriasError) {
+            const nextSubcategories = (subcategoriasData || []).reduce((acc, subcategoria) => {
+                acc[subcategoria.id] = subcategoria
+                return acc
+            }, {})
+            setSubcategoriesById(nextSubcategories)
+        } else {
+            setSubcategoriesById({})
         }
 
         if (!participantesError) {
@@ -608,12 +624,14 @@ const Reports = () => {
                                                     const stateLabel = classification.stateLabel || 'Sem estado'
                                                     const isDoneStage = classification.stageId === 'done'
                                                     const categoria = categoriesById[atividade.idcategoria]
+                                                    const subcategoria = subcategoriesById[atividade.idsubcategoria]
                                                     const participante = participantsById[atividade.participante]
                                                     const participanteInicial = participante?.nomeparticipante?.trim()?.charAt(0)?.toUpperCase() || '?'
                                                     const gutScore = getDynamicGutScore(atividade, nowMs)
                                                     const fimMs = atividade.data_fim ? new Date(atividade.data_fim).getTime() : Number.NaN
                                                     const isOverdue = Number.isFinite(fimMs) && fimMs < nowMs
                                                     const corCategoria = categoria?.corcategoria || '#64748b'
+                                                    const corSubcategoria = subcategoria?.corsubcategoria || '#94a3b8'
                                                     return (
                                                         <article
                                                             key={atividade.id}
@@ -621,23 +639,22 @@ const Reports = () => {
                                                             onDragStart={() => setDraggedCardId(atividade.id)}
                                                             onDragEnd={() => setDraggedCardId(null)}
                                                             onClick={() => openMoveModalFromCard(atividade)}
-                                                            className={`rounded-xl p-3.5 min-w-0 overflow-hidden cursor-grab active:cursor-grabbing shadow-sm hover:shadow-md transition-all ${
+                                                            className={`group rounded-2xl p-3.5 min-w-0 overflow-hidden cursor-grab active:cursor-grabbing shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all ${
                                                                 isDoneStage
                                                                     ? 'bg-emerald-500/10 border border-emerald-500/40 hover:border-emerald-400/50'
                                                                     : isOverdue
                                                                     ? 'bg-red-500/10 border border-red-500/40 hover:border-red-400/50'
-                                                                    : 'bg-zen-surface/90 border border-zen-border hover:border-zen-blue/40'
+                                                                    : 'bg-zen-surface/95 border border-zen-border hover:border-zen-blue/40'
                                                             }`}
                                                         >
-                                                            <div className="flex items-center justify-between gap-2 min-w-0">
-                                                                <h4
-                                                                    className="text-sm font-semibold text-white truncate flex-1 min-w-0"
-                                                                    onMouseEnter={(event) => showLabelTooltip(event, atividade.nometarefa)}
-                                                                    onMouseMove={(event) => moveLabelTooltip(event, atividade.nometarefa)}
-                                                                    onMouseLeave={hideLabelTooltip}
+                                                            <div className="flex items-start justify-between gap-3">
+                                                                <span
+                                                                    className={`inline-flex max-w-[calc(100%-3rem)] items-center rounded-full border px-2.5 py-1 text-[11px] font-medium ${getStateBadgeClass(
+                                                                        stateLabel
+                                                                    )}`}
                                                                 >
-                                                                    {atividade.nometarefa || '-'}
-                                                                </h4>
+                                                                    {stateLabel}
+                                                                </span>
                                                                 <div className="size-7 rounded-full border border-zen-border overflow-hidden flex items-center justify-center bg-zen-bg text-[10px] text-zen-text-sec shrink-0">
                                                                     {participante?.fotobase64 ? (
                                                                         <img
@@ -650,18 +667,21 @@ const Reports = () => {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <div className="mt-2.5 flex items-center justify-between gap-2 min-w-0">
-                                                                <span
-                                                                    className={`inline-flex w-full items-center rounded-md px-2 py-1 text-[11px] font-medium border truncate max-w-full min-w-0 ${getStateBadgeClass(
-                                                                        stateLabel
-                                                                    )}`}
+
+                                                            <div className="mt-3 min-w-0">
+                                                                <h4
+                                                                    className="min-w-0 text-[15px] font-semibold leading-5 text-white line-clamp-2"
+                                                                    onMouseEnter={(event) => showLabelTooltip(event, atividade.nometarefa)}
+                                                                    onMouseMove={(event) => moveLabelTooltip(event, atividade.nometarefa)}
+                                                                    onMouseLeave={hideLabelTooltip}
                                                                 >
-                                                                    {stateLabel}
-                                                                </span>
+                                                                    {atividade.nometarefa || '-'}
+                                                                </h4>
                                                             </div>
-                                                            <div className="mt-3 flex items-center justify-between gap-2 min-w-0">
+
+                                                            <div className="mt-3 flex flex-wrap items-start gap-2 min-w-0">
                                                                 <span
-                                                                    className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium border truncate max-w-[70%] min-w-0"
+                                                                    className="inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium min-w-0"
                                                                     style={{
                                                                         borderColor: `${corCategoria}80`,
                                                                         backgroundColor: `${corCategoria}1f`,
@@ -669,10 +689,29 @@ const Reports = () => {
                                                                     }}
                                                                 >
                                                                     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: corCategoria }} />
-                                                                    {categoria?.nomecategoria || '-'}
+                                                                    <span className="truncate">{categoria?.nomecategoria || '-'}</span>
                                                                 </span>
-                                                                <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-semibold border border-zen-blue/40 text-blue-200 bg-zen-blue/15 shrink-0">
-                                                                    {gutScore > 0 ? gutScore : '-'}
+                                                                {subcategoria && (
+                                                                    <span
+                                                                        className="inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium min-w-0"
+                                                                        style={{
+                                                                            borderColor: `${corSubcategoria}80`,
+                                                                            backgroundColor: `${corSubcategoria}14`,
+                                                                            color: corSubcategoria,
+                                                                        }}
+                                                                    >
+                                                                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: corSubcategoria }} />
+                                                                        <span className="truncate">{subcategoria.nomecategoria}</span>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="mt-4 flex items-center justify-between gap-3">
+                                                                <span className="text-[11px] font-medium text-zen-text-tri truncate">
+                                                                    {participante?.nomeparticipante || 'Sem participante'}
+                                                                </span>
+                                                                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold border border-zen-blue/40 text-blue-200 bg-zen-blue/15 shrink-0">
+                                                                    GUT {gutScore > 0 ? gutScore : '-'}
                                                                 </span>
                                                             </div>
                                                         </article>
