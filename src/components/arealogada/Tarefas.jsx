@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Loader2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Pencil, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase.js'
 
 const FILTER_OPTIONS = [
@@ -12,7 +12,6 @@ const FILTER_OPTIONS = [
 const HEADER_GRID_CLASS = 'grid grid-cols-[2fr_1.05fr_1.15fr_0.9fr_1fr_1fr_0.6fr_1fr_0.75fr] gap-3 px-4 py-3 text-xs font-semibold text-zen-text-tri uppercase tracking-wider bg-zen-bg/30'
 const ROW_GRID_CLASS = 'grid grid-cols-[2fr_1.05fr_1.15fr_0.9fr_1fr_1fr_0.6fr_1fr_0.75fr] gap-3 px-4 py-3.5 items-center hover:bg-white/[0.02] transition-colors'
 const DOT_CLASS = 'w-2 h-2 rounded-full'
-const DAY_IN_MS = 1000 * 60 * 60 * 24
 
 const Tarefas = () => {
     const navigate = useNavigate()
@@ -23,6 +22,12 @@ const Tarefas = () => {
     const [loading, setLoading] = useState(true)
     const [feedback, setFeedback] = useState(null)
     const [alocadoFilter, setAlocadoFilter] = useState('todos')
+    const [participantFilter, setParticipantFilter] = useState('todos')
+    const [categoryFilter, setCategoryFilter] = useState('todos')
+    const [startDateFilter, setStartDateFilter] = useState('')
+    const [endDateFilter, setEndDateFilter] = useState('')
+    const [sortConfig, setSortConfig] = useState({ key: 'gut', direction: 'desc' })
+    const [labelTooltip, setLabelTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
     const [nowMs, setNowMs] = useState(() => Date.now())
     const normalizeAlocado = (alocado) => (alocado || '').toLowerCase()
     const formatAlocadoLabel = (alocado) => {
@@ -35,6 +40,43 @@ const Tarefas = () => {
         if (!participantName) return '-'
         const firstName = participantName.trim().split(' ').filter(Boolean)[0]
         return firstName || '-'
+    }
+    const getDateOnlyKey = (value) => {
+        if (!value) return ''
+        const date = new Date(value)
+        if (Number.isNaN(date.getTime())) return ''
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+    }
+    const normalizeTaskLabel = (value) => (value || '-').trim() || '-'
+    const formatTaskLabel = (value) => {
+        const label = normalizeTaskLabel(value)
+        if (label.length <= 25) return label
+        return `${label.slice(0, 25)}...`
+    }
+    const isTaskLabelTruncated = (value) => normalizeTaskLabel(value).length > 25
+    const handleTaskLabelMouseEnter = (event, value) => {
+        if (!isTaskLabelTruncated(value)) return
+        setLabelTooltip({
+            visible: true,
+            text: normalizeTaskLabel(value),
+            x: event.clientX + 14,
+            y: event.clientY + 14,
+        })
+    }
+    const handleTaskLabelMouseMove = (event, value) => {
+        if (!isTaskLabelTruncated(value)) return
+        setLabelTooltip({
+            visible: true,
+            text: normalizeTaskLabel(value),
+            x: event.clientX + 14,
+            y: event.clientY + 14,
+        })
+    }
+    const handleTaskLabelMouseLeave = () => {
+        setLabelTooltip((current) => ({ ...current, visible: false }))
     }
 
     useEffect(() => {
@@ -64,21 +106,21 @@ const Tarefas = () => {
     }, [])
 
     const getTemporalWeight = useCallback((endDateValue, referenceNowMs) => {
-        if (!endDateValue) return 1
+        const minWeight = 1.01
+        const maxWeight = 2.0
+        const maxHours = 168
+        if (!endDateValue) return minWeight
 
         const endDateMs = new Date(endDateValue).getTime()
-        if (Number.isNaN(endDateMs)) return 1
+        if (Number.isNaN(endDateMs)) return minWeight
 
         const distanceMs = endDateMs - referenceNowMs
+        if (distanceMs <= 0) return maxWeight
 
-        if (distanceMs >= 0) {
-            const daysToEnd = distanceMs / DAY_IN_MS
-            const inverseWeight = 3 / (1 + daysToEnd)
-            return Math.max(0.2, inverseWeight)
-        }
-
-        const daysOverdue = Math.abs(distanceMs) / DAY_IN_MS
-        return 1 + Math.pow(daysOverdue + 1, 1.35)
+        const distanceHours = distanceMs / (1000 * 60 * 60)
+        const clamped = Math.min(Math.max(distanceHours / maxHours, 0), 1)
+        const weight = minWeight + (maxWeight - minWeight) * (1 - clamped)
+        return Number(weight.toFixed(2))
     }, [])
 
     const getDynamicGutScore = useCallback((atividade, referenceNowMs) => {
@@ -86,7 +128,7 @@ const Tarefas = () => {
         if (baseScore <= 0) return 0
 
         const temporalWeight = getTemporalWeight(atividade.data_fim, referenceNowMs)
-        return Math.round(baseScore * temporalWeight)
+        return Number((baseScore * temporalWeight).toFixed(2))
     }, [getGutScore, getTemporalWeight])
 
     const loadAtividades = useCallback(async (currentUserId) => {
@@ -96,6 +138,7 @@ const Tarefas = () => {
             .from('tbf_atividades')
             .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, created_at, idcategoria')
             .eq('idusuario', currentUserId)
+            .eq('posicao Kanban', 'backlog')
             .not('alocado', 'in', '("Stuff","Trash","Referencia","Incubado")')
             .order('created_at', { ascending: false })
 
@@ -186,7 +229,7 @@ const Tarefas = () => {
 
     const formatGut = (atividade) => {
         const score = getDynamicGutScore(atividade, nowMs)
-        return score > 0 ? score : '-'
+        return score > 0 ? score.toFixed(2) : '-'
     }
 
     const handleEdit = async (atividade) => {
@@ -234,18 +277,88 @@ const Tarefas = () => {
         setFeedback({ type: 'success', message: 'Tarefa excluida com sucesso.' })
     }
 
-    const sortedAtividades = useMemo(
-        () =>
-            atividades.slice().sort((a, b) => {
-                const gutDiff = getDynamicGutScore(b, nowMs) - getDynamicGutScore(a, nowMs)
-                if (gutDiff !== 0) return gutDiff
+    const displayedAtividades = useMemo(() => {
+        const byParticipant = participantFilter === 'todos'
+            ? atividades
+            : atividades.filter((atividade) => String(atividade.participante || '') === participantFilter)
+        const byCategory = categoryFilter === 'todos'
+            ? byParticipant
+            : byParticipant.filter((atividade) => String(atividade.idcategoria || '') === categoryFilter)
+        const byDateRange = startDateFilter
+            ? byCategory.filter((atividade) => {
+                const activityStartDate = getDateOnlyKey(atividade.data_inicio)
+                const activityEndDate = getDateOnlyKey(atividade.data_fim)
+                if (!activityStartDate || !activityEndDate) return false
+                if (endDateFilter) {
+                    return activityStartDate >= startDateFilter && activityEndDate <= endDateFilter
+                }
+                return activityStartDate >= startDateFilter
+            })
+            : byCategory
 
-                const fimA = a.data_fim ? new Date(a.data_fim).getTime() : 0
-                const fimB = b.data_fim ? new Date(b.data_fim).getTime() : 0
-                return fimB - fimA
-            }),
-        [atividades, getDynamicGutScore, nowMs]
-    )
+        const compareText = (first, second) => first.localeCompare(second, 'pt-BR', { sensitivity: 'base' })
+        const sorted = byDateRange.slice().sort((a, b) => {
+            const directionMultiplier = sortConfig.direction === 'asc' ? 1 : -1
+
+            const getComparable = (atividade) => {
+                if (sortConfig.key === 'nome') return (atividade.nometarefa || '').trim()
+                if (sortConfig.key === 'participante') {
+                    const participante = participantsById[atividade.participante]
+                    return (participante?.nomeparticipante || '').trim()
+                }
+                if (sortConfig.key === 'categoria') {
+                    const categoria = categoriesById[atividade.idcategoria]
+                    return (categoria?.nomecategoria || '').trim()
+                }
+                if (sortConfig.key === 'inicio') return atividade.data_inicio ? new Date(atividade.data_inicio).getTime() : 0
+                if (sortConfig.key === 'fim') return atividade.data_fim ? new Date(atividade.data_fim).getTime() : 0
+                if (sortConfig.key === 'criado') return atividade.created_at ? new Date(atividade.created_at).getTime() : 0
+                if (sortConfig.key === 'gut') return getDynamicGutScore(atividade, nowMs)
+                return ''
+            }
+
+            const aValue = getComparable(a)
+            const bValue = getComparable(b)
+
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return (aValue - bValue) * directionMultiplier
+            }
+            return compareText(String(aValue), String(bValue)) * directionMultiplier
+        })
+
+        return sorted
+    }, [atividades, categoriesById, categoryFilter, endDateFilter, getDynamicGutScore, nowMs, participantFilter, participantsById, sortConfig.direction, sortConfig.key, startDateFilter])
+
+    const handleSortChange = (key) => {
+        setSortConfig((current) => {
+            if (current.key === key) {
+                return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' }
+            }
+            return { key, direction: 'asc' }
+        })
+    }
+
+    const renderSortIcon = (key) => {
+        if (sortConfig.key !== key) return <ArrowUpDown className="h-3.5 w-3.5 text-zen-text-tri" />
+        if (sortConfig.direction === 'asc') return <ArrowUp className="h-3.5 w-3.5 text-zen-blue" />
+        return <ArrowDown className="h-3.5 w-3.5 text-zen-blue" />
+    }
+
+    const participantFilterOptions = useMemo(() => {
+        const ids = [...new Set(atividades.map((atividade) => atividade.participante).filter(Boolean))]
+        return ids
+            .map((id) => ({ id: String(id), nome: participantsById[id]?.nomeparticipante || '' }))
+            .filter((item) => item.nome)
+            .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }))
+    }, [atividades, participantsById])
+
+    const categoryFilterOptions = useMemo(() => {
+        const ids = [...new Set(atividades.map((atividade) => atividade.idcategoria).filter(Boolean))]
+        return ids
+            .map((id) => ({ id: String(id), nome: categoriesById[id]?.nomecategoria || '' }))
+            .filter((item) => item.nome)
+            .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }))
+    }, [atividades, categoriesById])
 
     const gutScores = useMemo(
         () =>
@@ -294,6 +407,66 @@ const Tarefas = () => {
                             )
                         })}
                     </div>
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                        <label className="flex flex-col gap-1.5">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-zen-text-tri">Participante</span>
+                            <select
+                                value={participantFilter}
+                                onChange={(event) => setParticipantFilter(event.target.value)}
+                                className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                            >
+                                <option value="todos">Todos os participantes</option>
+                                {participantFilterOptions.map((option) => (
+                                    <option key={option.id} value={option.id}>
+                                        {option.nome}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="flex flex-col gap-1.5">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-zen-text-tri">Categoria</span>
+                            <select
+                                value={categoryFilter}
+                                onChange={(event) => setCategoryFilter(event.target.value)}
+                                className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                            >
+                                <option value="todos">Todas as categorias</option>
+                                {categoryFilterOptions.map((option) => (
+                                    <option key={option.id} value={option.id}>
+                                        {option.nome}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="flex flex-col gap-1.5">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-zen-text-tri">Data início</span>
+                            <input
+                                type="date"
+                                value={startDateFilter}
+                                onChange={(event) => {
+                                    const nextStartDate = event.target.value
+                                    setStartDateFilter(nextStartDate)
+                                    setEndDateFilter((currentEndDate) => {
+                                        if (!nextStartDate) return ''
+                                        if (!currentEndDate) return currentEndDate
+                                        return currentEndDate < nextStartDate ? nextStartDate : currentEndDate
+                                    })
+                                }}
+                                className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                            />
+                        </label>
+                        <label className="flex flex-col gap-1.5">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-zen-text-tri">Data fim</span>
+                            <input
+                                type="date"
+                                value={endDateFilter}
+                                min={startDateFilter || undefined}
+                                disabled={!startDateFilter}
+                                onChange={(event) => setEndDateFilter(event.target.value)}
+                                className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue disabled:cursor-not-allowed disabled:opacity-60"
+                            />
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -338,28 +511,49 @@ const Tarefas = () => {
                         <Loader2 className="w-5 h-5 animate-spin text-zen-blue" />
                         Carregando registros...
                     </div>
-                ) : atividades.length === 0 ? (
+                ) : displayedAtividades.length === 0 ? (
                     <div className="flex flex-col items-center justify-center px-4 sm:px-6 py-12 text-center">
                         <p className="text-sm text-white font-medium">Nenhum registro encontrado.</p>
-                        <p className="text-sm text-zen-text-sec mt-1">Nao ha atividades cadastradas.</p>
+                        <p className="text-sm text-zen-text-sec mt-1">Nao ha atividades para os filtros aplicados.</p>
                     </div>
                 ) : (
                     <>
                         <div className="hidden xl:block">
                             <div className="divide-y divide-zen-border/50">
                                 <div className={HEADER_GRID_CLASS}>
-                                    <span>Nome</span>
-                                    <span>Participante</span>
-                                    <span>Categoria</span>
+                                    <button type="button" onClick={() => handleSortChange('nome')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        Nome
+                                        {renderSortIcon('nome')}
+                                    </button>
+                                    <button type="button" onClick={() => handleSortChange('participante')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        Participante
+                                        {renderSortIcon('participante')}
+                                    </button>
+                                    <button type="button" onClick={() => handleSortChange('categoria')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        Categoria
+                                        {renderSortIcon('categoria')}
+                                    </button>
                                     <span>Alocado</span>
-                                    <span>Inicio</span>
-                                    <span>Fim</span>
-                                    <span>GUT</span>
-                                    <span>Criado em</span>
-                                    <span>Acoes</span>
+                                    <button type="button" onClick={() => handleSortChange('inicio')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        Inicio
+                                        {renderSortIcon('inicio')}
+                                    </button>
+                                    <button type="button" onClick={() => handleSortChange('fim')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        Fim
+                                        {renderSortIcon('fim')}
+                                    </button>
+                                    <button type="button" onClick={() => handleSortChange('gut')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        GUT
+                                        {renderSortIcon('gut')}
+                                    </button>
+                                    <button type="button" onClick={() => handleSortChange('criado')} className="inline-flex items-center gap-1.5 text-left text-xs font-semibold uppercase tracking-wider text-zen-text-tri hover:text-white transition-colors">
+                                        Criado em
+                                        {renderSortIcon('criado')}
+                                    </button>
+                                    <span className="justify-self-end text-right">Acoes</span>
                                 </div>
 
-                                {sortedAtividades.map((atividade) => {
+                                {displayedAtividades.map((atividade) => {
                                     const categoria = categoriesById[atividade.idcategoria]
                                     const corCategoria = categoria?.corcategoria || '#64748b'
                                     const participante = participantsById[atividade.participante]
@@ -369,7 +563,14 @@ const Tarefas = () => {
                                         <div key={atividade.id} className={ROW_GRID_CLASS}>
                                             <div className="flex items-center gap-2 text-sm font-medium text-white/90">
                                                 <div className={DOT_CLASS} style={{ backgroundColor: corCategoria }} />
-                                                <span className="truncate">{atividade.nometarefa || '-'}</span>
+                                                <span
+                                                    className="truncate"
+                                                    onMouseEnter={(event) => handleTaskLabelMouseEnter(event, atividade.nometarefa)}
+                                                    onMouseMove={(event) => handleTaskLabelMouseMove(event, atividade.nometarefa)}
+                                                    onMouseLeave={handleTaskLabelMouseLeave}
+                                                >
+                                                    {formatTaskLabel(atividade.nometarefa)}
+                                                </span>
                                             </div>
                                             <div className="flex items-center gap-2 min-w-0">
                                                 <div className="size-7 rounded-full border border-zen-border overflow-hidden flex items-center justify-center bg-zen-bg text-[10px] text-zen-text-sec shrink-0">
@@ -398,20 +599,24 @@ const Tarefas = () => {
                                             <span className="text-sm text-zen-text-sec">{formatDate(atividade.data_fim)}</span>
                                             <span className="text-sm text-white font-medium">{formatGut(atividade)}</span>
                                             <span className="text-sm text-zen-text-sec">{formatDate(atividade.created_at)}</span>
-                                            <div className="flex justify-end gap-2">
+                                            <div className="flex justify-end justify-self-end gap-2">
                                                 <button
                                                     type="button"
                                                     onClick={() => handleEdit(atividade)}
-                                                    className="text-sm font-semibold px-3 py-2 rounded-lg border border-zen-border text-zen-text-sec hover:text-white hover:bg-zen-border/30 transition-colors"
+                                                    className="inline-flex items-center justify-center text-zen-text-sec hover:text-white transition-colors"
+                                                    aria-label="Editar"
+                                                    title="Editar"
                                                 >
-                                                    Editar
+                                                    <Pencil className="h-4 w-4" />
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDelete(atividade)}
-                                                    className="text-sm font-semibold px-3 py-2 rounded-lg border border-rose-500/40 text-rose-200 hover:text-white hover:bg-rose-500/20 transition-colors"
+                                                    className="inline-flex items-center justify-center text-rose-200 hover:text-rose-100 transition-colors"
+                                                    aria-label="Excluir"
+                                                    title="Excluir"
                                                 >
-                                                    Excluir
+                                                    <Trash2 className="h-4 w-4" />
                                                 </button>
                                             </div>
                                         </div>
@@ -421,7 +626,7 @@ const Tarefas = () => {
                         </div>
 
                         <div className="xl:hidden p-3 sm:p-4 grid gap-3">
-                            {sortedAtividades.map((atividade) => {
+                            {displayedAtividades.map((atividade) => {
                                 const categoria = categoriesById[atividade.idcategoria]
                                 const corCategoria = categoria?.corcategoria || '#64748b'
 
@@ -431,7 +636,14 @@ const Tarefas = () => {
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 text-sm font-medium text-white">
                                                     <div className={DOT_CLASS} style={{ backgroundColor: corCategoria }} />
-                                                    <span className="truncate">{atividade.nometarefa || '-'}</span>
+                                                    <span
+                                                        className="truncate"
+                                                        onMouseEnter={(event) => handleTaskLabelMouseEnter(event, atividade.nometarefa)}
+                                                        onMouseMove={(event) => handleTaskLabelMouseMove(event, atividade.nometarefa)}
+                                                        onMouseLeave={handleTaskLabelMouseLeave}
+                                                    >
+                                                        {formatTaskLabel(atividade.nometarefa)}
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1 text-xs text-zen-text-sec">
                                                     <div className={DOT_CLASS} style={{ backgroundColor: corCategoria }} />
@@ -442,16 +654,20 @@ const Tarefas = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleEdit(atividade)}
-                                                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-zen-border text-zen-text-sec hover:text-white hover:bg-zen-border/30 transition-colors shrink-0"
+                                                    className="inline-flex items-center justify-center text-zen-text-sec hover:text-white transition-colors shrink-0"
+                                                    aria-label="Editar"
+                                                    title="Editar"
                                                 >
-                                                    Editar
+                                                    <Pencil className="h-4 w-4" />
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDelete(atividade)}
-                                                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-rose-500/40 text-rose-200 hover:text-white hover:bg-rose-500/20 transition-colors shrink-0"
+                                                    className="inline-flex items-center justify-center text-rose-200 hover:text-rose-100 transition-colors shrink-0"
+                                                    aria-label="Excluir"
+                                                    title="Excluir"
                                                 >
-                                                    Excluir
+                                                    <Trash2 className="h-4 w-4" />
                                                 </button>
                                             </div>
                                         </div>
@@ -486,6 +702,14 @@ const Tarefas = () => {
                     </>
                 )}
             </div>
+            {labelTooltip.visible && (
+                <div
+                    className="pointer-events-none fixed z-[120] max-w-xs rounded-md border border-zen-border bg-zen-surface px-2.5 py-1.5 text-xs text-white shadow-xl"
+                    style={{ left: labelTooltip.x, top: labelTooltip.y }}
+                >
+                    {labelTooltip.text}
+                </div>
+            )}
         </div>
     )
 }

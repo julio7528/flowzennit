@@ -889,9 +889,9 @@ const Projetos = () => {
             { data: participantsData, error: participantsError},
             { data: categoriesData,   error: categoriesError  },
         ] = await Promise.all([
-            supabase.from('tbf_epic').select('id, nome_epic').order('id', { ascending: true }),
-            supabase.from('tbf_feature').select('id, nome_feature, id_epic').order('id', { ascending: true }),
-            supabase.from('tbf_userstory').select('id, nome_userstory, id_feature').order('id', { ascending: true }),
+            supabase.from('tbf_epic').select('id, nome_epic').eq('idusuario', userId).order('id', { ascending: true }),
+            supabase.from('tbf_feature').select('id, nome_feature, id_epic').eq('idusuario', userId).order('id', { ascending: true }),
+            supabase.from('tbf_userstory').select('id, nome_userstory, id_feature').eq('idusuario', userId).order('id', { ascending: true }),
             supabase
                 .from('tbf_atividades')
                 .select('id, nometarefa, descricao, alocado, created_at, "posicao Kanban", percentual_progresso, data_inicio, data_fim, gravidade, urgencia, tendencia, idcategoria, idsubcategoria, participante, predecessor, sucessor, userhistory')
@@ -1046,7 +1046,7 @@ const Projetos = () => {
 
         const key = `${config.id}-${item.id}`
         setDeletingCadastroKey(key)
-        const { error } = await supabase.from(config.table).delete().eq('id', item.id)
+        const { error } = await supabase.from(config.table).delete().eq('id', item.id).eq('idusuario', userId)
         setDeletingCadastroKey('')
 
         if (error) {
@@ -1056,7 +1056,7 @@ const Projetos = () => {
 
         setFeedback({ type: 'success', message: `${config.label} excluido com sucesso.` })
         setRefreshToken((c) => c + 1)
-    }, [])
+    }, [userId])
 
     // ── Loading state ──────────────────────────────────────────────────────────
     if (loading) {

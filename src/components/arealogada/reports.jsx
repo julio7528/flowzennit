@@ -93,6 +93,7 @@ const Reports = () => {
     const [stateFilter, setStateFilter] = useState('all')
     const [search, setSearch] = useState('')
     const [nowMs, setNowMs] = useState(() => Date.now())
+    const [labelTooltip, setLabelTooltip] = useState({ visible: false, text: '', x: 0, y: 0 })
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null))
@@ -104,6 +105,30 @@ const Reports = () => {
         }, 30000)
         return () => clearInterval(timer)
     }, [])
+
+    const showLabelTooltip = (event, value) => {
+        const text = (value || '-').trim() || '-'
+        setLabelTooltip({
+            visible: true,
+            text,
+            x: event.clientX + 14,
+            y: event.clientY + 14,
+        })
+    }
+
+    const moveLabelTooltip = (event, value) => {
+        const text = (value || '-').trim() || '-'
+        setLabelTooltip({
+            visible: true,
+            text,
+            x: event.clientX + 14,
+            y: event.clientY + 14,
+        })
+    }
+
+    const hideLabelTooltip = () => {
+        setLabelTooltip((current) => ({ ...current, visible: false }))
+    }
 
     const loadAtividades = useCallback(async () => {
         if (!userId) return
@@ -605,7 +630,12 @@ const Reports = () => {
                                                             }`}
                                                         >
                                                             <div className="flex items-center justify-between gap-2 min-w-0">
-                                                                <h4 className="text-sm font-semibold text-white truncate flex-1 min-w-0">
+                                                                <h4
+                                                                    className="text-sm font-semibold text-white truncate flex-1 min-w-0"
+                                                                    onMouseEnter={(event) => showLabelTooltip(event, atividade.nometarefa)}
+                                                                    onMouseMove={(event) => moveLabelTooltip(event, atividade.nometarefa)}
+                                                                    onMouseLeave={hideLabelTooltip}
+                                                                >
                                                                     {atividade.nometarefa || '-'}
                                                                 </h4>
                                                                 <div className="size-7 rounded-full border border-zen-border overflow-hidden flex items-center justify-center bg-zen-bg text-[10px] text-zen-text-sec shrink-0">
@@ -939,6 +969,14 @@ const Reports = () => {
                     ))}
                 </ul>
             </section>
+            {labelTooltip.visible && (
+                <div
+                    className="pointer-events-none fixed z-[120] max-w-xs rounded-md border border-zen-border bg-zen-surface px-2.5 py-1.5 text-xs text-white shadow-xl"
+                    style={{ left: labelTooltip.x, top: labelTooltip.y }}
+                >
+                    {labelTooltip.text}
+                </div>
+            )}
         </div>
     )
 }

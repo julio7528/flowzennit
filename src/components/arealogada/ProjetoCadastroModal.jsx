@@ -166,13 +166,17 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     }, [isTaskOrBug, userId])
 
     useEffect(() => {
-        if (!isTaskOrBug) return
+        if (!isTaskOrBug || !userId) return
         const loadUserStories = async () => {
-            const { data } = await supabase.from('tbf_userstory').select('id, nome_userstory').order('nome_userstory', { ascending: true })
+            const { data } = await supabase
+                .from('tbf_userstory')
+                .select('id, nome_userstory')
+                .eq('idusuario', userId)
+                .order('nome_userstory', { ascending: true })
             setUserStories(data || [])
         }
         loadUserStories()
-    }, [isTaskOrBug])
+    }, [isTaskOrBug, userId])
 
     useEffect(() => {
         if (!isTaskOrBug || !userId) return
@@ -189,22 +193,30 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     }, [isTaskOrBug, userId])
 
     useEffect(() => {
-        if (!isFeature) return
+        if (!isFeature || !userId) return
         const loadEpics = async () => {
-            const { data } = await supabase.from('tbf_epic').select('id, nome_epic').order('nome_epic', { ascending: true })
+            const { data } = await supabase
+                .from('tbf_epic')
+                .select('id, nome_epic')
+                .eq('idusuario', userId)
+                .order('nome_epic', { ascending: true })
             setEpics(data || [])
         }
         loadEpics()
-    }, [isFeature])
+    }, [isFeature, userId])
 
     useEffect(() => {
-        if (!isUserStory) return
+        if (!isUserStory || !userId) return
         const loadFeatures = async () => {
-            const { data } = await supabase.from('tbf_feature').select('id, nome_feature').order('nome_feature', { ascending: true })
+            const { data } = await supabase
+                .from('tbf_feature')
+                .select('id, nome_feature')
+                .eq('idusuario', userId)
+                .order('nome_feature', { ascending: true })
             setFeatures(data || [])
         }
         loadFeatures()
-    }, [isUserStory])
+    }, [isUserStory, userId])
 
     const resetToolbar = useCallback(() => {
         setIsBold(false)
@@ -477,14 +489,18 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     }
 
     const handleSaveEpic = async () => {
+        if (!userId) {
+            setFeedback({ type: 'error', message: 'Usuario nao autenticado.' })
+            return
+        }
         if (!nomeEpic.trim()) {
             setFeedback({ type: 'error', message: 'Informe o nome do Epic.' })
             return
         }
         setSaving(true)
         const query = isEditingEntity
-            ? supabase.from('tbf_epic').update({ nome_epic: nomeEpic.trim() }).eq('id', editingId)
-            : supabase.from('tbf_epic').insert({ nome_epic: nomeEpic.trim() })
+            ? supabase.from('tbf_epic').update({ nome_epic: nomeEpic.trim() }).eq('id', editingId).eq('idusuario', userId)
+            : supabase.from('tbf_epic').insert({ nome_epic: nomeEpic.trim(), idusuario: userId })
         const { error } = await query
         if (error) {
             setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar o Epic.' : 'Nao foi possivel cadastrar o Epic.' })
@@ -497,6 +513,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     }
 
     const handleSaveFeature = async () => {
+        if (!userId) {
+            setFeedback({ type: 'error', message: 'Usuario nao autenticado.' })
+            return
+        }
         if (!nomeFeature.trim()) {
             setFeedback({ type: 'error', message: 'Informe o nome da Feature.' })
             return
@@ -511,8 +531,8 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             id_epic: Number(selectedEpicIdForFeature),
         }
         const query = isEditingEntity
-            ? supabase.from('tbf_feature').update(payload).eq('id', editingId)
-            : supabase.from('tbf_feature').insert(payload)
+            ? supabase.from('tbf_feature').update(payload).eq('id', editingId).eq('idusuario', userId)
+            : supabase.from('tbf_feature').insert({ ...payload, idusuario: userId })
         const { error } = await query
         if (error) {
             setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar a Feature.' : 'Nao foi possivel cadastrar a Feature.' })
@@ -525,6 +545,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     }
 
     const handleSaveUserStory = async () => {
+        if (!userId) {
+            setFeedback({ type: 'error', message: 'Usuario nao autenticado.' })
+            return
+        }
         if (!nomeUserStory.trim()) {
             setFeedback({ type: 'error', message: 'Informe o nome da User Story.' })
             return
@@ -539,8 +563,8 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             id_feature: Number(selectedFeatureIdForUserStory),
         }
         const query = isEditingEntity
-            ? supabase.from('tbf_userstory').update(payload).eq('id', editingId)
-            : supabase.from('tbf_userstory').insert(payload)
+            ? supabase.from('tbf_userstory').update(payload).eq('id', editingId).eq('idusuario', userId)
+            : supabase.from('tbf_userstory').insert({ ...payload, idusuario: userId })
         const { error } = await query
         if (error) {
             setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar a User Story.' : 'Nao foi possivel cadastrar a User Story.' })

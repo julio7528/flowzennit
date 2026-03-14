@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase.js'
-import { X, Loader2, Bold, Italic, Underline, List, ListOrdered, Link2, Cloud } from 'lucide-react'
+import { X, Loader2, Bold, Italic, Underline, List, ListOrdered, Link2, Cloud, Plus } from 'lucide-react'
 
 const BOX_PATH_BY_STATUS = {
     Stuff: '/boxes/stuff',
@@ -59,6 +59,14 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
     const [dataFim, setDataFim] = useState('')
     const [saving, setSaving] = useState(false)
     const [feedback, setFeedback] = useState(null)
+    const [quickModal, setQuickModal] = useState(null)
+    const [quickSaving, setQuickSaving] = useState(false)
+    const [quickParticipantName, setQuickParticipantName] = useState('')
+    const [quickCategoryName, setQuickCategoryName] = useState('')
+    const [quickCategoryColor, setQuickCategoryColor] = useState('#3B82F6')
+    const [quickSubcategoryName, setQuickSubcategoryName] = useState('')
+    const [quickSubcategoryColor, setQuickSubcategoryColor] = useState('#3B82F6')
+    const [quickSubcategoryCategoryId, setQuickSubcategoryCategoryId] = useState('')
     const editorRef = useRef(null)
     const editingId = seedData?.id ?? null
     const isEditing = Boolean(editingId)
@@ -500,54 +508,69 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
         updateToolbar()
     }
 
+    const loadParticipants = useCallback(async () => {
+        if (!userId) return []
+        setParticipantsLoading(true)
+        const { data, error } = await supabase
+            .from('tbf_participantes')
+            .select('id, nomeparticipante, fotobase64')
+            .eq('idusuario', userId)
+            .order('nomeparticipante', { ascending: true })
+        if (error) {
+            setDelegarFeedback({ type: 'error', message: 'Não foi possível carregar os participantes.' })
+            setParticipants([])
+            setParticipantsLoading(false)
+            return []
+        }
+        const rows = data || []
+        setParticipants(rows)
+        setParticipantsLoading(false)
+        return rows
+    }, [userId])
+
+    const loadCategories = useCallback(async () => {
+        if (!userId) return []
+        const { data, error } = await supabase
+            .from('tbf_categorias')
+            .select('id, nomecategoria, corcategoria')
+            .eq('idusuario', userId)
+            .order('nomecategoria', { ascending: true })
+        if (error) {
+            setDelegarFeedback({ type: 'error', message: 'Não foi possível carregar as categorias.' })
+            setCategories([])
+            return []
+        }
+        const rows = data || []
+        setCategories(rows)
+        return rows
+    }, [userId])
+
+    const loadSubcategories = useCallback(async () => {
+        if (!userId) return []
+        const { data, error } = await supabase
+            .from('tbf_subcategorias')
+            .select('id, nomecategoria, corsubcategoria, idcategorias')
+            .eq('idusuario', userId)
+            .order('nomecategoria', { ascending: true })
+        if (error) {
+            setDelegarFeedback({ type: 'error', message: 'Não foi possível carregar as subcategorias.' })
+            setSubcategories([])
+            return []
+        }
+        const rows = data || []
+        setSubcategories(rows)
+        return rows
+    }, [userId])
+
     useEffect(() => {
         if (!delegarOpen || !userId) return
-        const loadParticipants = async () => {
-            setParticipantsLoading(true)
-            const { data, error } = await supabase
-                .from('tbf_participantes')
-                .select('id, nomeparticipante, fotobase64')
-                .eq('idusuario', userId)
-                .order('nomeparticipante', { ascending: true })
-            if (error) {
-                setDelegarFeedback({ type: 'error', message: 'Não foi possível carregar os participantes.' })
-                setParticipants([])
-                setParticipantsLoading(false)
-                return
-            }
-            setParticipants(data || [])
-            setParticipantsLoading(false)
-        }
-        const loadCategories = async () => {
-            const { data, error } = await supabase
-                .from('tbf_categorias')
-                .select('id, nomecategoria, corcategoria')
-                .eq('idusuario', userId)
-                .order('nomecategoria', { ascending: true })
-            if (error) {
-                setDelegarFeedback({ type: 'error', message: 'Não foi possível carregar as categorias.' })
-                setCategories([])
-                return
-            }
-            setCategories(data || [])
-        }
-        const loadSubcategories = async () => {
-            const { data, error } = await supabase
-                .from('tbf_subcategorias')
-                .select('id, nomecategoria, corsubcategoria, idcategorias')
-                .eq('idusuario', userId)
-                .order('nomecategoria', { ascending: true })
-            if (error) {
-                setDelegarFeedback({ type: 'error', message: 'Não foi possível carregar as subcategorias.' })
-                setSubcategories([])
-                return
-            }
-            setSubcategories(data || [])
-        }
-        loadParticipants()
-        loadCategories()
-        loadSubcategories()
-    }, [delegarOpen, userId])
+        const timer = setTimeout(() => {
+            loadParticipants()
+            loadCategories()
+            loadSubcategories()
+        }, 0)
+        return () => clearTimeout(timer)
+    }, [delegarOpen, loadCategories, loadParticipants, loadSubcategories, userId])
 
     const handleDelegarNext = () => {
         if (!validateForm()) return
@@ -592,6 +615,119 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
         })
         onSaved?.()
         resetForm()
+    }
+
+    const closeQuickModal = (force = false) => {
+        if (quickSaving && !force) return
+        setQuickModal(null)
+        setQuickParticipantName('')
+        setQuickCategoryName('')
+        setQuickCategoryColor('#3B82F6')
+        setQuickSubcategoryName('')
+        setQuickSubcategoryColor('#3B82F6')
+        setQuickSubcategoryCategoryId('')
+    }
+
+    const handleQuickParticipantSave = async () => {
+        if (!userId) {
+            setDelegarFeedback({ type: 'error', message: 'Usuario nao autenticado.' })
+            return
+        }
+        if (!quickParticipantName.trim()) {
+            setDelegarFeedback({ type: 'error', message: 'Informe o nome do participante.' })
+            return
+        }
+        setQuickSaving(true)
+        const { error } = await supabase.from('tbf_participantes').insert({
+            idusuario: userId,
+            nomeparticipante: quickParticipantName.trim(),
+            fotobase64: null,
+        })
+        if (error) {
+            setDelegarFeedback({ type: 'error', message: 'Nao foi possivel cadastrar o participante.' })
+            setQuickSaving(false)
+            return
+        }
+        const rows = await loadParticipants()
+        const created = rows.find((item) => item.nomeparticipante.toLowerCase() === quickParticipantName.trim().toLowerCase()) || null
+        if (created) {
+            setResponsavel(created.nomeparticipante)
+            setSelectedParticipant(created)
+        }
+        setDelegarFeedback({ type: 'success', message: 'Participante cadastrado com sucesso.' })
+        setQuickSaving(false)
+        closeQuickModal(true)
+    }
+
+    const handleQuickCategorySave = async () => {
+        if (!userId) {
+            setDelegarFeedback({ type: 'error', message: 'Usuario nao autenticado.' })
+            return
+        }
+        if (!quickCategoryName.trim()) {
+            setDelegarFeedback({ type: 'error', message: 'Informe o nome da categoria.' })
+            return
+        }
+        setQuickSaving(true)
+        const { error } = await supabase.from('tbf_categorias').insert({
+            idusuario: userId,
+            nomecategoria: quickCategoryName.trim(),
+            corcategoria: quickCategoryColor,
+        })
+        if (error) {
+            setDelegarFeedback({ type: 'error', message: 'Nao foi possivel cadastrar a categoria.' })
+            setQuickSaving(false)
+            return
+        }
+        const rows = await loadCategories()
+        const created = rows.find((item) => item.nomecategoria.toLowerCase() === quickCategoryName.trim().toLowerCase()) || null
+        if (created) {
+            setSelectedCategoriaId(String(created.id))
+            setSelectedSubcategoriaId('')
+        }
+        setDelegarFeedback({ type: 'success', message: 'Categoria cadastrada com sucesso.' })
+        setQuickSaving(false)
+        closeQuickModal(true)
+    }
+
+    const handleQuickSubcategorySave = async () => {
+        if (!userId) {
+            setDelegarFeedback({ type: 'error', message: 'Usuario nao autenticado.' })
+            return
+        }
+        if (!quickSubcategoryName.trim()) {
+            setDelegarFeedback({ type: 'error', message: 'Informe o nome da subcategoria.' })
+            return
+        }
+        if (!quickSubcategoryCategoryId) {
+            setDelegarFeedback({ type: 'error', message: 'Selecione a categoria vinculada.' })
+            return
+        }
+        setQuickSaving(true)
+        const { error } = await supabase.from('tbf_subcategorias').insert({
+            idusuario: userId,
+            idcategorias: Number(quickSubcategoryCategoryId),
+            nomecategoria: quickSubcategoryName.trim(),
+            corsubcategoria: quickSubcategoryColor,
+        })
+        if (error) {
+            setDelegarFeedback({ type: 'error', message: 'Nao foi possivel cadastrar a subcategoria.' })
+            setQuickSaving(false)
+            return
+        }
+        const rows = await loadSubcategories()
+        const created = rows.find(
+            (item) =>
+                String(item.idcategorias) === String(quickSubcategoryCategoryId)
+                && item.nomecategoria.toLowerCase() === quickSubcategoryName.trim().toLowerCase()
+        ) || null
+        setSelectedCategoriaId(String(quickSubcategoryCategoryId))
+        if (created) {
+            setSelectedSubcategoriaId(String(created.id))
+        }
+        setDelegarFeedback({ type: 'success', message: 'Subcategoria cadastrada com sucesso.' })
+        setQuickSaving(false)
+        closeQuickModal(true)
     }
 
     // Função para travar a digitação se atingir o limite (permite apagar)
@@ -992,25 +1128,37 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
                         {delegarStep === 'form' && (
                             <div className="flex flex-col gap-5">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold text-zen-text-tri uppercase tracking-wider">Responsável</label>
-                                    <div className="relative">
-                                        <input
-                                            value={responsavel}
-                                            onChange={(event) => {
-                                                const value = event.target.value
-                                                setResponsavel(value)
-                                                const match = participants.find(
-                                                    (item) => item.nomeparticipante.toLowerCase() === value.trim().toLowerCase()
-                                                )
-                                                setSelectedParticipant(match || null)
-                                            }}
-                                            list="participants-list"
-                                            className="bg-zen-bg border border-zen-border rounded-lg py-2.5 px-10 text-sm text-white focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none transition-all w-full"
-                                            placeholder={participantsLoading ? 'Carregando responsáveis...' : 'Selecione o responsável'}
-                                        />
-                                        {participantsLoading && (
-                                            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-zen-blue" />
-                                        )}
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-xs font-semibold text-zen-text-tri uppercase tracking-wider">Responsável</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuickModal('participant')}
+                                            className="inline-flex items-center gap-1 text-xs font-medium text-zen-blue hover:text-blue-400 transition-colors"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Novo
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative flex-1">
+                                            <input
+                                                value={responsavel}
+                                                onChange={(event) => {
+                                                    const value = event.target.value
+                                                    setResponsavel(value)
+                                                    const match = participants.find(
+                                                        (item) => item.nomeparticipante.toLowerCase() === value.trim().toLowerCase()
+                                                    )
+                                                    setSelectedParticipant(match || null)
+                                                }}
+                                                list="participants-list"
+                                                className="bg-zen-bg border border-zen-border rounded-lg py-2.5 px-10 text-sm text-white focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none transition-all w-full"
+                                                placeholder={participantsLoading ? 'Carregando responsáveis...' : 'Selecione o responsável'}
+                                            />
+                                            {participantsLoading && (
+                                                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-zen-blue" />
+                                            )}
+                                        </div>
                                     </div>
                                     <datalist id="participants-list">
                                         {participants.map((participant) => (
@@ -1060,7 +1208,17 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-2">
-                                        <label className="text-xs font-semibold text-zen-text-tri uppercase tracking-wider">Categoria</label>
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-xs font-semibold text-zen-text-tri uppercase tracking-wider">Categoria</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setQuickModal('category')}
+                                                className="inline-flex items-center gap-1 text-xs font-medium text-zen-blue hover:text-blue-400 transition-colors"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                                Nova
+                                            </button>
+                                        </div>
                                         <select
                                             value={selectedCategoriaId}
                                             onChange={(event) => {
@@ -1087,7 +1245,20 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-2">
-                                        <label className="text-xs font-semibold text-zen-text-tri uppercase tracking-wider">Subcategoria</label>
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-xs font-semibold text-zen-text-tri uppercase tracking-wider">Subcategoria</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setQuickSubcategoryCategoryId(selectedCategoriaId || '')
+                                                    setQuickModal('subcategory')
+                                                }}
+                                                className="inline-flex items-center gap-1 text-xs font-medium text-zen-blue hover:text-blue-400 transition-colors"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                                Nova
+                                            </button>
+                                        </div>
                                         <select
                                             value={selectedSubcategoriaId}
                                             onChange={(event) => setSelectedSubcategoriaId(event.target.value)}
@@ -1220,6 +1391,160 @@ const CadAtividades = ({ open, onClose, onSaved, seedData }) => {
                                             setDelegarFeedback(null)
                                         }}
                                         className="text-sm font-medium text-zen-text-sec hover:text-white hover:bg-zen-border/30 py-2.5 px-4 rounded-lg transition-colors"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+            {quickModal && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeQuickModal} />
+                    <div className="relative w-full max-w-lg rounded-xl border border-zen-border bg-zen-surface p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="mb-5 flex items-center justify-between">
+                            <h3 className="font-display text-lg font-semibold text-white">
+                                {quickModal === 'participant' ? 'Novo Participante' : quickModal === 'category' ? 'Nova Categoria' : 'Nova Subcategoria'}
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={closeQuickModal}
+                                className="rounded-lg p-2 text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+
+                        {quickModal === 'participant' && (
+                            <div className="flex flex-col gap-5">
+                                <label className="flex flex-col gap-2">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Nome do Participante</span>
+                                    <input
+                                        value={quickParticipantName}
+                                        onChange={(event) => setQuickParticipantName(event.target.value)}
+                                        className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                                        placeholder="Ex: Ana Silva"
+                                        autoFocus
+                                    />
+                                </label>
+                                <div className="flex items-center gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleQuickParticipantSave}
+                                        disabled={quickSaving}
+                                        className="flex min-w-[120px] items-center justify-center rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        {quickSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={closeQuickModal}
+                                        className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {quickModal === 'category' && (
+                            <div className="flex flex-col gap-5">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_160px]">
+                                    <label className="flex flex-col gap-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Nome da Categoria</span>
+                                        <input
+                                            value={quickCategoryName}
+                                            onChange={(event) => setQuickCategoryName(event.target.value)}
+                                            className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                                            placeholder="Ex: Atendimento"
+                                            autoFocus
+                                        />
+                                    </label>
+                                    <label className="flex flex-col gap-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Cor</span>
+                                        <div className="flex items-center gap-3 rounded-lg border border-zen-border bg-zen-bg p-1.5 pr-4">
+                                            <input
+                                                type="color"
+                                                value={quickCategoryColor}
+                                                onChange={(event) => setQuickCategoryColor(event.target.value)}
+                                                className="h-8 w-12 cursor-pointer rounded border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-none"
+                                            />
+                                            <span className="text-sm font-medium uppercase tracking-wider text-zen-text-sec">{quickCategoryColor}</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div className="flex items-center gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleQuickCategorySave}
+                                        disabled={quickSaving}
+                                        className="flex min-w-[120px] items-center justify-center rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        {quickSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={closeQuickModal}
+                                        className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {quickModal === 'subcategory' && (
+                            <div className="flex flex-col gap-5">
+                                <label className="flex flex-col gap-2">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Nome da Subcategoria</span>
+                                    <input
+                                        value={quickSubcategoryName}
+                                        onChange={(event) => setQuickSubcategoryName(event.target.value)}
+                                        className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                                        placeholder="Ex: Atendimento VIP"
+                                        autoFocus
+                                    />
+                                </label>
+                                <label className="flex flex-col gap-2">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Categoria Vinculada</span>
+                                    <select
+                                        value={quickSubcategoryCategoryId}
+                                        onChange={(event) => setQuickSubcategoryCategoryId(event.target.value)}
+                                        className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
+                                    >
+                                        <option value="">Selecione uma categoria...</option>
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>{category.nomecategoria}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                                <label className="flex flex-col gap-2">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Cor da Subcategoria</span>
+                                    <div className="flex items-center gap-3 rounded-lg border border-zen-border bg-zen-bg p-1.5 pr-4 w-fit">
+                                        <input
+                                            type="color"
+                                            value={quickSubcategoryColor}
+                                            onChange={(event) => setQuickSubcategoryColor(event.target.value)}
+                                            className="h-8 w-12 cursor-pointer rounded border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-none"
+                                        />
+                                        <span className="text-sm font-medium uppercase tracking-wider text-zen-text-sec">{quickSubcategoryColor}</span>
+                                    </div>
+                                </label>
+                                <div className="flex items-center gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleQuickSubcategorySave}
+                                        disabled={quickSaving}
+                                        className="flex min-w-[120px] items-center justify-center rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        {quickSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={closeQuickModal}
+                                        className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                                     >
                                         Cancelar
                                     </button>

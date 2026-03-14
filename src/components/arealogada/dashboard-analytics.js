@@ -555,9 +555,9 @@ export const useWorkspaceAnalytics = (userId) => {
             supabase.from('tbf_categorias').select('id, nomecategoria, corcategoria, created_at').eq('idusuario', userId),
             supabase.from('tbf_subcategorias').select('id, idcategorias, nomecategoria, corsubcategoria, created_at').eq('idusuario', userId),
             supabase.from('tbf_participantes').select('id, nomeparticipante, fotobase64, created_at').eq('idusuario', userId),
-            supabase.from('tbf_epic').select('id, nome_epic').order('id', { ascending: true }),
-            supabase.from('tbf_feature').select('id, nome_feature, id_epic').order('id', { ascending: true }),
-            supabase.from('tbf_userstory').select('id, nome_userstory, id_feature').order('id', { ascending: true }),
+            supabase.from('tbf_epic').select('id, nome_epic').eq('idusuario', userId).order('id', { ascending: true }),
+            supabase.from('tbf_feature').select('id, nome_feature, id_epic').eq('idusuario', userId).order('id', { ascending: true }),
+            supabase.from('tbf_userstory').select('id, nome_userstory, id_feature').eq('idusuario', userId).order('id', { ascending: true }),
         ])
 
         if (atividadesError) {
