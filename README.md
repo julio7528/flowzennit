@@ -157,16 +157,6 @@ No caso da Vercel, `vercel.json` define:
 - `outputDirectory`: `dist`
 - Reescrita global para `index.html` (necessária para SPA com React Router)
 
-## 📌 Estado atual e evolução sugerida
-
-Possíveis próximos passos:
-
-- Expandir cobertura de testes para rotas protegidas e componentes da área logada.
-- Documentar contratos de dados das tabelas Supabase usadas pelo frontend.
-- Padronizar textos e revisar consistência de nomenclatura entre rotas/componentes.
-- Adicionar guia de contribuição (`CONTRIBUTING.md`) e convenção de commits.
-
----
 
 Se quiser, posso também criar uma versão deste README com:
 
