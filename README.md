@@ -156,9 +156,3 @@ No caso da Vercel, `vercel.json` define:
 - `buildCommand`: `npm run build`
 - `outputDirectory`: `dist`
 - Reescrita global para `index.html` (necessária para SPA com React Router)
-
-
-Se quiser, posso também criar uma versão deste README com:
-
-1. **Foco para usuários finais** (menos técnico), ou
-2. **Foco para desenvolvedores** (mais arquitetura, banco e fluxos de autenticação).
