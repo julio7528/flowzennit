@@ -81,7 +81,7 @@ const Footer = () => {
             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">Aprender</h4>
             <ul className="text-sm text-gray-400 space-y-3">
               <li>
-                <a href="#cta" className="hover:text-neonCyan transition-colors">
+                <a href="/documentacao" className="hover:text-neonCyan transition-colors">
                   Documentação
                 </a>
               </li>

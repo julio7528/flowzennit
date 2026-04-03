@@ -7,6 +7,7 @@ import DetailedFeatures from './components/detailedfeatures.jsx'
 import Metodologia from './components/metodologia.jsx'
 import Ciencia from './components/ciencia.jsx'
 import Sobre from './components/sobre.jsx'
+import Documentacao from './components/documentacao.tsx'
 import Login from './components/login.jsx'
 import AuthCallback from './components/AuthCallback.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -41,6 +42,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/metodologia" element={<Metodologia />} />
         <Route path="/ciencia" element={<Ciencia />} />
         <Route path="/sobre" element={<Sobre />} />
+        <Route path="/documentacao" element={<Documentacao />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 

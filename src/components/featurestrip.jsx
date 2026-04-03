@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Code2, Zap, Cpu, LayoutDashboard, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import featureOpenSource from '../assets/feature-open-source.svg'
-import featureMethodology from '../assets/feature-methodology.svg'
-import featureAi from '../assets/feature-ai.svg'
-import featureInterface from '../assets/feature-interface.svg'
+import featureOpenSource from '../assets/png1.png'
+import featureMethodology from '../assets/png2.png'
+import featureAi from '../assets/png3.png'
+import featureInterface from '../assets/png4.png'
 
 const MotionDiv = motion.div
 
@@ -131,7 +131,6 @@ const FeatureStrip = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className="h-48 md:h-full relative">
-                  <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-bgCard to-transparent z-[1]" />
                   <img src={selectedFeature.image} alt={selectedFeature.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-8 flex flex-col justify-center">

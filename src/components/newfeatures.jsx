@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import integrationCalendar from '../assets/integration-calendar.svg'
-import integrationWhatsapp from '../assets/integration-whatsapp.svg'
+import integrationCalendar from '../assets/png2gcarl.png'
+import integrationWhatsapp from '../assets/png2wpp.png'
 
 const MotionDiv = motion.div
 const MotionH2 = motion.h2

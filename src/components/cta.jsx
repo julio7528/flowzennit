@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 const MotionDiv = motion.div
 const MotionLink = motion.a
+const MotionRouterLink = motion(Link)
 
 const Cta = () => {
   return (
@@ -23,19 +25,19 @@ const Cta = () => {
             <MotionLink
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="#"
+              href="/login"
               className="px-8 py-4 rounded-lg bg-gradient-primary text-white font-bold text-lg hover:opacity-90 transition-opacity shadow-xl"
             >
               Criar Conta Gratuita
             </MotionLink>
-            <MotionLink
+            <MotionRouterLink
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="#"
+              to="/documentacao"
               className="px-8 py-4 rounded-lg border-2 border-gray-200 text-gray-800 font-bold text-lg hover:border-gray-400 hover:bg-gray-50 transition-all"
             >
               Ler Documentação
-            </MotionLink>
+            </MotionRouterLink>
             <MotionLink
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
