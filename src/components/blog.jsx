@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   ArrowLeft,
-  ArrowUp,
   ArrowUpRight,
   CalendarDays,
   Heart,
@@ -24,8 +24,8 @@ import {
   writeBrowserFlag,
 } from '../lib/blog.js'
 
-
 export default function Blog() {
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { slug } = useParams()
 
@@ -42,9 +42,12 @@ export default function Blog() {
   const [likeLoading, setLikeLoading] = useState(false)
   const [feedback, setFeedback] = useState('')
 
+  const locale = i18n.resolvedLanguage || 'pt-BR'
+  const formatDate = (value) => formatBlogDate(value, locale)
+
   const loadPosts = async () => {
     if (!supabase) {
-      setError('Supabase nao configurado.')
+      setError(t('blog.states.supabaseMissing'))
       setLoading(false)
       return
     }
@@ -70,7 +73,7 @@ export default function Blog() {
 
   useEffect(() => {
     loadPosts()
-  }, [])
+  }, [i18n.resolvedLanguage])
 
   useEffect(() => {
     getVisitorFingerprint().then((value) => setVisitorFingerprint(value))
@@ -129,7 +132,7 @@ export default function Blog() {
       if (insertError.message.toLowerCase().includes('duplicate')) {
         setLiked(true)
         writeBrowserFlag(getBlogLikeStorageKey(selectedPost.id))
-        setFeedback('Este navegador ja registrou like para esta postagem.')
+        setFeedback(t('blog.feedback.duplicateLike'))
       } else {
         setFeedback(insertError.message)
       }
@@ -152,7 +155,7 @@ export default function Blog() {
     const commentText = commentState.comment_text.trim()
 
     if (!displayName || !commentText) {
-      setFeedback('Nome e comentario sao obrigatorios.')
+      setFeedback(t('blog.feedback.requiredCommentFields'))
       return
     }
 
@@ -170,7 +173,7 @@ export default function Blog() {
       if (insertError.message.toLowerCase().includes('duplicate')) {
         setCommented(true)
         writeBrowserFlag(getBlogCommentStorageKey(selectedPost.id))
-        setFeedback('Este navegador ja enviou um comentario para esta postagem.')
+        setFeedback(t('blog.feedback.duplicateComment'))
       } else {
         setFeedback(insertError.message)
       }
@@ -218,44 +221,39 @@ export default function Blog() {
       <Header />
 
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-0 px-4 sm:px-6 lg:px-8">
-
-        {/* ── Masthead bar ── */}
-        <div className="sticky top-20 z-20 bg-[#050508]/95 backdrop-blur-sm border-b border-[#1A1D26]">
+        <div className="sticky top-20 z-20 border-b border-[#1A1D26] bg-[#050508]/95 backdrop-blur-sm">
           <div className="flex h-14 items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="blog-mono text-[10px] font-bold uppercase tracking-[0.35em] text-[#00F0FF]">
-                Blog FlowZenit — Por Julio Gomes
+                {t('blog.masthead.title')}
               </span>
               <span className="h-3 w-px bg-white/10" />
               <span className="hidden text-[11px] text-gray-500 md:block">
-                {posts.length} publicacoes
+                {t('blog.masthead.postsCount', { count: posts.length })}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] animate-pulse" />
-              <span className="text-[11px] text-gray-500">ao vivo</span>
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00F0FF]" />
+              <span className="text-[11px] text-gray-500">{t('blog.masthead.live')}</span>
             </div>
           </div>
         </div>
 
-        {/* ── States: loading / error / empty ── */}
         {loading ? (
           <div className="flex min-h-[50vh] items-center justify-center border-b border-[#1A1D26]">
             <div className="flex items-center gap-3 text-sm text-gray-400">
               <LoaderCircle className="h-4 w-4 animate-spin text-[#00F0FF]" />
-              Carregando postagens publicadas...
+              {t('blog.states.loadingPosts')}
             </div>
           </div>
         ) : error ? (
-          <div className="border-l-2 border-red-500 bg-red-500/5 px-6 py-5 text-sm text-red-300 my-10">{error}</div>
+          <div className="my-10 border-l-2 border-red-500 bg-red-500/5 px-6 py-5 text-sm text-red-300">{error}</div>
         ) : posts.length === 0 ? (
-          <div className="border border-dashed border-white/10 p-20 text-center text-sm text-gray-500 my-10">
-            Nenhuma postagem publicada no momento.
+          <div className="my-10 border border-dashed border-white/10 p-20 text-center text-sm text-gray-500">
+            {t('blog.states.empty')}
           </div>
         ) : (
           <div className="grid gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
-
-            {/* ── Sidebar ── */}
             <aside className="scrollbar-flowzenit border-r border-[#1A1D26] bg-[#050508] lg:sticky lg:top-[calc(3.5rem+5rem)] lg:max-h-[calc(100vh-8.5rem)] lg:overflow-y-auto">
               <div className="py-10 pr-7">
                 <Link
@@ -263,13 +261,15 @@ export default function Blog() {
                   className="mb-8 inline-flex items-center gap-2 rounded-lg border border-[#1A1D26] bg-[#0E1016] px-3 py-2.5 text-xs text-gray-400 transition-colors hover:border-[#00F0FF]/30 hover:text-[#00F0FF]"
                 >
                   <ArrowUpRight className="h-3 w-3" />
-                  Índice do Blog
+                  {t('blog.sidebar.index')}
                 </Link>
-                <p className="blog-mono mb-6 text-[10px] uppercase tracking-[0.32em] text-[#BD00FF]">Arquivo</p>
+                <p className="blog-mono mb-6 text-[10px] uppercase tracking-[0.32em] text-[#BD00FF]">
+                  {t('blog.sidebar.archive')}
+                </p>
                 <div className="flex flex-col gap-8">
                   {archiveGroups.map((group) => (
                     <div key={group.label}>
-                      <h2 className="mb-3 text-[10px] font-bold uppercase tracking-[0.26em] text-gray-600 border-b border-[#1A1D26] pb-2.5">
+                      <h2 className="mb-3 border-b border-[#1A1D26] pb-2.5 text-[10px] font-bold uppercase tracking-[0.26em] text-gray-600">
                         {group.label}
                       </h2>
                       <div className="flex flex-col gap-0">
@@ -288,7 +288,7 @@ export default function Blog() {
                               {post.title}
                             </p>
                             <p className="mt-2 text-[11px] text-gray-600">
-                              {formatBlogDate(post.published_at ?? post.created_at)}
+                              {formatDate(post.published_at ?? post.created_at)}
                             </p>
                           </button>
                         ))}
@@ -299,15 +299,13 @@ export default function Blog() {
               </div>
             </aside>
 
-            {/* ── Main content ── */}
             <div className="flex flex-col">
-
-              {/* ── Index view ── */}
               {!slug && featuredPost && (
                 <>
-                  {/* Featured post */}
-                  <section className="border-b border-[#1A1D26] mt-12 pb-14 pl-10 pr-6 lg:pl-12 lg:pr-8">
-                    <p className="blog-mono mb-6 text-[10px] uppercase tracking-[0.32em] text-[#00F0FF]">Ultima postagem</p>
+                  <section className="mt-12 border-b border-[#1A1D26] pb-14 pl-10 pr-6 lg:pl-12 lg:pr-8">
+                    <p className="blog-mono mb-6 text-[10px] uppercase tracking-[0.32em] text-[#00F0FF]">
+                      {t('blog.indexView.latest')}
+                    </p>
                     <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:items-start">
                       <div className="flex flex-col gap-6">
                         <h2 className="blog-display text-4xl font-black leading-[1.05] tracking-tight text-white lg:text-5xl">
@@ -315,7 +313,7 @@ export default function Blog() {
                         </h2>
                         <div className="flex items-center gap-2 text-xs text-gray-500">
                           <CalendarDays className="h-3.5 w-3.5 text-[#00FF88]" />
-                          {formatBlogDate(featuredPost.published_at ?? featuredPost.created_at)}
+                          {formatDate(featuredPost.published_at ?? featuredPost.created_at)}
                         </div>
                         <p className="max-w-xl text-[1.0625rem] leading-8 text-gray-300">
                           {featuredPost.excerpt || buildExcerpt(featuredPost.content_html)}
@@ -325,7 +323,7 @@ export default function Blog() {
                           onClick={() => openPost(featuredPost.slug)}
                           className="inline-flex w-fit items-center gap-2 border border-[#00F0FF]/40 bg-[#00F0FF]/8 px-5 py-3 text-sm font-semibold text-[#00F0FF] transition-colors hover:bg-[#00F0FF]/15"
                         >
-                          Ler postagem completa
+                          {t('blog.indexView.readFull')}
                           <ArrowUpRight className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -339,14 +337,13 @@ export default function Blog() {
                     </div>
                   </section>
 
-                  {/* Recent posts grid */}
                   {recentPosts.length > 0 && (
-                    <section className="border-b border-[#1A1D26] mt-2 pl-10 lg:pl-12">
+                    <section className="mt-2 border-b border-[#1A1D26] pl-10 lg:pl-12">
                       <div className="grid divide-x divide-[#1A1D26] xl:grid-cols-3">
                         {recentPosts.map((post) => (
                           <article
                             key={post.id}
-                            className="post-card-hover border border-transparent border-b border-b-[#1A1D26] xl:border-b-0"
+                            className="post-card-hover border border-b border-b-[#1A1D26] border-transparent xl:border-b-0"
                           >
                             <button type="button" onClick={() => openPost(post.slug)} className="block h-full w-full text-left">
                               <div className="overflow-hidden border-b border-[#1A1D26]">
@@ -358,7 +355,7 @@ export default function Blog() {
                               </div>
                               <div className="p-7">
                                 <p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-gray-600">
-                                  {formatBlogDate(post.published_at ?? post.created_at)}
+                                  {formatDate(post.published_at ?? post.created_at)}
                                 </p>
                                 <h3 className="text-base font-bold leading-snug text-white">{post.title}</h3>
                                 <p className="mt-3.5 text-sm leading-6 text-gray-500">
@@ -372,11 +369,12 @@ export default function Blog() {
                     </section>
                   )}
 
-                  {/* Older posts list */}
                   {olderPosts.length > 0 && (
-                    <section className="pl-10 pt-10 pb-14 lg:pl-12">
-                      <p className="blog-mono mb-2 text-[10px] uppercase tracking-[0.3em] text-[#00FF88]">Historico</p>
-                      <h2 className="mb-7 text-xl font-black text-white">Demais postagens publicadas</h2>
+                    <section className="pl-10 pb-14 pt-10 lg:pl-12">
+                      <p className="blog-mono mb-2 text-[10px] uppercase tracking-[0.3em] text-[#00FF88]">
+                        {t('blog.indexView.historyEyebrow')}
+                      </p>
+                      <h2 className="mb-7 text-xl font-black text-white">{t('blog.indexView.historyTitle')}</h2>
                       <div className="flex flex-col border-t border-[#1A1D26]">
                         {olderPosts.map((post) => (
                           <button
@@ -387,7 +385,7 @@ export default function Blog() {
                           >
                             <div className="flex items-baseline gap-6">
                               <span className="blog-mono hidden w-24 shrink-0 text-[10px] text-gray-600 lg:block">
-                                {formatBlogDate(post.published_at ?? post.created_at)}
+                                {formatDate(post.published_at ?? post.created_at)}
                               </span>
                               <p className="text-sm font-semibold text-gray-300 group-hover:text-white">{post.title}</p>
                             </div>
@@ -400,26 +398,25 @@ export default function Blog() {
                 </>
               )}
 
-              {/* ── Single post view ── */}
               {slug && selectedPost && (
                 <article className="pl-10 lg:pl-12">
-                  {/* Post header nav */}
                   <div className="flex flex-wrap items-center gap-3 border-b border-[#1A1D26] py-6">
                     <Link
                       to="/blog"
                       className="inline-flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
-                      Voltar ao indice
+                      {t('blog.postView.backToIndex')}
                     </Link>
                     <span className="h-3 w-px bg-white/10" />
                     <span className="blog-mono text-[10px] uppercase tracking-[0.24em] text-gray-600">
-                      Publicado em {formatBlogDate(selectedPost.published_at ?? selectedPost.created_at)}
+                      {t('blog.postView.publishedAt', {
+                        date: formatDate(selectedPost.published_at ?? selectedPost.created_at),
+                      })}
                     </span>
                   </div>
 
-                  {/* Cover image */}
-                  <div className="border-b border-[#1A1D26] mt-8 mr-6 lg:mr-10">
+                  <div className="mr-6 mt-8 border-b border-[#1A1D26] lg:mr-10">
                     <img
                       src={selectedPost.cover_image_url}
                       alt={selectedPost.title}
@@ -427,8 +424,7 @@ export default function Blog() {
                     />
                   </div>
 
-                  {/* Post title & excerpt */}
-                  <div className="border-b border-[#1A1D26] pt-12 pb-10 pr-6 lg:pr-14">
+                  <div className="border-b border-[#1A1D26] pb-10 pt-12 pr-6 lg:pr-14">
                     <h1 className="blog-display text-4xl font-black leading-[1.05] tracking-tight text-white lg:text-5xl">
                       {selectedPost.title}
                     </h1>
@@ -437,17 +433,17 @@ export default function Blog() {
                     </p>
                   </div>
 
-                  {/* Post body */}
                   <div
                     className="blog-content border-b border-[#1A1D26] py-12 pr-6 lg:pr-20"
                     dangerouslySetInnerHTML={{ __html: selectedPost.content_html }}
                   />
 
-                  {/* Engagement — like */}
                   <div className="flex flex-col gap-5 border-b border-[#1A1D26] py-9 pr-6 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="blog-mono text-[10px] uppercase tracking-[0.3em] text-[#00FF88]">Engajamento</p>
-                      <h2 className="mt-2 text-lg font-black text-white">Curtiu o conteudo?</h2>
+                      <p className="blog-mono text-[10px] uppercase tracking-[0.3em] text-[#00FF88]">
+                        {t('blog.postView.engagement')}
+                      </p>
+                      <h2 className="mt-2 text-lg font-black text-white">{t('blog.postView.engagementTitle')}</h2>
                     </div>
                     <button
                       type="button"
@@ -463,24 +459,24 @@ export default function Blog() {
                         ? <LoaderCircle className="h-4 w-4 animate-spin" />
                         : <Heart className={`h-4 w-4 ${liked ? 'fill-[#00FF88] text-[#00FF88]' : ''}`} />
                       }
-                      {liked ? 'Like registrado' : 'Curtir postagem'}
+                      {liked ? t('blog.postView.likeRegistered') : t('blog.postView.likeAction')}
                       <span className="border border-white/10 bg-white/5 px-2 py-0.5 text-xs tabular-nums">
                         {likeCount}
                       </span>
                     </button>
                   </div>
 
-                  {/* Comments section */}
                   <section className="py-10 pr-6 lg:pr-14">
                     <div className="mb-8 flex items-center gap-4">
                       <MessageSquare className="h-5 w-5 text-[#BD00FF]" />
                       <div>
-                        <p className="blog-mono text-[10px] uppercase tracking-[0.3em] text-[#BD00FF]">Comentarios</p>
-                        <h2 className="mt-1.5 text-lg font-black text-white">Participe da conversa</h2>
+                        <p className="blog-mono text-[10px] uppercase tracking-[0.3em] text-[#BD00FF]">
+                          {t('blog.postView.commentsEyebrow')}
+                        </p>
+                        <h2 className="mt-1.5 text-lg font-black text-white">{t('blog.postView.commentsTitle')}</h2>
                       </div>
                     </div>
 
-                    {/* Comment form */}
                     <form onSubmit={handleCommentSubmit} className="mb-10 border-b border-[#1A1D26] pb-10">
                       <div className="grid gap-3.5 md:grid-cols-[220px_minmax(0,1fr)]">
                         <input
@@ -490,7 +486,7 @@ export default function Blog() {
                           }
                           disabled={commented}
                           className="border border-white/10 bg-[#0A0B10] px-4 py-3.5 text-sm text-white transition-colors"
-                          placeholder="Seu nome"
+                          placeholder={t('blog.postView.namePlaceholder')}
                         />
                         <textarea
                           value={commentState.comment_text}
@@ -500,12 +496,12 @@ export default function Blog() {
                           disabled={commented}
                           rows={4}
                           className="border border-white/10 bg-[#0A0B10] px-4 py-3.5 text-sm text-white transition-colors"
-                          placeholder="Compartilhe seu comentario"
+                          placeholder={t('blog.postView.commentPlaceholder')}
                         />
                       </div>
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                         <p className="text-xs leading-5 text-gray-600">
-                          Cada navegador pode registrar um comentario e um like por postagem.
+                          {t('blog.postView.commentRule')}
                         </p>
                         <button
                           type="submit"
@@ -520,23 +516,21 @@ export default function Blog() {
                             ? <LoaderCircle className="h-4 w-4 animate-spin" />
                             : <Send className="h-3.5 w-3.5" />
                           }
-                          {commented ? 'Comentario registrado' : 'Enviar comentario'}
+                          {commented ? t('blog.postView.commentRegistered') : t('blog.postView.commentAction')}
                         </button>
                       </div>
                     </form>
 
-                    {/* Feedback message */}
                     {feedback && (
                       <div className="mb-7 border-l-2 border-yellow-500/40 bg-yellow-500/5 px-4 py-3.5 text-sm text-yellow-200/80">
                         {feedback}
                       </div>
                     )}
 
-                    {/* Comments list */}
                     <div className="flex flex-col gap-0">
                       {comments.length === 0 ? (
                         <div className="border border-dashed border-white/10 p-10 text-center text-sm text-gray-600">
-                          Ainda nao ha comentarios publicados nesta postagem.
+                          {t('blog.postView.emptyComments')}
                         </div>
                       ) : (
                         comments.map((comment) => (
@@ -544,7 +538,7 @@ export default function Blog() {
                             <div className="flex flex-wrap items-baseline justify-between gap-3">
                               <h3 className="text-sm font-bold text-white">{comment.display_name}</h3>
                               <span className="blog-mono text-[10px] text-gray-600">
-                                {formatBlogDate(comment.created_at)}
+                                {formatDate(comment.created_at)}
                               </span>
                             </div>
                             <p className="mt-3 text-sm leading-7 text-gray-400">{comment.comment_text}</p>
@@ -556,10 +550,9 @@ export default function Blog() {
                 </article>
               )}
 
-              {/* ── 404 post ── */}
               {slug && !selectedPost && (
-                <div className="border border-dashed border-white/10 m-12 p-20 text-center text-sm text-gray-500">
-                  Postagem nao encontrada ou ainda nao publicada.
+                <div className="m-12 border border-dashed border-white/10 p-20 text-center text-sm text-gray-500">
+                  {t('blog.states.notFound')}
                 </div>
               )}
             </div>

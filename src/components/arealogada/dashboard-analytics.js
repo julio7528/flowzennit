@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
+import i18n from '../../lib/i18n.js'
 import { getStageLabelByState, isDoneState, normalizeKey, PROJECT_KANBAN_GROUPS } from './kanban-model.js'
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24
@@ -8,15 +9,32 @@ const ALERT_WINDOW_DAYS = 3
 export const BOX_ALOCADOS = ['stuff', 'trash', 'referencia', 'incubado']
 export const PROJECT_ALOCADOS = ['taskproj', 'bugproj']
 
-const STAGE_ORDER = [
-    'Backlog',
-    'Analise (Plan)',
-    'Doing (Do)',
-    'Conferindo (Check)',
-    'Revisao e Padronizacao (Act)',
-    'Done',
-    'Sem etapa',
-]
+const STAGE_ORDER = ['backlog', 'analysis', 'doing', 'check', 'review', 'done', 'unassigned']
+
+const getLocale = () => i18n.resolvedLanguage || 'pt-BR'
+
+const getStageKey = (stageLabel) => {
+    const key = normalizeKey(stageLabel)
+    if (key.includes('backlog')) return 'backlog'
+    if (key.includes('analise') || key.includes('plan')) return 'analysis'
+    if (key.includes('doing') || key.includes('execucao')) return 'doing'
+    if (key.includes('conferindo') || key.includes('check')) return 'check'
+    if (key.includes('revisao') || key.includes('padronizacao') || key.includes('act')) return 'review'
+    if (key.includes('done')) return 'done'
+    return 'unassigned'
+}
+
+const translateStageKey = (stageKey) => {
+    if (stageKey === 'backlog') return i18n.t('dashboardAnalytics.stages.backlog')
+    if (stageKey === 'analysis') return i18n.t('dashboardAnalytics.stages.analysis')
+    if (stageKey === 'doing') return i18n.t('dashboardAnalytics.stages.doing')
+    if (stageKey === 'check') return i18n.t('dashboardAnalytics.stages.check')
+    if (stageKey === 'review') return i18n.t('dashboardAnalytics.stages.review')
+    if (stageKey === 'done') return i18n.t('dashboardAnalytics.stages.done')
+    return i18n.t('dashboardAnalytics.stages.unassigned')
+}
+
+const translateStageLabel = (stageLabel) => translateStageKey(getStageKey(stageLabel))
 
 const STAGE_META = {
     backlog: { tone: 'bg-slate-500/10 text-slate-200 border-slate-400/30', bar: 'bg-slate-400' },
@@ -28,12 +46,12 @@ const STAGE_META = {
     fallback: { tone: 'bg-zinc-500/10 text-zinc-200 border-zinc-400/30', bar: 'bg-zinc-400' },
 }
 
-const RISK_BUCKETS = [
-    { id: 'critical', label: 'Critico', min: 500, tone: 'bg-rose-500/10 text-rose-200 border-rose-400/30' },
-    { id: 'high', label: 'Alto', min: 200, tone: 'bg-orange-500/10 text-orange-200 border-orange-400/30' },
-    { id: 'medium', label: 'Moderado', min: 75, tone: 'bg-amber-500/10 text-amber-200 border-amber-400/30' },
-    { id: 'low', label: 'Controlado', min: 1, tone: 'bg-emerald-500/10 text-emerald-200 border-emerald-400/30' },
-    { id: 'empty', label: 'Sem GUT', min: Number.NEGATIVE_INFINITY, tone: 'bg-zinc-500/10 text-zinc-200 border-zinc-400/30' },
+const getRiskBuckets = () => [
+    { id: 'critical', label: i18n.t('dashboardAnalytics.riskBuckets.critical'), min: 500, tone: 'bg-rose-500/10 text-rose-200 border-rose-400/30' },
+    { id: 'high', label: i18n.t('dashboardAnalytics.riskBuckets.high'), min: 200, tone: 'bg-orange-500/10 text-orange-200 border-orange-400/30' },
+    { id: 'medium', label: i18n.t('dashboardAnalytics.riskBuckets.medium'), min: 75, tone: 'bg-amber-500/10 text-amber-200 border-amber-400/30' },
+    { id: 'low', label: i18n.t('dashboardAnalytics.riskBuckets.low'), min: 1, tone: 'bg-emerald-500/10 text-emerald-200 border-emerald-400/30' },
+    { id: 'empty', label: i18n.t('dashboardAnalytics.riskBuckets.empty'), min: Number.NEGATIVE_INFINITY, tone: 'bg-zinc-500/10 text-zinc-200 border-zinc-400/30' },
 ]
 
 export const DashboardAnalyticsContext = createContext(null)
@@ -56,8 +74,12 @@ const emptyAnalytics = {
     refresh: async () => {},
     snapshot: emptySnapshot,
     summary: {
-        pulse: { level: 'neutral', label: 'Sem dados', description: 'Conecte o workspace para montar os indicadores.' },
-        headline: 'Sem dados operacionais carregados.',
+        pulse: {
+            level: 'neutral',
+            label: i18n.t('dashboardAnalytics.defaults.pulseLabel'),
+            description: i18n.t('dashboardAnalytics.defaults.pulseDescription'),
+        },
+        headline: i18n.t('dashboardAnalytics.defaults.headline'),
         counts: {
             workspaceTotal: 0,
             activeTotal: 0,
@@ -129,13 +151,13 @@ const getDateMs = (value) => {
 const formatPercentValue = (value) => `${Math.round(Number(value) || 0)}%`
 
 export const formatCompactNumber = (value) =>
-    new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(value) || 0)
+    new Intl.NumberFormat(getLocale(), { notation: 'compact', maximumFractionDigits: 1 }).format(Number(value) || 0)
 
 export const formatDateTime = (value) => {
     if (!value) return '-'
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return '-'
-    return new Intl.DateTimeFormat('pt-BR', {
+    return new Intl.DateTimeFormat(getLocale(), {
         day: '2-digit',
         month: '2-digit',
         hour: '2-digit',
@@ -152,16 +174,22 @@ export const formatRelativeTime = (value) => {
     const diffMinutes = Math.round(diffMs / (1000 * 60))
 
     if (Math.abs(diffMinutes) < 60) {
-        return diffMinutes >= 0 ? `em ${Math.abs(diffMinutes)} min` : `${Math.abs(diffMinutes)} min atras`
+        return diffMinutes >= 0
+            ? i18n.t('dashboardAnalytics.relativeTime.inMinutes', { count: Math.abs(diffMinutes) })
+            : i18n.t('dashboardAnalytics.relativeTime.minutesAgo', { count: Math.abs(diffMinutes) })
     }
 
     const diffHours = Math.round(diffMinutes / 60)
     if (Math.abs(diffHours) < 24) {
-        return diffHours >= 0 ? `em ${Math.abs(diffHours)} h` : `${Math.abs(diffHours)} h atras`
+        return diffHours >= 0
+            ? i18n.t('dashboardAnalytics.relativeTime.inHours', { count: Math.abs(diffHours) })
+            : i18n.t('dashboardAnalytics.relativeTime.hoursAgo', { count: Math.abs(diffHours) })
     }
 
     const diffDays = Math.round(diffHours / 24)
-    return diffDays >= 0 ? `em ${Math.abs(diffDays)} dias` : `${Math.abs(diffDays)} dias atras`
+    return diffDays >= 0
+        ? i18n.t('dashboardAnalytics.relativeTime.inDays', { count: Math.abs(diffDays) })
+        : i18n.t('dashboardAnalytics.relativeTime.daysAgo', { count: Math.abs(diffDays) })
 }
 
 export const getBaseGutScore = (atividade) => {
@@ -199,31 +227,32 @@ export const getDynamicGutScore = (atividade, referenceNowMs) => {
 }
 
 export const getRiskBucket = (score) => {
-    if (!score) return RISK_BUCKETS[RISK_BUCKETS.length - 1]
-    return RISK_BUCKETS.find((bucket, index) => {
-        if (index === RISK_BUCKETS.length - 1) return true
-        const next = RISK_BUCKETS[index + 1]
+    const riskBuckets = getRiskBuckets()
+    if (!score) return riskBuckets[riskBuckets.length - 1]
+    return riskBuckets.find((bucket, index) => {
+        if (index === riskBuckets.length - 1) return true
+        const next = riskBuckets[index + 1]
         return score >= bucket.min && score > next.min
-    }) || RISK_BUCKETS[RISK_BUCKETS.length - 1]
+    }) || riskBuckets[riskBuckets.length - 1]
 }
 
 const getAlocadoLabel = (value) => {
     const key = normalizeKey(value)
-    if (key === 'taskproj') return 'Task'
-    if (key === 'bugproj') return 'Bug'
-    if (key === 'agendar') return 'Agendar'
-    if (key === 'delegar') return 'Delegar'
-    return value || 'Sem tipo'
+    if (key === 'taskproj') return i18n.t('dashboardAnalytics.allocation.task')
+    if (key === 'bugproj') return i18n.t('dashboardAnalytics.allocation.bug')
+    if (key === 'agendar') return i18n.t('dashboardAnalytics.allocation.schedule')
+    if (key === 'delegar') return i18n.t('dashboardAnalytics.allocation.delegate')
+    return value || i18n.t('dashboardAnalytics.allocation.unknown')
 }
 
 const getStageMeta = (stageLabel) => {
-    const key = normalizeKey(stageLabel)
-    if (key.includes('backlog')) return STAGE_META.backlog
-    if (key.includes('analise')) return STAGE_META.analise
-    if (key.includes('doing') || key.includes('execucao')) return STAGE_META.doing
-    if (key.includes('conferindo') || key.includes('check')) return STAGE_META.conferindo
-    if (key.includes('revisao') || key.includes('padronizacao') || key.includes('act')) return STAGE_META.revisao
-    if (key.includes('done')) return STAGE_META.done
+    const key = getStageKey(stageLabel)
+    if (key === 'backlog') return STAGE_META.backlog
+    if (key === 'analysis') return STAGE_META.analise
+    if (key === 'doing') return STAGE_META.doing
+    if (key === 'check') return STAGE_META.conferindo
+    if (key === 'review') return STAGE_META.revisao
+    if (key === 'done') return STAGE_META.done
     return STAGE_META.fallback
 }
 
@@ -231,31 +260,31 @@ const buildPulse = ({ overdueCount, criticalCount, backlogRate, storyLink, plann
     if (overdueCount > 0 || criticalCount > 0) {
         return {
             level: 'critical',
-            label: 'Operacao pressionada',
-            description: 'Ha atrasos ou cards com GUT critico exigindo resposta imediata.',
+            label: i18n.t('dashboardAnalytics.pulse.critical.label'),
+            description: i18n.t('dashboardAnalytics.pulse.critical.description'),
         }
     }
 
     if (backlogRate >= 55 || planning < 70 || ownership < 70 || storyLink < 70) {
         return {
             level: 'warning',
-            label: 'Fluxo em atencao',
-            description: 'O pipeline esta ativo, mas ainda com gargalos de planejamento ou estruturacao.',
+            label: i18n.t('dashboardAnalytics.pulse.warning.label'),
+            description: i18n.t('dashboardAnalytics.pulse.warning.description'),
         }
     }
 
     if (planning >= 70 && ownership >= 70) {
         return {
             level: 'healthy',
-            label: 'Operacao estavel',
-            description: 'O workspace tem cobertura operacional consistente e baixa pressao imediata.',
+            label: i18n.t('dashboardAnalytics.pulse.healthy.label'),
+            description: i18n.t('dashboardAnalytics.pulse.healthy.description'),
         }
     }
 
     return {
         level: 'neutral',
-        label: 'Operacao em formacao',
-        description: 'Ainda ha pouca base historica para cravar uma tendencia operacional.',
+        label: i18n.t('dashboardAnalytics.pulse.neutral.label'),
+        description: i18n.t('dashboardAnalytics.pulse.neutral.description'),
     }
 }
 
@@ -282,8 +311,8 @@ const buildQualitativeInsights = ({
         return [
             buildInsight(
                 'zinc',
-                'Workspace vazio',
-                'Nao ha cards suficientes para gerar leitura operacional. O primeiro ganho sera estruturar tarefas, responsaveis e datas.'
+                i18n.t('dashboardAnalytics.insights.empty.title'),
+                i18n.t('dashboardAnalytics.insights.empty.text')
             ),
         ]
     }
@@ -292,16 +321,16 @@ const buildQualitativeInsights = ({
         insights.push(
             buildInsight(
                 'rose',
-                'Pressao de risco',
-                `${overdueCount} item(ns) em atraso e ${criticalCount} card(s) em GUT critico indicam risco operacional imediato.`
+                i18n.t('dashboardAnalytics.insights.riskPressure.title'),
+                i18n.t('dashboardAnalytics.insights.riskPressure.text', { overdueCount, criticalCount })
             )
         )
     } else if (highCount > 0) {
         insights.push(
             buildInsight(
                 'orange',
-                'Prioridades altas',
-                `${highCount} card(s) com GUT alto pedem sequenciamento cuidadoso para evitar escalada de impacto.`
+                i18n.t('dashboardAnalytics.insights.highPriority.title'),
+                i18n.t('dashboardAnalytics.insights.highPriority.text', { highCount })
             )
         )
     }
@@ -310,16 +339,16 @@ const buildQualitativeInsights = ({
         insights.push(
             buildInsight(
                 'amber',
-                'Acumulo em backlog',
-                `${formatPercentValue(backlogRate)} do volume ainda esta parado no backlog. O gargalo atual esta antes da execucao.`
+                i18n.t('dashboardAnalytics.insights.backlogAccumulation.title'),
+                i18n.t('dashboardAnalytics.insights.backlogAccumulation.text', { backlogRate: formatPercentValue(backlogRate) })
             )
         )
     } else if (doneRate >= 25) {
         insights.push(
             buildInsight(
                 'emerald',
-                'Fluxo com entrega',
-                `${formatPercentValue(doneRate)} do funil ja foi encerrado em Done, sinalizando capacidade de fechar ciclos.`
+                i18n.t('dashboardAnalytics.insights.deliveryFlow.title'),
+                i18n.t('dashboardAnalytics.insights.deliveryFlow.text', { doneRate: formatPercentValue(doneRate) })
             )
         )
     }
@@ -328,8 +357,11 @@ const buildQualitativeInsights = ({
         insights.push(
             buildInsight(
                 'sky',
-                'Governanca operacional',
-                `Cobertura de planejamento em ${formatPercentValue(planning)} e ownership em ${formatPercentValue(ownership)}. Falta amarrar prazo ou responsavel em parte da carteira ativa.`
+                i18n.t('dashboardAnalytics.insights.governance.title'),
+                i18n.t('dashboardAnalytics.insights.governance.text', {
+                    planning: formatPercentValue(planning),
+                    ownership: formatPercentValue(ownership),
+                })
             )
         )
     }
@@ -338,16 +370,19 @@ const buildQualitativeInsights = ({
         insights.push(
             buildInsight(
                 'cyan',
-                'Hierarquia de projetos incompleta',
-                `${formatPercentValue(storyLink)} dos cards de projeto estao ligados a user stories. ${unlinkedProjectItems} item(ns) ainda nao conversam com a cadeia epic > feature > story.`
+                i18n.t('dashboardAnalytics.insights.incompleteHierarchy.title'),
+                i18n.t('dashboardAnalytics.insights.incompleteHierarchy.text', {
+                    storyLink: formatPercentValue(storyLink),
+                    unlinkedProjectItems,
+                })
             )
         )
     } else if (portfolioRows.length > 0) {
         insights.push(
             buildInsight(
                 'emerald',
-                'Portifolio conectado',
-                `A cadeia de projetos esta ativa e o progresso medio dos cards de projeto esta em ${formatPercentValue(avgProgress)}.`
+                i18n.t('dashboardAnalytics.insights.connectedPortfolio.title'),
+                i18n.t('dashboardAnalytics.insights.connectedPortfolio.text', { avgProgress: formatPercentValue(avgProgress) })
             )
         )
     }
@@ -356,8 +391,8 @@ const buildQualitativeInsights = ({
         insights.push(
             buildInsight(
                 'zinc',
-                'Carga atual',
-                `${activeTotal} item(ns) seguem operando agora. O foco deve ficar nos cards com maior GUT e prazo mais curto.`
+                i18n.t('dashboardAnalytics.insights.currentLoad.title'),
+                i18n.t('dashboardAnalytics.insights.currentLoad.text', { activeTotal })
             )
         )
     }
@@ -367,18 +402,18 @@ const buildQualitativeInsights = ({
 
 const buildHeadline = ({ pulse, activeTotal, criticalCount, dueSoonCount, epics, userStories }) => {
     if (activeTotal === 0) {
-        return 'Sem itens ativos no momento. O dashboard esta pronto para acompanhar a proxima rodada operacional.'
+        return i18n.t('dashboardAnalytics.headline.noActive')
     }
 
     if (pulse.level === 'critical') {
-        return `${criticalCount} card(s) critico(s) e ${dueSoonCount} entrega(s) proximas puxam o foco para resposta de curto prazo.`
+        return i18n.t('dashboardAnalytics.headline.critical', { criticalCount, dueSoonCount })
     }
 
     if (epics > 0 || userStories > 0) {
-        return `${activeTotal} item(ns) ativos conectam a operacao diaria com a hierarquia de projetos ja cadastrada.`
+        return i18n.t('dashboardAnalytics.headline.withHierarchy', { activeTotal })
     }
 
-    return `${activeTotal} item(ns) ativos em execucao, com leitura de fluxo, risco GUT e cobertura operacional.`
+    return i18n.t('dashboardAnalytics.headline.default', { activeTotal })
 }
 
 const compareByPriority = (a, b) => {
@@ -393,9 +428,9 @@ const compareByPriority = (a, b) => {
 const compareCurrent = (a, b) => {
     if (b.isOverdue !== a.isOverdue) return Number(b.isOverdue) - Number(a.isOverdue)
     if (b.isDueSoon !== a.isDueSoon) return Number(b.isDueSoon) - Number(a.isDueSoon)
-    if (a.stageLabel !== b.stageLabel) {
-        const aIndex = STAGE_ORDER.findIndex((item) => normalizeKey(item) === normalizeKey(a.stageLabel))
-        const bIndex = STAGE_ORDER.findIndex((item) => normalizeKey(item) === normalizeKey(b.stageLabel))
+    if (a.stageKey !== b.stageKey) {
+        const aIndex = STAGE_ORDER.findIndex((item) => item === a.stageKey)
+        const bIndex = STAGE_ORDER.findIndex((item) => item === b.stageKey)
         return aIndex - bIndex
     }
     return compareByPriority(a, b)
@@ -405,29 +440,29 @@ const buildStageBreakdown = (items, totalCount) => {
     const stageCounts = new Map(STAGE_ORDER.map((label) => [label, 0]))
 
     items.forEach((item) => {
-        const stageLabel = STAGE_ORDER.find((label) => normalizeKey(label) === normalizeKey(item.stageLabel)) || 'Sem etapa'
-        stageCounts.set(stageLabel, (stageCounts.get(stageLabel) || 0) + 1)
+        const stageKey = STAGE_ORDER.includes(item.stageKey) ? item.stageKey : 'unassigned'
+        stageCounts.set(stageKey, (stageCounts.get(stageKey) || 0) + 1)
     })
 
     return STAGE_ORDER
-        .map((label) => {
-            const count = stageCounts.get(label) || 0
-            if (count === 0 && label === 'Sem etapa') return null
+        .map((stageKey) => {
+            const count = stageCounts.get(stageKey) || 0
+            if (count === 0 && stageKey === 'unassigned') return null
             const share = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0
             return {
-                label,
-                key: normalizeKey(label),
+                label: translateStageKey(stageKey),
+                key: stageKey,
                 count,
                 share,
-                ...getStageMeta(label),
+                ...getStageMeta(stageKey),
             }
         })
         .filter(Boolean)
 }
 
 export const buildRiskBreakdown = (items) =>
-    RISK_BUCKETS.map((bucket, index) => {
-        const next = RISK_BUCKETS[index - 1]
+    getRiskBuckets().map((bucket, index, riskBuckets) => {
+        const next = riskBuckets[index - 1]
         const count = items.filter((item) => {
             if (bucket.id === 'empty') return item.dynamicGut <= 0
             if (!next) return item.dynamicGut >= bucket.min
@@ -488,7 +523,7 @@ const buildOwnerLoad = ({ activeActivities, participantsById }) => {
         .sort((a, b) => {
             if (b.highRiskCount !== a.highRiskCount) return b.highRiskCount - a.highRiskCount
             if (b.activeCount !== a.activeCount) return b.activeCount - a.activeCount
-            return a.nome.localeCompare(b.nome, 'pt-BR')
+            return a.nome.localeCompare(b.nome, getLocale())
         })
 
     const semResponsavel = activeActivities.filter((item) => !item.participante).length
@@ -515,11 +550,11 @@ export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
 
     useEffect(() => {
         hasLoadedRef.current = false
-    }, [userId])
+    }, [userId, i18n.resolvedLanguage])
 
     const loadAnalytics = useCallback(async (dateFrom = null, dateTo = null) => {
         if (!supabase) {
-            setError('Supabase nao configurado.')
+            setError(i18n.t('dashboardAnalytics.errors.supabaseMissing'))
             setLoading(false)
             setRefreshing(false)
             setSnapshot(emptySnapshot)
@@ -570,7 +605,7 @@ export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
 
         if (atividadesError) {
             setSnapshot(emptySnapshot)
-            setError('Nao foi possivel carregar as atividades do dashboard.')
+            setError(i18n.t('dashboardAnalytics.errors.loadActivities'))
             setLoading(false)
             setRefreshing(false)
             return
@@ -587,7 +622,7 @@ export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
         })
 
         if (categoriasError || subcategoriasError || participantesError || epicsError || featuresError || userStoriesError) {
-            setError('Parte das fontes auxiliares falhou. Os KPIs foram montados com o que estava disponivel.')
+            setError(i18n.t('dashboardAnalytics.errors.partialSources'))
         } else {
             setError(null)
         }
@@ -639,7 +674,8 @@ export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
             .map((atividade) => {
                 const alocadoKey = normalizeKey(atividade.alocado)
                 const rawState = atividade['posicao Kanban'] || ''
-                const stageLabel = getStageLabelByState(rawState, PROJECT_KANBAN_GROUPS)
+                const canonicalStageLabel = getStageLabelByState(rawState, PROJECT_KANBAN_GROUPS)
+                const stageKey = getStageKey(canonicalStageLabel)
                 const progress = clamp(Number(atividade.percentual_progresso || 0), 0, 100)
                 const dynamicGut = getDynamicGutScore(atividade, nowMs)
                 const dueMs = getDateMs(atividade.data_fim)
@@ -659,8 +695,9 @@ export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
                     alocadoKey,
                     alocadoLabel: getAlocadoLabel(atividade.alocado),
                     rawState,
-                    stageLabel,
-                    stageMeta: getStageMeta(stageLabel),
+                    stageKey,
+                    stageLabel: translateStageLabel(canonicalStageLabel),
+                    stageMeta: getStageMeta(canonicalStageLabel),
                     progress,
                     dynamicGut,
                     baseGut: getBaseGutScore(atividade),
@@ -861,7 +898,7 @@ export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
                 qualitativeInsights,
             },
         }
-    }, [error, lastLoadedAt, loadAnalytics, loading, nowMs, refreshing, snapshot, dateFrom, dateTo])
+    }, [dateFrom, dateTo, error, i18n.resolvedLanguage, lastLoadedAt, loadAnalytics, loading, nowMs, refreshing, snapshot])
 }
 export const getPulseToneClass = (level) => {
     if (level === 'critical') return 'border-rose-400/40 bg-rose-500/10 text-rose-200'

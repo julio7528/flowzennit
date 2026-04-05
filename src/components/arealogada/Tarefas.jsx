@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Pencil, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase.js'
 
-const FILTER_OPTIONS = [
-    { value: 'todos',          label: 'Todos'           },
-    { value: 'delegar',        label: 'Delegar'         },
-    { value: 'agendar',        label: 'Agendar'         },
-    { value: 'concluidas',     label: 'Concluidas'      },
-    { value: 'em_andamento',   label: 'Em Andamento'    },
+const getFilterOptions = (t) => [
+    { value: 'todos', label: t('tasks.filters.options.all') },
+    { value: 'delegar', label: t('tasks.filters.options.delegate') },
+    { value: 'agendar', label: t('tasks.filters.options.schedule') },
+    { value: 'concluidas', label: t('tasks.filters.options.completed') },
+    { value: 'em_andamento', label: t('tasks.filters.options.inProgress') },
 ]
 
 const HEADER_GRID_CLASS =
@@ -21,6 +22,7 @@ const ROW_GRID_CLASS =
 const DOT_CLASS = 'w-2 h-2 shrink-0'
 
 const Tarefas = () => {
+    const { t, i18n } = useTranslation()
     const navigate = useNavigate()
     const [userId, setUserId]                   = useState(null)
     const [atividades, setAtividades]           = useState([])
@@ -48,8 +50,8 @@ const Tarefas = () => {
     }
     const formatAlocadoLabel = (alocado) => {
         const normalized = normalizeAlocado(alocado)
-        if (normalized === 'delegar') return 'Delegar'
-        if (normalized === 'agendar') return 'Agendar'
+        if (normalized === 'delegar') return t('tasks.filters.options.delegate')
+        if (normalized === 'agendar') return t('tasks.filters.options.schedule')
         return alocado || '-'
     }
     const getParticipantFirstName = (participantName) => {
@@ -101,6 +103,8 @@ const Tarefas = () => {
         const timer = setInterval(() => { setNowMs(Date.now()) }, 30000)
         return () => clearInterval(timer)
     }, [])
+
+    const filterOptions = useMemo(() => getFilterOptions(t), [t])
 
     const getGutScore = useCallback((atividade) => {
         const { gravidade, urgencia, tendencia } = atividade
@@ -157,7 +161,7 @@ const Tarefas = () => {
         )
 
         if (atividadesError) {
-            setFeedback({ type: 'error', message: 'Não foi possível carregar as atividades.' })
+            setFeedback({ type: 'error', message: t('tasks.feedback.loadError') })
             setAtividades([])
         } else {
             const atividadesOrdenadas = (atividadesData || []).slice().sort((a, b) => {
@@ -177,7 +181,7 @@ const Tarefas = () => {
         )
 
         setLoading(false)
-    }, [getGutScore])
+    }, [getGutScore, t])
 
     useEffect(() => {
         if (!userId) return
@@ -196,7 +200,7 @@ const Tarefas = () => {
         if (!value) return '-'
         const date = new Date(value)
         if (Number.isNaN(date.getTime())) return '-'
-        return new Intl.DateTimeFormat('pt-BR', {
+        return new Intl.DateTimeFormat(i18n.resolvedLanguage || 'pt-BR', {
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit',
         }).format(date)
@@ -217,7 +221,7 @@ const Tarefas = () => {
             .maybeSingle()
 
         if (error || !data) {
-            setFeedback({ type: 'error', message: 'Não foi possível carregar os dados para edição.' })
+            setFeedback({ type: 'error', message: t('tasks.feedback.editLoadError') })
             return
         }
 
@@ -227,7 +231,9 @@ const Tarefas = () => {
 
     const handleDelete = async (atividade) => {
         if (!atividade?.id || !userId) return
-        const confirmed = window.confirm(`Excluir a tarefa "${atividade.nometarefa || 'Sem nome'}"?`)
+        const confirmed = window.confirm(
+            t('tasks.feedback.deleteConfirm', { name: atividade.nometarefa || '-' })
+        )
         if (!confirmed) return
 
         const { error } = await supabase
@@ -237,12 +243,12 @@ const Tarefas = () => {
             .eq('idusuario', userId)
 
         if (error) {
-            setFeedback({ type: 'error', message: 'Não foi possível excluir a tarefa.' })
+            setFeedback({ type: 'error', message: t('tasks.feedback.deleteError') })
             return
         }
 
         setAtividades((current) => current.filter((item) => item.id !== atividade.id))
-        setFeedback({ type: 'success', message: 'Tarefa excluída com sucesso.' })
+        setFeedback({ type: 'success', message: t('tasks.feedback.deleteSuccess') })
     }
 
     const displayedAtividades = useMemo(() => {
@@ -270,7 +276,8 @@ const Tarefas = () => {
                     ? byDateRange.filter((a) => isInProgressState(a))
                     : byDateRange.filter((a) => normalizeAlocado(a.alocado) === alocadoFilter && isBacklogState(a))
 
-        const compareText = (first, second) => first.localeCompare(second, 'pt-BR', { sensitivity: 'base' })
+        const compareText = (first, second) =>
+            first.localeCompare(second, i18n.resolvedLanguage || 'pt-BR', { sensitivity: 'base' })
         return byAlocado.slice().sort((a, b) => {
             const dir = sortConfig.direction === 'asc' ? 1 : -1
             const getComparable = (atividade) => {
@@ -288,7 +295,7 @@ const Tarefas = () => {
             if (typeof aValue === 'number' && typeof bValue === 'number') return (aValue - bValue) * dir
             return compareText(String(aValue), String(bValue)) * dir
         })
-    }, [atividades, categoriesById, categoryFilter, endDateFilter, getDynamicGutScore, nowMs, participantFilter, participantsById, sortConfig.direction, sortConfig.key, startDateFilter, alocadoFilter])
+    }, [alocadoFilter, atividades, categoriesById, categoryFilter, endDateFilter, getDynamicGutScore, i18n.resolvedLanguage, nowMs, participantFilter, participantsById, sortConfig.direction, sortConfig.key, startDateFilter])
 
     const handleSortChange = (key) => {
         setSortConfig((current) => {
@@ -308,16 +315,16 @@ const Tarefas = () => {
         return ids
             .map((id) => ({ id: String(id), nome: participantsById[id]?.nomeparticipante || '' }))
             .filter((item) => item.nome)
-            .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }))
-    }, [atividades, participantsById])
+            .sort((a, b) => a.nome.localeCompare(b.nome, i18n.resolvedLanguage || 'pt-BR', { sensitivity: 'base' }))
+    }, [atividades, i18n.resolvedLanguage, participantsById])
 
     const categoryFilterOptions = useMemo(() => {
         const ids = [...new Set(atividades.map((a) => a.idcategoria).filter(Boolean))]
         return ids
             .map((id) => ({ id: String(id), nome: categoriesById[id]?.nomecategoria || '' }))
             .filter((item) => item.nome)
-            .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }))
-    }, [atividades, categoriesById])
+            .sort((a, b) => a.nome.localeCompare(b.nome, i18n.resolvedLanguage || 'pt-BR', { sensitivity: 'base' }))
+    }, [atividades, categoriesById, i18n.resolvedLanguage])
 
     const gutScores    = useMemo(
         () => atividades.map((a) => getDynamicGutScore(a, nowMs)).filter((s) => s > 0),
@@ -344,9 +351,9 @@ const Tarefas = () => {
                 <span className="pointer-events-none absolute right-0 top-[2px] h-8 w-8 border-r border-t border-zen-border/50" />
                 <div className="px-5 py-5 sm:px-6">
                     <div className="flex flex-col gap-1">
-                        <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Backlog · tbf_atividades</span>
-                        <h1 className="font-display text-2xl font-bold tracking-tight text-white">Tarefas</h1>
-                        <p className="text-xs text-zen-text-sec">Lançamentos do backlog por tipo de alocação, filtros e ordenação GUT dinâmica.</p>
+                        <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.header.eyebrow')}</span>
+                        <h1 className="font-display text-2xl font-bold tracking-tight text-white">{t('tasks.header.title')}</h1>
+                        <p className="text-xs text-zen-text-sec">{t('tasks.header.description')}</p>
                     </div>
                 </div>
             </header>
@@ -365,14 +372,14 @@ const Tarefas = () => {
             {/* ── FILTROS ──────────────────────────────────────────────────────── */}
             <section className="border border-zen-border bg-zen-surface">
                 <div className="border-b border-zen-border px-4 py-3">
-                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Filtros</span>
+                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.filters.sectionTitle')}</span>
                 </div>
                 <div className="p-4 flex flex-col gap-4">
                     {/* Alocado filter pills */}
                     <div className="flex flex-col gap-2">
-                        <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Filtro de alocação</span>
+                        <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.filters.allocation')}</span>
                         <div className="flex flex-wrap gap-2">
-                            {FILTER_OPTIONS.map((option) => {
+                            {filterOptions.map((option) => {
                                 const active = alocadoFilter === option.value
                                 return (
                                     <button
@@ -395,33 +402,33 @@ const Tarefas = () => {
                     {/* Advanced filters grid */}
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                         <label className="flex flex-col gap-1.5">
-                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Participante</span>
+                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.filters.participant')}</span>
                             <select
                                 value={participantFilter}
                                 onChange={(event) => setParticipantFilter(event.target.value)}
                                 className="border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                             >
-                                <option value="todos">Todos os participantes</option>
+                                <option value="todos">{t('tasks.filters.allParticipants')}</option>
                                 {participantFilterOptions.map((option) => (
                                     <option key={option.id} value={option.id}>{option.nome}</option>
                                 ))}
                             </select>
                         </label>
                         <label className="flex flex-col gap-1.5">
-                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Categoria</span>
+                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.filters.category')}</span>
                             <select
                                 value={categoryFilter}
                                 onChange={(event) => setCategoryFilter(event.target.value)}
                                 className="border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                             >
-                                <option value="todos">Todas as categorias</option>
+                                <option value="todos">{t('tasks.filters.allCategories')}</option>
                                 {categoryFilterOptions.map((option) => (
                                     <option key={option.id} value={option.id}>{option.nome}</option>
                                 ))}
                             </select>
                         </label>
                         <label className="flex flex-col gap-1.5">
-                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Data início</span>
+                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.filters.startDate')}</span>
                             <input
                                 type="date"
                                 value={startDateFilter}
@@ -438,7 +445,7 @@ const Tarefas = () => {
                             />
                         </label>
                         <label className="flex flex-col gap-1.5">
-                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Data fim</span>
+                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.filters.endDate')}</span>
                             <input
                                 type="date"
                                 value={endDateFilter}
@@ -455,10 +462,10 @@ const Tarefas = () => {
             {/* ── MÉTRICAS ─────────────────────────────────────────────────────── */}
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-px bg-zen-border">
                 {[
-                    { label: 'Total',     value: atividades.length, tone: 'from-sky-500/40 to-transparent'     },
-                    { label: 'Delegar',   value: delegarCount,      tone: 'from-blue-500/40 to-transparent'    },
-                    { label: 'Agendar',   value: agendarCount,      tone: 'from-amber-500/40 to-transparent'   },
-                    { label: 'Média GUT', value: gutAverage,        tone: 'from-rose-500/40 to-transparent'    },
+                    { label: t('tasks.metrics.total'), value: atividades.length, tone: 'from-sky-500/40 to-transparent' },
+                    { label: t('tasks.metrics.delegate'), value: delegarCount, tone: 'from-blue-500/40 to-transparent' },
+                    { label: t('tasks.metrics.schedule'), value: agendarCount, tone: 'from-amber-500/40 to-transparent' },
+                    { label: t('tasks.metrics.averageGut'), value: gutAverage, tone: 'from-rose-500/40 to-transparent' },
                 ].map(({ label, value, tone }) => (
                     <article key={label} className="relative overflow-hidden border border-zen-border bg-zen-surface">
                         <div className={`h-[2px] w-full bg-gradient-to-r ${tone}`} />
@@ -474,19 +481,19 @@ const Tarefas = () => {
             {/* ── TABELA PRINCIPAL ─────────────────────────────────────────────── */}
             <div className="border border-zen-border bg-zen-surface overflow-hidden">
                 <div className="px-4 sm:px-6 py-4 border-b border-zen-border bg-zen-surface/50 flex items-center justify-between">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Lista de Atividades</h2>
-                    <span className="font-mono text-[10px] text-zen-text-tri">{displayedAtividades.length} registro(s)</span>
+                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white">{t('tasks.list.title')}</h2>
+                    <span className="font-mono text-[10px] text-zen-text-tri">{t('tasks.list.records', { count: displayedAtividades.length })}</span>
                 </div>
 
                 {loading ? (
                     <div className="flex items-center justify-center gap-3 px-4 sm:px-6 py-12 text-sm text-zen-text-sec">
                         <Loader2 className="w-4 h-4 animate-spin text-zen-blue" />
-                        <span className="font-mono uppercase tracking-widest">Carregando registros...</span>
+                        <span className="font-mono uppercase tracking-widest">{t('tasks.list.loading')}</span>
                     </div>
                 ) : displayedAtividades.length === 0 ? (
                     <div className="flex flex-col items-center justify-center px-4 sm:px-6 py-12 text-center gap-1">
-                        <p className="text-sm font-semibold text-white">Nenhum registro encontrado.</p>
-                        <p className="font-mono text-[10px] text-zen-text-sec">Não há atividades para os filtros aplicados.</p>
+                        <p className="text-sm font-semibold text-white">{t('tasks.list.emptyTitle')}</p>
+                        <p className="font-mono text-[10px] text-zen-text-sec">{t('tasks.list.emptyDescription')}</p>
                     </div>
                 ) : (
                     <>
@@ -496,9 +503,9 @@ const Tarefas = () => {
                                 {/* Header */}
                                 <div className={HEADER_GRID_CLASS}>
                                     {[
-                                        { key: 'nome',         label: 'Nome'        },
-                                        { key: 'participante', label: 'Participante' },
-                                        { key: 'categoria',    label: 'Categoria'   },
+                                        { key: 'nome', label: t('tasks.list.columns.name') },
+                                        { key: 'participante', label: t('tasks.list.columns.participant') },
+                                        { key: 'categoria', label: t('tasks.list.columns.category') },
                                     ].map(({ key, label }) => (
                                         <button
                                             key={key}
@@ -510,12 +517,12 @@ const Tarefas = () => {
                                             {renderSortIcon(key)}
                                         </button>
                                     ))}
-                                    <span>Alocado</span>
+                                    <span>{t('tasks.list.columns.allocation')}</span>
                                     {[
-                                        { key: 'inicio',  label: 'Início'    },
-                                        { key: 'fim',     label: 'Fim'       },
-                                        { key: 'gut',     label: 'GUT'       },
-                                        { key: 'criado',  label: 'Criado em' },
+                                        { key: 'inicio', label: t('tasks.list.columns.start') },
+                                        { key: 'fim', label: t('tasks.list.columns.end') },
+                                        { key: 'gut', label: t('tasks.list.columns.gut') },
+                                        { key: 'criado', label: t('tasks.list.columns.createdAt') },
                                     ].map(({ key, label }) => (
                                         <button
                                             key={key}
@@ -527,7 +534,7 @@ const Tarefas = () => {
                                             {renderSortIcon(key)}
                                         </button>
                                     ))}
-                                    <span className="justify-self-end text-right">Ações</span>
+                                    <span className="justify-self-end text-right">{t('tasks.list.columns.actions')}</span>
                                 </div>
 
                                 {/* Rows */}
@@ -593,8 +600,8 @@ const Tarefas = () => {
                                                     type="button"
                                                     onClick={() => handleEdit(atividade)}
                                                     className="inline-flex items-center justify-center text-zen-text-sec hover:text-white transition-colors"
-                                                    aria-label="Editar"
-                                                    title="Editar"
+                                                    aria-label={t('tasks.actions.edit')}
+                                                    title={t('tasks.actions.edit')}
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </button>
@@ -602,8 +609,8 @@ const Tarefas = () => {
                                                     type="button"
                                                     onClick={() => handleDelete(atividade)}
                                                     className="inline-flex items-center justify-center text-rose-300 hover:text-rose-100 transition-colors"
-                                                    aria-label="Excluir"
-                                                    title="Excluir"
+                                                    aria-label={t('tasks.actions.delete')}
+                                                    title={t('tasks.actions.delete')}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
@@ -639,7 +646,7 @@ const Tarefas = () => {
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <div className={DOT_CLASS} style={{ backgroundColor: corCategoria }} />
                                                     <span className="truncate font-mono text-[11px] text-zen-text-sec">
-                                                        {categoria?.nomecategoria || 'Sem categoria'}
+                                                        {categoria?.nomecategoria || t('tasks.list.uncategorized')}
                                                     </span>
                                                 </div>
                                             </div>
@@ -648,8 +655,8 @@ const Tarefas = () => {
                                                     type="button"
                                                     onClick={() => handleEdit(atividade)}
                                                     className="inline-flex items-center justify-center text-zen-text-sec hover:text-white transition-colors"
-                                                    aria-label="Editar"
-                                                    title="Editar"
+                                                    aria-label={t('tasks.actions.edit')}
+                                                    title={t('tasks.actions.edit')}
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </button>
@@ -657,8 +664,8 @@ const Tarefas = () => {
                                                     type="button"
                                                     onClick={() => handleDelete(atividade)}
                                                     className="inline-flex items-center justify-center text-rose-300 hover:text-rose-100 transition-colors"
-                                                    aria-label="Excluir"
-                                                    title="Excluir"
+                                                    aria-label={t('tasks.actions.delete')}
+                                                    title={t('tasks.actions.delete')}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
@@ -678,15 +685,15 @@ const Tarefas = () => {
                                         {/* Date cells */}
                                         <div className="grid grid-cols-2 gap-px bg-zen-border text-xs">
                                             <div className="bg-zen-surface border border-zen-border px-3 py-2">
-                                                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">Início</div>
+                                                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.list.columns.start')}</div>
                                                 <div className="font-mono text-[10px] text-zen-text-sec mt-1">{formatDate(atividade.data_inicio)}</div>
                                             </div>
                                             <div className="bg-zen-surface border border-zen-border px-3 py-2">
-                                                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">Fim</div>
+                                                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.list.columns.end')}</div>
                                                 <div className="font-mono text-[10px] text-zen-text-sec mt-1">{formatDate(atividade.data_fim)}</div>
                                             </div>
                                             <div className="col-span-2 bg-zen-surface border border-zen-border px-3 py-2">
-                                                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">Criado em</div>
+                                                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">{t('tasks.list.columns.createdAt')}</div>
                                                 <div className="font-mono text-[10px] text-zen-text-sec mt-1">{formatDate(atividade.created_at)}</div>
                                             </div>
                                         </div>

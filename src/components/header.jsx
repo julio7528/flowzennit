@@ -2,20 +2,23 @@ import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import logofull from '../assets/logofull.png'
+import LanguageSwitcher from './LanguageSwitcher.jsx'
 
 const MotionHeader = motion.header
 
 const Header = ({ offsetTop = 0 }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useTranslation()
 
-  const toggleMenu = () => setIsOpen(!isOpen)
+  const toggleMenu = () => setIsOpen((current) => !current)
   const navItems = [
-    { label: 'Funcionalidades', href: '/detailedfeatures', isRoute: true },
-    { label: 'Metodologia', href: '/metodologia', isRoute: true },
-    { label: 'Ciência', href: '/ciencia', isRoute: true },
-    { label: 'Blog', href: '/blog', isRoute: true },
-    { label: 'Sobre', href: '/sobre', isRoute: true },
+    { label: t('nav.features'), href: '/detailedfeatures', isRoute: true },
+    { label: t('nav.methodology'), href: '/metodologia', isRoute: true },
+    { label: t('nav.science'), href: '/ciencia', isRoute: true },
+    { label: t('nav.blog'), href: '/blog', isRoute: true },
+    { label: t('nav.about'), href: '/sobre', isRoute: true },
   ]
 
   return (
@@ -29,7 +32,7 @@ const Header = ({ offsetTop = 0 }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex-shrink-0 flex items-center justify-center gap-2">
-            <img src={logofull} alt="FlowZenit Logo" className="h-14 w-auto" />
+            <img src={logofull} alt={t('brand.logoAlt')} className="h-14 w-auto" />
           </Link>
 
           <nav className="hidden md:flex gap-8">
@@ -55,14 +58,15 @@ const Header = ({ offsetTop = 0 }) => {
           </nav>
 
           <div className="hidden md:flex items-center space-x-6">
+            <LanguageSwitcher />
             <Link to="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
-              Acesse sua conta
+              {t('auth.accessAccount')}
             </Link>
             <Link
               to="/login"
               className="px-5 py-2.5 rounded-full bg-gradient-primary text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/20"
             >
-              Começar Gratuitamente
+              {t('auth.startFree')}
             </Link>
           </div>
 
@@ -70,6 +74,7 @@ const Header = ({ offsetTop = 0 }) => {
             <button
               onClick={toggleMenu}
               type="button"
+              aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               className="text-gray-300 hover:text-white focus:outline-none"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -81,6 +86,9 @@ const Header = ({ offsetTop = 0 }) => {
       {isOpen && (
         <div className="md:hidden bg-bgCard border-b border-white/5">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <div className="px-3 py-2">
+              <LanguageSwitcher className="w-full" />
+            </div>
             {navItems.map((item) =>
               item.isRoute ? (
                 <Link
@@ -102,13 +110,13 @@ const Header = ({ offsetTop = 0 }) => {
             )}
             <div className="pt-4 flex flex-col gap-3 px-3">
               <Link to="/login" className="text-center text-sm font-medium text-gray-300 hover:text-white">
-                Acesse sua conta
+                {t('auth.accessAccount')}
               </Link>
               <Link
                 to="/login"
                 className="text-center px-5 py-2.5 rounded-full bg-gradient-primary text-white text-sm font-bold"
               >
-                Começar Gratuitamente
+                {t('auth.startFree')}
               </Link>
             </div>
           </div>

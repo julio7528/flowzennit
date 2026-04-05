@@ -1,30 +1,32 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Lock, LockKeyhole, Mail, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { isSupabaseConfigured, supabase } from '../lib/supabase.js'
 import Header from './header.jsx'
 import Footer from './footer.jsx'
 
 const Login = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
 
   const [isSignUpOpen, setIsSignUpOpen] = useState(false)
   const [isForgotOpen, setIsForgotOpen] = useState(false)
   const [feedbackType, setFeedbackType] = useState(() => (location.state?.accessDenied ? 'error' : null))
-  const [feedbackMessage, setFeedbackMessage] = useState(() => (location.state?.accessDenied ? 'Acesso Negado' : ''))
+  const [feedbackMessage, setFeedbackMessage] = useState(() =>
+    location.state?.accessDenied ? t('login.feedback.accessDenied') : '',
+  )
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Signup fields
   const [signUpName, setSignUpName] = useState('')
   const [signUpEmail, setSignUpEmail] = useState('')
   const [signUpPassword, setSignUpPassword] = useState('')
   const [signUpConfirm, setSignUpConfirm] = useState('')
   const [signUpLoading, setSignUpLoading] = useState(false)
 
-  // Forgot password field
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotLoading, setForgotLoading] = useState(false)
 
@@ -41,7 +43,6 @@ const Login = () => {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [])
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (!isSupabaseConfigured) return
     supabase.auth.getSession().then(({ data }) => {
@@ -54,18 +55,18 @@ const Login = () => {
   const feedbackConfig =
     feedbackType === 'success'
       ? {
-        title: 'Sucesso',
-        message: feedbackMessage || 'Operação realizada com sucesso.',
-        primary: 'Voltar ao login',
-        secondary: 'Fechar',
-      }
+          title: t('login.feedback.successTitle'),
+          message: feedbackMessage || t('login.feedback.successDefault'),
+          primary: t('login.feedback.backToLogin'),
+          secondary: t('common.close'),
+        }
       : feedbackType === 'error'
         ? {
-          title: 'Erro',
-          message: feedbackMessage || 'Ocorreu um erro. Tente novamente.',
-          primary: 'Tentar novamente',
-          secondary: 'Fechar',
-        }
+            title: t('login.feedback.errorTitle'),
+            message: feedbackMessage || t('login.feedback.errorDefault'),
+            primary: t('login.feedback.tryAgain'),
+            secondary: t('common.close'),
+          }
         : null
 
   const showFeedback = (type, message) => {
@@ -81,18 +82,20 @@ const Login = () => {
 
   const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
+  const missingAuthConfigMessage = t('login.errors.missingAuthConfig')
+
   const handleLogin = async (event) => {
     event.preventDefault()
     if (!isSupabaseConfigured) {
-      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      showFeedback('error', missingAuthConfigMessage)
       return
     }
     if (!isValidEmail(email)) {
-      showFeedback('error', 'Por favor, insira um email válido.')
+      showFeedback('error', t('login.errors.invalidEmail'))
       return
     }
     if (password.length < 8) {
-      showFeedback('error', 'A senha deve ter no mínimo 8 caracteres.')
+      showFeedback('error', t('login.errors.passwordMinLength'))
       return
     }
     setLoading(true)
@@ -107,12 +110,12 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     if (!isSupabaseConfigured) {
-      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      showFeedback('error', missingAuthConfigMessage)
       return
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/auth/callback' },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
     if (error) {
       showFeedback('error', error.message)
@@ -121,19 +124,19 @@ const Login = () => {
 
   const handleSignUp = async () => {
     if (!isSupabaseConfigured) {
-      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      showFeedback('error', missingAuthConfigMessage)
       return
     }
     if (!isValidEmail(signUpEmail)) {
-      showFeedback('error', 'Por favor, insira um email válido.')
+      showFeedback('error', t('login.errors.invalidEmail'))
       return
     }
     if (signUpPassword.length < 8) {
-      showFeedback('error', 'A senha deve ter no mínimo 8 caracteres.')
+      showFeedback('error', t('login.errors.passwordMinLength'))
       return
     }
     if (signUpPassword !== signUpConfirm) {
-      showFeedback('error', 'As senhas não conferem.')
+      showFeedback('error', t('login.errors.passwordMismatch'))
       return
     }
     setSignUpLoading(true)
@@ -163,28 +166,28 @@ const Login = () => {
         )
       if (insertError) {
         setSignUpLoading(false)
-        showFeedback('error', 'Cadastro criado, mas não foi possível registrar o usuário no controle.')
+        showFeedback('error', t('login.errors.controlRegistry'))
         return
       }
     }
     setSignUpLoading(false)
     setIsSignUpOpen(false)
-    showFeedback('success', 'Verifique seu email para confirmar o cadastro.')
+    showFeedback('success', t('login.feedback.verifyEmail'))
   }
 
   const handleForgotPassword = async (event) => {
     event.preventDefault()
     if (!isSupabaseConfigured) {
-      showFeedback('error', 'Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      showFeedback('error', missingAuthConfigMessage)
       return
     }
     if (!isValidEmail(forgotEmail)) {
-      showFeedback('error', 'Por favor, insira um email válido.')
+      showFeedback('error', t('login.errors.invalidEmail'))
       return
     }
     setForgotLoading(true)
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: window.location.origin + '/auth/reset-password',
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     })
     setForgotLoading(false)
     if (error) {
@@ -192,7 +195,7 @@ const Login = () => {
       return
     }
     setIsForgotOpen(false)
-    showFeedback('success', 'Enviamos um link de recuperação para o seu email. Verifique sua caixa de entrada.')
+    showFeedback('success', t('login.feedback.resetLinkSent'))
   }
 
   return (
@@ -237,7 +240,7 @@ const Login = () => {
         <section className="login-glass w-full max-w-[480px] rounded-[24px] p-8 md:p-10">
           <div className="mb-8 flex flex-col items-center gap-2">
             <h1 className="font-display text-4xl font-bold tracking-tight text-[#f8fafc]">FlowZenit</h1>
-            <p className="text-center text-sm text-[#94a3b8]">Entre no vacuo. Foque como nunca antes.</p>
+            <p className="text-center text-sm text-[#94a3b8]">{t('login.hero.subtitle')}</p>
           </div>
 
           <button
@@ -246,26 +249,28 @@ const Login = () => {
             className="group relative mb-7 flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/5 text-base font-display font-medium text-[#f8fafc] transition-all duration-300 hover:scale-[1.01] hover:border-white/20 hover:bg-white/10 active:scale-[0.99]"
           >
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            <span className="relative z-10"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" className="h-5 w-5" /></span>
-            <span className="relative z-10">Acessar com Google</span>
+            <span className="relative z-10">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" className="h-5 w-5" />
+            </span>
+            <span className="relative z-10">{t('login.actions.google')}</span>
           </button>
 
           <div className="mb-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-white/10" />
-            <span className="text-xs font-medium uppercase tracking-wider text-[#94a3b8]">ou continue com email</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#94a3b8]">{t('login.hero.orEmail')}</span>
             <div className="h-px flex-1 bg-white/10" />
           </div>
 
           <form className="flex flex-col gap-6" onSubmit={handleLogin}>
             <div className="group flex flex-col gap-2">
               <label htmlFor="email" className="pl-1 text-xs font-medium uppercase tracking-wider text-[#94a3b8] transition-colors group-focus-within:text-[#67e8f9]">
-                Email
+                {t('login.fields.email')}
               </label>
               <div className="relative">
                 <input
                   id="email"
                   type="email"
-                  placeholder="seu@email.com"
+                  placeholder={t('login.placeholders.email')}
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   className="h-12 w-full rounded-xl border-0 bg-black/30 px-4 text-[#f8fafc] placeholder:text-white/20 outline-none transition-all duration-300 focus:ring-1 focus:ring-[#67e8f9]"
@@ -276,13 +281,13 @@ const Login = () => {
 
             <div className="group flex flex-col gap-2">
               <label htmlFor="password" className="pl-1 text-xs font-medium uppercase tracking-wider text-[#94a3b8] transition-colors group-focus-within:text-[#67e8f9]">
-                Senha
+                {t('login.fields.password')}
               </label>
               <div className="relative">
                 <input
                   id="password"
                   type="password"
-                  placeholder="........"
+                  placeholder={t('login.placeholders.password')}
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -297,10 +302,8 @@ const Login = () => {
               disabled={loading}
               className="relative mt-2 flex h-[52px] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-primary text-lg font-display font-semibold text-white shadow-[0_4px_20px_rgba(255,79,216,0.4)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,79,216,0.6)] active:scale-[0.98]"
             >
-              <span className="relative z-10">{loading ? 'Entrando...' : 'Acessar'}</span>
-              <div
-                className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100"
-              />
+              <span className="relative z-10">{loading ? t('login.actions.loggingIn') : t('login.actions.login')}</span>
+              <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 hover:opacity-100" />
             </button>
           </form>
 
@@ -313,7 +316,7 @@ const Login = () => {
               }}
               className="text-[#94a3b8] transition-colors duration-200 hover:text-white"
             >
-              Esqueci minha senha
+              {t('login.actions.forgotPassword')}
             </button>
             <button
               type="button"
@@ -323,7 +326,7 @@ const Login = () => {
               }}
               className="font-medium text-[#94a3b8] transition-colors duration-200 hover:text-white"
             >
-              Criar nova conta
+              {t('login.actions.createAccount')}
             </button>
           </div>
         </section>
@@ -344,22 +347,22 @@ const Login = () => {
               type="button"
               onClick={() => setIsSignUpOpen(false)}
               className="absolute right-6 top-6 text-[#94a3b8] transition-colors duration-200 hover:text-white"
-              aria-label="Fechar"
+              aria-label={t('common.close')}
             >
               <X className="h-6 w-6" />
             </button>
 
             <div className="space-y-2 text-center">
-              <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-white">Junte-se ao Flow</h2>
-              <p className="text-[15px] text-[#94a3b8]">Crie sua conta e entre no cockpit.</p>
+              <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-white">{t('login.signUp.title')}</h2>
+              <p className="text-[15px] text-[#94a3b8]">{t('login.signUp.description')}</p>
             </div>
 
             <form className="mt-6 flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); handleSignUp() }}>
               <div className="flex flex-col gap-2">
-                <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">Nome Completo</label>
+                <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">{t('login.signUp.fields.name')}</label>
                 <input
                   type="text"
-                  placeholder="Seu nome"
+                  placeholder={t('login.signUp.placeholders.name')}
                   value={signUpName}
                   onChange={(event) => setSignUpName(event.target.value)}
                   className="h-12 rounded-xl border border-transparent bg-black/30 px-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
@@ -367,10 +370,10 @@ const Login = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">Email</label>
+                <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">{t('login.signUp.fields.email')}</label>
                 <input
                   type="email"
-                  placeholder="seu@email.com"
+                  placeholder={t('login.placeholders.email')}
                   value={signUpEmail}
                   onChange={(event) => setSignUpEmail(event.target.value)}
                   className="h-12 rounded-xl border border-transparent bg-black/30 px-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
@@ -379,10 +382,10 @@ const Login = () => {
 
               <div className="flex flex-col gap-5 sm:flex-row">
                 <div className="flex flex-1 flex-col gap-2">
-                  <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">Senha</label>
+                  <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">{t('login.signUp.fields.password')}</label>
                   <input
                     type="password"
-                    placeholder="........"
+                    placeholder={t('login.placeholders.password')}
                     autoComplete="new-password"
                     value={signUpPassword}
                     onChange={(event) => setSignUpPassword(event.target.value)}
@@ -390,10 +393,10 @@ const Login = () => {
                   />
                 </div>
                 <div className="flex flex-1 flex-col gap-2">
-                  <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">Confirmar Senha</label>
+                  <label className="text-[13px] font-medium uppercase tracking-wider text-[#94a3b8]">{t('login.signUp.fields.confirmPassword')}</label>
                   <input
                     type="password"
-                    placeholder="........"
+                    placeholder={t('login.placeholders.password')}
                     autoComplete="new-password"
                     value={signUpConfirm}
                     onChange={(event) => setSignUpConfirm(event.target.value)}
@@ -411,14 +414,14 @@ const Login = () => {
                   />
                 </div>
                 <label htmlFor="terms" className="select-none text-[14px] leading-6 text-[#94a3b8]">
-                  Li e aceito os{' '}
-                  <a href="#" className="text-white underline decoration-white/20 underline-offset-4 transition-colors hover:text-[#67e8f9]">
-                    Termos de Uso
-                  </a>{' '}
-                  e{' '}
-                  <a href="#" className="text-white underline decoration-white/20 underline-offset-4 transition-colors hover:text-[#67e8f9]">
-                    Privacidade
-                  </a>
+                  {t('login.signUp.termsPrefix')}{' '}
+                  <Link to="/privacidade" className="text-white underline decoration-white/20 underline-offset-4 transition-colors hover:text-[#67e8f9]">
+                    {t('login.signUp.termsLink')}
+                  </Link>{' '}
+                  {t('login.signUp.termsAnd')}{' '}
+                  <Link to="/privacidade" className="text-white underline decoration-white/20 underline-offset-4 transition-colors hover:text-[#67e8f9]">
+                    {t('login.signUp.privacyLink')}
+                  </Link>
                 </label>
               </div>
 
@@ -427,18 +430,18 @@ const Login = () => {
                 disabled={signUpLoading}
                 className="mt-4 flex h-[52px] w-full items-center justify-center rounded-xl bg-gradient-primary text-[16px] font-display font-semibold text-white shadow-[0_4px_20px_rgba(255,79,216,0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                {signUpLoading ? 'Criando...' : 'Criar Conta'}
+                {signUpLoading ? t('login.signUp.actions.creating') : t('login.signUp.actions.submit')}
               </button>
             </form>
 
             <div className="pt-4 text-center text-[14px] text-[#94a3b8]">
-              Já tem uma conta?
+              {t('login.signUp.footer')}{' '}
               <button
                 type="button"
                 onClick={() => setIsSignUpOpen(false)}
                 className="ml-1 font-medium text-white transition-colors hover:text-[#67e8f9]"
               >
-                Entrar
+                {t('login.signUp.actions.backToLogin')}
               </button>
             </div>
           </section>
@@ -458,7 +461,7 @@ const Login = () => {
               type="button"
               onClick={() => setIsForgotOpen(false)}
               className="absolute right-5 top-5 z-20 text-white/50 transition-colors hover:text-white"
-              aria-label="Fechar"
+              aria-label={t('common.close')}
             >
               <X className="h-6 w-6" />
             </button>
@@ -471,16 +474,16 @@ const Login = () => {
               </div>
 
               <div className="mb-8 text-center">
-                <h2 className="mb-2 font-display text-3xl font-bold tracking-tight text-white">Recuperar Acesso</h2>
+                <h2 className="mb-2 font-display text-3xl font-bold tracking-tight text-white">{t('login.reset.title')}</h2>
                 <p className="text-[15px] leading-relaxed text-[#94a3b8]">
-                  Digite o email associado à sua conta para receber o link de redefinição.
+                  {t('login.reset.description')}
                 </p>
               </div>
 
               <form className="flex flex-col gap-6" onSubmit={handleForgotPassword}>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="forgot-email" className="pl-1 text-[11px] font-medium uppercase tracking-[0.05em] text-[#94a3b8]">
-                    Email
+                    {t('login.fields.email')}
                   </label>
                   <div className="group relative">
                     <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#94a3b8] transition-colors group-focus-within:text-[#67e8f9]" />
@@ -488,7 +491,7 @@ const Login = () => {
                       id="forgot-email"
                       type="email"
                       required
-                      placeholder="nome@exemplo.com"
+                      placeholder={t('login.reset.placeholder')}
                       value={forgotEmail}
                       onChange={(event) => setForgotEmail(event.target.value)}
                       className="h-12 w-full rounded-xl border border-transparent bg-black/30 pl-11 pr-4 text-[15px] text-white placeholder:text-[#94a3b8]/50 outline-none transition-all duration-300 focus:border-[#67e8f9] focus:ring-0 focus:shadow-[0_0_15px_rgba(103,232,249,0.3)]"
@@ -501,7 +504,7 @@ const Login = () => {
                   disabled={forgotLoading}
                   className="relative mt-2 flex h-[52px] w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-primary text-[16px] font-display font-bold tracking-wide text-white shadow-[0_4px_20px_rgba(255,79,216,0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span className="relative z-10">{forgotLoading ? 'Enviando...' : 'Enviar Link de Recuperação'}</span>
+                  <span className="relative z-10">{forgotLoading ? t('login.reset.actions.sending') : t('login.reset.actions.submit')}</span>
                   <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 hover:translate-y-0" />
                 </button>
 
@@ -512,7 +515,7 @@ const Login = () => {
                     className="inline-flex items-center gap-1 text-sm text-[#94a3b8] transition-colors hover:text-white"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Voltar para o login
+                    {t('login.reset.actions.back')}
                   </button>
                 </div>
               </form>
@@ -534,12 +537,14 @@ const Login = () => {
           >
             <div className="mb-8 relative flex items-center justify-center">
               <div
-                className={`absolute inset-0 rounded-full blur-xl scale-150 animate-pulse ${feedbackType === 'success' ? 'bg-[#67e8f9]/20' : 'bg-[#ff4fd8]/20'
-                  }`}
+                className={`absolute inset-0 rounded-full blur-xl scale-150 animate-pulse ${
+                  feedbackType === 'success' ? 'bg-[#67e8f9]/20' : 'bg-[#ff4fd8]/20'
+                }`}
               />
               <div
-                className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border ${feedbackType === 'success' ? 'border-[#67e8f9]/40 text-[#67e8f9]' : 'border-[#ff4fd8]/40 text-[#ff4fd8]'
-                  }`}
+                className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-full border ${
+                  feedbackType === 'success' ? 'border-[#67e8f9]/40 text-[#67e8f9]' : 'border-[#ff4fd8]/40 text-[#ff4fd8]'
+                }`}
               >
                 {feedbackType === 'success' ? (
                   <svg className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -563,10 +568,11 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setFeedbackType(null)}
-                className={`w-full h-[52px] rounded-xl font-display font-semibold text-base text-white transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] ${feedbackType === 'success'
-                  ? 'bg-gradient-to-r from-[#8b5cf6] to-[#ff4fd8] shadow-[0_4px_20px_rgba(255,79,216,0.4)]'
-                  : 'bg-gradient-to-r from-[#ff4fd8] to-[#8b5cf6] shadow-[0_4px_20px_rgba(255,79,216,0.35)]'
-                  }`}
+                className={`w-full h-[52px] rounded-xl font-display font-semibold text-base text-white transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                  feedbackType === 'success'
+                    ? 'bg-gradient-to-r from-[#8b5cf6] to-[#ff4fd8] shadow-[0_4px_20px_rgba(255,79,216,0.4)]'
+                    : 'bg-gradient-to-r from-[#ff4fd8] to-[#8b5cf6] shadow-[0_4px_20px_rgba(255,79,216,0.35)]'
+                }`}
               >
                 {feedbackConfig.primary}
               </button>

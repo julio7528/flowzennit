@@ -1,3 +1,5 @@
+import i18n from '../../lib/i18n.js'
+
 export const EXCLUDED_ALOCADO_CLAUSE = '("Stuff","Trash","Referencia","Incubado")'
 export const BACKLOG_STATE = 'backlog'
 
@@ -10,21 +12,21 @@ const DEFAULT_MACRO_COLUMNS = [
     'Done',
 ]
 
-export const VIEW_OPTIONS = [
+export const getViewOptions = () => [
     {
         value: 'all',
-        label: 'Todos',
-        description: 'Exibe todos os cards validos do workspace.',
+        label: i18n.t('kanbanCommon.viewOptions.all.label'),
+        description: i18n.t('kanbanCommon.viewOptions.all.description'),
     },
     {
         value: 'projects',
-        label: 'Projetos',
-        description: 'Mostra apenas cards taskproj e bugproj.',
+        label: i18n.t('kanbanCommon.viewOptions.projects.label'),
+        description: i18n.t('kanbanCommon.viewOptions.projects.description'),
     },
     {
         value: 'initial',
-        label: 'Agendar e delegar',
-        description: 'Foca no fluxo inicial de agendar e delegar.',
+        label: i18n.t('kanbanCommon.viewOptions.initial.label'),
+        description: i18n.t('kanbanCommon.viewOptions.initial.description'),
     },
 ]
 
@@ -108,6 +110,41 @@ export const findGroupByState = (stateValue, groups = KANBAN_GROUPS) =>
     groups.find((group) => isStateInGroup(stateValue, group)) || null
 
 export const getStageLabelByState = (stateValue, groups = KANBAN_GROUPS) => findGroupByState(stateValue, groups)?.stage || 'Sem etapa'
+
+export const translateStageLabel = (stageValue) => {
+    const key = normalizeKey(stageValue)
+    if (key.includes('backlog')) return i18n.t('kanbanCommon.stages.backlog')
+    if (key.includes('analise') || key.includes('plan')) return i18n.t('kanbanCommon.stages.analysis')
+    if (key.includes('doing') || key.includes('execucao')) return i18n.t('kanbanCommon.stages.doing')
+    if (key.includes('conferindo') || key.includes('check')) return i18n.t('kanbanCommon.stages.check')
+    if (key.includes('revisao') || key.includes('padronizacao') || key.includes('act')) return i18n.t('kanbanCommon.stages.review')
+    if (key.includes('done')) return i18n.t('kanbanCommon.stages.done')
+    return i18n.t('kanbanCommon.stages.unassigned')
+}
+
+export const translateStateLabel = (stateValue) => {
+    const key = normalizeKey(stateValue)
+    if (!key) return i18n.t('kanbanCommon.states.none')
+    if (key === 'backlog') return i18n.t('kanbanCommon.states.backlog')
+    if (key === 'identificacao do problema') return i18n.t('kanbanCommon.states.problemIdentification')
+    if (key === 'observacao') return i18n.t('kanbanCommon.states.observation')
+    if (key === 'analise') return i18n.t('kanbanCommon.states.analysis')
+    if (key === 'planejamento de acao') return i18n.t('kanbanCommon.states.actionPlanning')
+    if (key === 'aguardando plan' || key === 'aguardando plano') return i18n.t('kanbanCommon.states.waitingPlan')
+    if (key === 'bloqueado plan' || key === 'bloqueado plano') return i18n.t('kanbanCommon.states.blockedPlan')
+    if (key === 'em execucao') return i18n.t('kanbanCommon.states.inExecution')
+    if (key === 'aguardando doing') return i18n.t('kanbanCommon.states.waitingDoing')
+    if (key === 'bloqueado doing') return i18n.t('kanbanCommon.states.blockedDoing')
+    if (key === 'verificacao') return i18n.t('kanbanCommon.states.verification')
+    if (key === 'validacao') return i18n.t('kanbanCommon.states.validation')
+    if (key === 'conferencia de aderencia') return i18n.t('kanbanCommon.states.adherenceCheck')
+    if (key === 'padronizacao') return i18n.t('kanbanCommon.states.standardization')
+    if (key === 'conclusao') return i18n.t('kanbanCommon.states.conclusion')
+    if (key === 'documentado') return i18n.t('kanbanCommon.states.documented')
+    if (key === 'conhecimento consolidado') return i18n.t('kanbanCommon.states.knowledgeConsolidated')
+    if (key === 'done') return i18n.t('kanbanCommon.states.done')
+    return stateValue || i18n.t('kanbanCommon.states.none')
+}
 
 export const isDoneState = (stateValue, groups = KANBAN_GROUPS) => {
     const directKey = normalizeKey(stateValue)

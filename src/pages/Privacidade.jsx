@@ -1,20 +1,11 @@
+import { useMemo } from 'react'
 import { Fingerprint, LockKeyhole, ShieldCheck, SlidersHorizontal, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/header.jsx'
 import Footer from '../components/footer.jsx'
 import PrivacyRequestForm from '../components/privacy/PrivacyRequestForm.jsx'
 import { useCookieConsent } from '../components/privacy/cookie-consent-context.js'
-import {
-  COOKIE_CATEGORIES,
-  PRIVACY_DATA_GROUPS,
-  PRIVACY_GOVERNANCE_ITEMS,
-  PRIVACY_HERO_POINTS,
-  PRIVACY_LAST_UPDATED,
-  PRIVACY_PURPOSES,
-  PRIVACY_RETENTION_RULES,
-  PRIVACY_RIGHTS,
-  PRIVACY_STATUS_BADGES,
-  PRIVACY_THIRD_PARTIES,
-} from '../lib/privacy-content.js'
+import { getPrivacyContent } from '../lib/privacy-content.js'
 
 const iconBySection = {
   dados: Fingerprint,
@@ -55,7 +46,9 @@ const PolicySection = ({ id, eyebrow, title, description, children, iconKey }) =
 }
 
 const PrivacyPage = () => {
+  const { t } = useTranslation()
   const { openPreferences } = useCookieConsent()
+  const privacyContent = useMemo(() => getPrivacyContent(t), [t])
 
   return (
     <div className="min-h-screen flex flex-col bg-[#050508] text-white antialiased selection:bg-[#00F0FF] selection:text-black overflow-x-hidden font-[Public_Sans,sans-serif]">
@@ -95,11 +88,11 @@ const PrivacyPage = () => {
                 <span className="relative inline-flex h-3 w-3 rounded-full bg-[#00F0FF]" />
               </div>
               <h2 className="privacy-mono text-xs sm:text-sm tracking-widest text-[#00F0FF] font-bold">
-                PRIVACIDADE // LGPD // CONTROLE ATIVO
+                {t('privacy.stickyHeader')}
               </h2>
             </div>
             <div className="hidden md:flex items-center gap-3 privacy-mono text-xs text-gray-400">
-              {['Dados', 'Cookies', 'Solicitações LGPD'].map((item, index) => (
+              {t('privacy.stickyItems', { returnObjects: true }).map((item, index) => (
                 <div key={item} className="flex items-center gap-2 px-3 py-1.5 bg-[#0E1016] border border-[#1A1D26]">
                   <span style={{ color: index === 0 ? '#00F0FF' : index === 1 ? '#BD00FF' : '#00FF41' }}>
                     {String(index + 1).padStart(2, '0')}
@@ -120,23 +113,23 @@ const PrivacyPage = () => {
                 <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#00F0FF]/80 via-[#BD00FF]/45 to-transparent" />
                 <div className="relative z-10">
                   <p className="privacy-mono text-xs text-[#00F0FF] uppercase tracking-[0.28em]">
-                    Política de Privacidade e Cookies
+                    {t('privacy.hero.eyebrow')}
                   </p>
                   <h1 className="privacy-display mt-5 text-4xl md:text-5xl font-black tracking-tight text-white leading-tight uppercase">
-                    Privacidade com
+                    {t('privacy.hero.titleLine1')}
                     <br />
-                    controle real
+                    {t('privacy.hero.titleLine2')}
                     <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] to-[#BD00FF]">
-                      para o usuário.
+                      {t('privacy.hero.titleAccent')}
                     </span>
                   </h1>
                   <p className="mt-5 max-w-2xl text-sm md:text-base leading-7 text-gray-300">
-                    Esta página resume como a FlowZenit trata dados de conta, registros inseridos pelo próprio usuário, cookies e preferências de privacidade, além de abrir um canal direto para solicitações ligadas à LGPD.
+                    {t('privacy.hero.description')}
                   </p>
 
                   <div className="mt-6 flex flex-wrap gap-3">
-                    {PRIVACY_STATUS_BADGES.map((badge) => (
+                    {privacyContent.statusBadges.map((badge) => (
                       <span
                         key={badge}
                         className="privacy-mono border border-white/10 bg-black/20 px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gray-200"
@@ -147,25 +140,18 @@ const PrivacyPage = () => {
                   </div>
 
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <button
-                      type="button"
-                      onClick={openPreferences}
-                      className={squareActionPrimaryClass}
-                    >
-                      Gerenciar cookies
+                    <button type="button" onClick={openPreferences} className={squareActionPrimaryClass}>
+                      {t('cookieConsent.actions.configure')}
                     </button>
-                    <a
-                      href="#solicitacoes"
-                      className={squareActionSecondaryClass}
-                    >
-                      Abrir formulário LGPD
+                    <a href="#solicitacoes" className={squareActionSecondaryClass}>
+                      {t('privacy.hero.formAction')}
                     </a>
                   </div>
                 </div>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-3">
-                {PRIVACY_HERO_POINTS.map((point, index) => (
+                {privacyContent.heroPoints.map((point, index) => (
                   <div key={point.label} className="border border-[#1A1D26] bg-[#0E1016] p-4">
                     <p className="privacy-mono text-[11px] uppercase tracking-[0.22em] text-gray-500">{point.label}</p>
                     <p className="mt-2 text-sm leading-6 text-gray-200">{point.value}</p>
@@ -205,26 +191,26 @@ const PrivacyPage = () => {
                   {'};'}
                   <br />
                   <br />
-                  <span className="text-gray-500">// Ultima revisao:</span> <span className="text-white">{PRIVACY_LAST_UPDATED}</span>
+                  <span className="text-gray-500">{t('privacy.runtime.lastReview')}</span> <span className="text-white">{privacyContent.lastUpdated}</span>
                 </div>
 
                 <div className="mt-8 space-y-4">
                   <div className="border border-[#1A1D26] bg-black/20 p-5">
-                    <p className="privacy-mono text-[11px] uppercase tracking-[0.24em] text-[#00F0FF]">Controlador / projeto</p>
+                    <p className="privacy-mono text-[11px] uppercase tracking-[0.24em] text-[#00F0FF]">{t('privacy.runtime.controllerTitle')}</p>
                     <p className="mt-3 text-sm leading-6 text-gray-300">
-                      A FlowZenit trata dados pessoais na medida necessária para operar a autenticação, manter a área logada e armazenar os registros criados pelo próprio usuário dentro da plataforma.
+                      {t('privacy.runtime.controllerText')}
                     </p>
                   </div>
                   <div className="border border-[#1A1D26] bg-black/20 p-5">
-                    <p className="privacy-mono text-[11px] uppercase tracking-[0.24em] text-[#BD00FF]">Canal de privacidade</p>
+                    <p className="privacy-mono text-[11px] uppercase tracking-[0.24em] text-[#BD00FF]">{t('privacy.runtime.channelTitle')}</p>
                     <p className="mt-3 text-sm leading-6 text-gray-300">
-                      O canal principal para solicitações LGPD nesta fase é o formulário disponível nesta página. Ele foi preparado para integração real com o stack atual do projeto.
+                      {t('privacy.runtime.channelText')}
                     </p>
                   </div>
                   <div className="border border-[#1A1D26] bg-black/20 p-5">
-                    <p className="privacy-mono text-[11px] uppercase tracking-[0.24em] text-[#00FF41]">Atualizações desta política</p>
+                    <p className="privacy-mono text-[11px] uppercase tracking-[0.24em] text-[#00FF41]">{t('privacy.runtime.updatesTitle')}</p>
                     <p className="mt-3 text-sm leading-6 text-gray-300">
-                      Esta política pode evoluir conforme o produto amadurece. Mudanças relevantes podem exigir uma nova confirmação de consentimento para cookies opcionais.
+                      {t('privacy.runtime.updatesText')}
                     </p>
                   </div>
                 </div>
@@ -235,13 +221,13 @@ const PrivacyPage = () => {
 
         <PolicySection
           id="dados"
-          eyebrow="Quais dados tratamos"
-          title="Inventário mínimo de dados desta versão"
-          description="A política reflete apenas o que já foi confirmado no projeto, sem ampliar escopo com categorias inexistentes."
+          eyebrow={t('privacy.sections.data.eyebrow')}
+          title={t('privacy.sections.data.title')}
+          description={t('privacy.sections.data.description')}
           iconKey="dados"
         >
           <div className="grid gap-4 md:grid-cols-3">
-            {PRIVACY_DATA_GROUPS.map((group) => (
+            {privacyContent.dataGroups.map((group) => (
               <article key={group.title} className="border border-[#1A1D26] bg-black/20 p-5">
                 <div className="flex items-center gap-3">
                   <span
@@ -266,13 +252,13 @@ const PrivacyPage = () => {
 
         <PolicySection
           id="finalidades"
-          eyebrow="Finalidades do tratamento"
-          title="Por que esses dados são tratados"
-          description="As finalidades abaixo seguem o uso real da plataforma e deixam claro quando depende de consentimento."
+          eyebrow={t('privacy.sections.purposes.eyebrow')}
+          title={t('privacy.sections.purposes.title')}
+          description={t('privacy.sections.purposes.description')}
           iconKey="finalidades"
         >
           <div className="grid gap-4 md:grid-cols-2">
-            {PRIVACY_PURPOSES.map((purpose, index) => (
+            {privacyContent.purposes.map((purpose, index) => (
               <div key={purpose} className="border border-[#1A1D26] bg-black/20 p-5">
                 <span className="privacy-mono text-xs text-gray-500">[{String(index + 1).padStart(2, '0')}]</span>
                 <p className="mt-3 text-sm leading-6 text-gray-200">{purpose}</p>
@@ -283,13 +269,13 @@ const PrivacyPage = () => {
 
         <PolicySection
           id="terceiros"
-          eyebrow="Compartilhamento com terceiros"
-          title="Terceiros relevantes nesta fase"
-          description="O compartilhamento e suporte externo considerados nesta política se limitam aos serviços realmente identificados no projeto."
+          eyebrow={t('privacy.sections.thirdParties.eyebrow')}
+          title={t('privacy.sections.thirdParties.title')}
+          description={t('privacy.sections.thirdParties.description')}
           iconKey="terceiros"
         >
           <div className="grid gap-4 md:grid-cols-3">
-            {PRIVACY_THIRD_PARTIES.map((party) => (
+            {privacyContent.thirdParties.map((party) => (
               <article key={party.name} className="border border-[#1A1D26] bg-black/20 p-5">
                 <div className="flex items-center gap-3">
                   <span
@@ -306,13 +292,13 @@ const PrivacyPage = () => {
 
         <PolicySection
           id="cookies"
-          eyebrow="Política de Cookies"
-          title="Categorias usadas no site"
-          description="Nesta versão, o site trabalha apenas com cookies estritamente necessários e com medição opcional para analytics. Nenhuma categoria adicional foi criada sem uso real."
+          eyebrow={t('privacy.sections.cookies.eyebrow')}
+          title={t('privacy.sections.cookies.title')}
+          description={t('privacy.sections.cookies.description')}
           iconKey="cookies"
         >
           <div className="grid gap-4 md:grid-cols-2">
-            {COOKIE_CATEGORIES.map((category) => (
+            {privacyContent.cookieCategories.map((category) => (
               <article key={category.key} className="border border-[#1A1D26] bg-black/20 p-5">
                 <div className="flex items-center gap-3">
                   <span
@@ -323,7 +309,7 @@ const PrivacyPage = () => {
                 </div>
                 <p className="mt-4 text-sm leading-6 text-gray-300">{category.description}</p>
                 <div className="mt-4 privacy-mono text-xs uppercase tracking-[0.22em] text-gray-500">
-                  {category.alwaysOn ? 'Sempre ativo' : 'Desligado por padrão até consentimento'}
+                  {category.alwaysOn ? t('privacy.sections.cookies.alwaysOn') : t('privacy.sections.cookies.defaultOff')}
                 </div>
               </article>
             ))}
@@ -332,14 +318,10 @@ const PrivacyPage = () => {
           <div className="mt-6 border border-[#00F0FF]/20 bg-[#00F0FF]/8 p-5">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <p className="max-w-3xl text-sm leading-6 text-gray-200">
-                Você pode revisar sua preferência a qualquer momento. O Google Analytics só é carregado após consentimento explícito para a categoria de medição/analytics.
+                {t('privacy.sections.cookies.manageNotice')}
               </p>
-              <button
-                type="button"
-                onClick={openPreferences}
-                className={squareActionPrimaryClass}
-              >
-                Gerenciar cookies
+              <button type="button" onClick={openPreferences} className={squareActionPrimaryClass}>
+                {t('cookieConsent.actions.configure')}
               </button>
             </div>
           </div>
@@ -348,13 +330,13 @@ const PrivacyPage = () => {
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <PolicySection
             id="direitos"
-            eyebrow="Direitos do titular"
-            title="Como o usuário pode agir sobre seus dados"
-            description="Os direitos abaixo podem ser exercidos pelo formulário desta página, sem depender de uma área jurídica externa para o primeiro contato."
+            eyebrow={t('privacy.sections.rights.eyebrow')}
+            title={t('privacy.sections.rights.title')}
+            description={t('privacy.sections.rights.description')}
             iconKey="direitos"
           >
             <div className="space-y-3">
-              {PRIVACY_RIGHTS.map((right, index) => (
+              {privacyContent.rights.map((right, index) => (
                 <div key={right} className="border border-[#1A1D26] bg-black/20 p-4 flex gap-3">
                   <span className="privacy-mono text-xs text-[#00F0FF] mt-1">{String(index + 1).padStart(2, '0')}</span>
                   <p className="text-sm leading-6 text-gray-200">{right}</p>
@@ -365,13 +347,13 @@ const PrivacyPage = () => {
 
           <PolicySection
             id="retencao"
-            eyebrow="Retenção e eliminação"
-            title="Como tratamos permanência e descarte"
-            description="A governança inicial foi escrita para o cenário real do projeto, sem prometer automações que ainda não existem."
+            eyebrow={t('privacy.sections.retention.eyebrow')}
+            title={t('privacy.sections.retention.title')}
+            description={t('privacy.sections.retention.description')}
             iconKey="dados"
           >
             <div className="space-y-4">
-              {PRIVACY_RETENTION_RULES.map((rule) => (
+              {privacyContent.retentionRules.map((rule) => (
                 <article key={rule.title} className="border border-[#1A1D26] bg-black/20 p-5">
                   <h3 className="text-base font-bold text-white">{rule.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-gray-300">{rule.text}</p>
@@ -385,17 +367,17 @@ const PrivacyPage = () => {
           <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#1A1D26_1px,transparent_1px),linear-gradient(90deg,#1A1D26_1px,transparent_1px)] bg-[size:24px_24px]" />
           <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#00FF41]">Governança mínima</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#00FF41]">{t('privacy.governance.eyebrow')}</p>
               <h2 className="mt-3 text-2xl md:text-3xl font-black tracking-tight text-white">
-                Base inicial para evolução futura da privacidade.
+                {t('privacy.governance.title')}
               </h2>
               <p className="mt-4 text-sm leading-7 text-gray-400">
-                Esta entrega já organiza o inventário mínimo, o ponto de coleta de consentimento e a trilha inicial para evoluções futuras sem retrabalho estrutural grande.
+                {t('privacy.governance.description')}
               </p>
             </div>
 
             <div className="space-y-3">
-              {PRIVACY_GOVERNANCE_ITEMS.map((item) => (
+              {privacyContent.governanceItems.map((item) => (
                 <div key={item} className="border border-[#1A1D26] bg-black/20 p-4 flex gap-3">
                   <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#00FF41] shadow-[0_0_10px_rgba(0,255,65,0.6)]" />
                   <p className="text-sm leading-6 text-gray-200">{item}</p>
@@ -412,10 +394,10 @@ const PrivacyPage = () => {
           <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#00FF41]/70 via-[#00F0FF]/30 to-transparent" />
           <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#00F0FF]">Última atualização</p>
-              <h2 className="mt-2 text-2xl font-black text-white">{PRIVACY_LAST_UPDATED}</h2>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#00F0FF]">{t('privacy.footerCard.eyebrow')}</p>
+              <h2 className="mt-2 text-2xl font-black text-white">{privacyContent.lastUpdated}</h2>
               <p className="mt-3 text-sm leading-6 text-gray-400">
-                Esta política poderá ser revista para refletir novas integrações, novas bases de tratamento ou melhorias de governança.
+                {t('privacy.footerCard.description')}
               </p>
             </div>
 
@@ -425,13 +407,13 @@ const PrivacyPage = () => {
                 onClick={openPreferences}
                 className="border border-[#00F0FF]/30 bg-[#00F0FF]/12 px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#00F0FF] transition-colors hover:bg-[#00F0FF]/18 hover:text-white"
               >
-                Gerenciar cookies
+                {t('cookieConsent.actions.configure')}
               </button>
               <a
                 href="#solicitacoes"
                 className="border border-[#BD00FF]/30 bg-[#BD00FF]/15 px-5 py-3 text-center font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#BD00FF]/22"
               >
-                Ir para solicitações LGPD
+                {t('privacy.footerCard.requestsAction')}
               </a>
             </div>
           </div>

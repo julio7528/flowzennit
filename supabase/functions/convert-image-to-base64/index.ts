@@ -1,6 +1,10 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 
-Deno.serve(async (req) => {
+declare const Deno: {
+    serve: (handler: (req: Request) => Response | Promise<Response>) => void
+}
+
+Deno.serve(async (req: Request) => {
     if (req.method !== 'POST') {
         return new Response(JSON.stringify({ error: 'Method not allowed' }), {
             status: 405,

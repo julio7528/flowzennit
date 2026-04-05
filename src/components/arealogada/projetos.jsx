@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     AlertCircle,
     ArrowRight,
@@ -23,27 +24,12 @@ import {
 import { supabase } from '../../lib/supabase.js'
 import KanbanProj from './kanbanproj.jsx'
 import ProjetoCadastroModal from './ProjetoCadastroModal.jsx'
-import { getStageLabelByState, getStateBadgeClass, isDoneState, normalizeKey, stripHtml } from './kanban-model.js'
+import { getStageLabelByState, getStateBadgeClass, isDoneState, normalizeKey, stripHtml, translateStageLabel } from './kanban-model.js'
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 const DAY_IN_MS = 1000 * 60 * 60 * 24
 const PROJECT_ALOCADOS = ['taskproj', 'bugproj']
-
-const ACOES_CADASTRO = [
-    { id: 'task',       titulo: 'Task',       icone: CheckSquare, borda: 'border-emerald-500/40', bg: 'bg-emerald-500/10', destaque: 'text-emerald-300' },
-    { id: 'bug',        titulo: 'Bug',        icone: Bug,         borda: 'border-rose-500/40',    bg: 'bg-rose-500/10',    destaque: 'text-rose-300'    },
-    { id: 'user-story', titulo: 'User Story', icone: ListTodo,    borda: 'border-amber-500/40',   bg: 'bg-amber-500/10',   destaque: 'text-amber-300'   },
-    { id: 'feature',    titulo: 'Feature',    icone: Workflow,    borda: 'border-cyan-500/40',    bg: 'bg-cyan-500/10',    destaque: 'text-cyan-300'    },
-    { id: 'epic',       titulo: 'Epic',       icone: Layers3,     borda: 'border-blue-500/40',    bg: 'bg-blue-500/10',    destaque: 'text-blue-300'    },
-]
-
-const HIERARQUIA = ['Projeto', 'Epic', 'Feature', 'User Story', 'Task / Bug']
-
-const REPORT_TABS = [
-    { id: 'backlog', rotulo: 'Backlog', icone: ListTodo,      apoio: 'Hierarquia do produto'  },
-    { id: 'gantt',   rotulo: 'Gantt',   icone: CalendarClock, apoio: 'Planejamento de sprint' },
-    { id: 'kanban',  rotulo: 'Kanban',  icone: FolderKanban,  apoio: 'Fluxo operacional'      },
-]
+const HIERARCHY_ITEMS = ['project', 'epic', 'feature', 'story', 'delivery']
 
 const TYPE_META = {
     epic:     { rotulo: 'Epic',       classe: 'border-blue-500/30 bg-blue-500/10 text-blue-200',         icone: Layers3    },
@@ -54,18 +40,18 @@ const TYPE_META = {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const formatDateTime = (value) => {
+const formatDateTime = (value, locale = 'pt-BR') => {
     if (!value) return '-'
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return '-'
-    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date)
+    return new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date)
 }
 
-const formatDateShort = (value) => {
+const formatDateShort = (value, locale = 'pt-BR') => {
     if (!value) return '-'
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return '-'
-    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date)
+    return new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit' }).format(date)
 }
 
 const getProgressTone = (percent) => {
@@ -80,12 +66,23 @@ const buildTaskSeed = (atividade, participantName) => ({ ...atividade, participa
 // ─── Micro-componentes ────────────────────────────────────────────────────────
 
 const TypePill = ({ type }) => {
+    const { t } = useTranslation()
     const meta = TYPE_META[type] || TYPE_META.story
     const Icone = meta.icone
+    const typeLabel =
+        type === 'epic'
+            ? t('projectsPage.types.epic')
+            : type === 'feature'
+            ? t('projectsPage.types.feature')
+            : type === 'story'
+            ? t('projectsPage.types.story')
+            : type === 'taskproj'
+            ? t('projectsPage.types.task')
+            : t('projectsPage.types.bug')
     return (
         <span className={`inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] font-semibold ${meta.classe}`}>
             <Icone className="h-3 w-3" />
-            {meta.rotulo}
+            {typeLabel}
         </span>
     )
 }
@@ -132,12 +129,13 @@ const EmptyPanel = ({ title, description, actionLabel, onAction }) => (
 
 // ─── HierarchyOverviewPanel ───────────────────────────────────────────────────
 const HierarchyOverviewPanel = ({ epics, featuresByEpic, storiesByFeature, activitiesByStory, onCreateEpic }) => {
+    const { t } = useTranslation()
     if (epics.length === 0) {
         return (
             <EmptyPanel
-                title="Nenhum Epic encontrado"
-                description="Crie o primeiro Epic para estruturar o backlog na cadeia Epic → Feature → User Story → Task/Bug."
-                actionLabel="Cadastrar Epic"
+                title={t('projectsPage.hierarchyPanel.emptyTitle')}
+                description={t('projectsPage.hierarchyPanel.emptyDescription')}
+                actionLabel={t('projectsPage.actions.newEpic')}
                 onAction={onCreateEpic}
             />
         )
@@ -163,18 +161,18 @@ const HierarchyOverviewPanel = ({ epics, featuresByEpic, storiesByFeature, activ
                                 <h3 className="truncate text-sm font-semibold text-white">{epic.nome_epic}</h3>
                             </div>
                             <div className="flex shrink-0 items-center gap-2 font-mono text-[10px] text-zen-text-tri">
-                                <span>{featureList.length} feat.</span>
+                                <span>{t('projectsPage.hierarchyPanel.counts.features', { count: featureList.length })}</span>
                                 <span>·</span>
-                                <span>{storiesCount} stories</span>
+                                <span>{t('projectsPage.hierarchyPanel.counts.stories', { count: storiesCount })}</span>
                                 <span>·</span>
-                                <span>{itensCount} itens</span>
+                                <span>{t('projectsPage.hierarchyPanel.counts.items', { count: itensCount })}</span>
                             </div>
                         </div>
 
                         {/* Features */}
                         <div className="divide-y divide-zen-border/40">
                             {featureList.length === 0 ? (
-                                <div className="px-4 py-3 font-mono text-[10px] text-zen-text-tri">Sem features vinculadas.</div>
+                                <div className="px-4 py-3 font-mono text-[10px] text-zen-text-tri">{t('projectsPage.hierarchyPanel.noLinkedFeatures')}</div>
                             ) : (
                                 featureList.map((feature) => {
                                     const storyList = storiesByFeature.get(feature.id) || []
@@ -185,7 +183,7 @@ const HierarchyOverviewPanel = ({ epics, featuresByEpic, storiesByFeature, activ
                                                 <span className="text-xs font-medium text-white">{feature.nome_feature}</span>
                                             </div>
                                             {storyList.length === 0 ? (
-                                                <span className="ml-1 font-mono text-[10px] text-zen-text-tri">Sem User Stories.</span>
+                                                <span className="ml-1 font-mono text-[10px] text-zen-text-tri">{t('projectsPage.hierarchyPanel.noLinkedStories')}</span>
                                             ) : (
                                                 <div className="flex flex-wrap gap-1.5 ml-1">
                                                     {storyList.map((story) => (
@@ -210,20 +208,23 @@ const HierarchyOverviewPanel = ({ epics, featuresByEpic, storiesByFeature, activ
 
 // ─── OverviewRail (sidebar) ───────────────────────────────────────────────────
 const OverviewRail = ({ upcomingItems, metrics }) => {
+    const { t, i18n } = useTranslation()
+    const locale = i18n.resolvedLanguage || 'pt-BR'
+
     return (
         <div className="flex flex-col gap-3">
             {/* Saúde da sprint */}
             <article className="border border-zen-border bg-zen-surface p-4">
                 <div className="mb-4 flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">
                     <Target className="h-3.5 w-3.5 text-emerald-300" />
-                    Saúde da sprint
+                    {t('projectsPage.overview.sprintHealth.title')}
                 </div>
                 <div className="grid grid-cols-2 gap-px bg-zen-border">
                     {[
-                        { label: 'Em fluxo', value: metrics.flowing, color: 'text-sky-300' },
-                        { label: 'Done',     value: metrics.done,    color: 'text-emerald-300' },
-                        { label: 'Backlog',  value: metrics.backlog, color: 'text-zen-text-sec' },
-                        { label: 'Bugs',     value: metrics.bugs,    color: 'text-rose-300' },
+                        { label: t('projectsPage.overview.sprintHealth.flowing'), value: metrics.flowing, color: 'text-sky-300' },
+                        { label: t('projectsPage.overview.sprintHealth.done'), value: metrics.done, color: 'text-emerald-300' },
+                        { label: t('projectsPage.overview.sprintHealth.backlog'), value: metrics.backlog, color: 'text-zen-text-sec' },
+                        { label: t('projectsPage.overview.sprintHealth.bugs'), value: metrics.bugs, color: 'text-rose-300' },
                     ].map(({ label, value, color }) => (
                         <div key={label} className="border border-zen-border bg-zen-bg/60 p-3">
                             <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">{label}</div>
@@ -237,19 +238,19 @@ const OverviewRail = ({ upcomingItems, metrics }) => {
             <article className="border border-zen-border bg-zen-surface p-4">
                 <div className="mb-4 flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">
                     <Clock3 className="h-3.5 w-3.5 text-amber-300" />
-                    Próximas entregas
+                    {t('projectsPage.overview.upcoming.title')}
                 </div>
                 <div className="space-y-2">
                     {upcomingItems.length === 0 ? (
                         <p className="border border-dashed border-zen-border bg-zen-bg/40 px-3 py-4 text-center font-mono text-[10px] text-zen-text-tri">
-                            Nenhuma entrega com prazo definido.
+                            {t('projectsPage.overview.upcoming.empty')}
                         </p>
                     ) : (
                         upcomingItems.map((item) => (
                             <div key={item.id} className="border border-zen-border bg-zen-bg/50 p-3">
                                 <div className="flex items-center justify-between gap-2 mb-1.5">
                                     <TypePill type={item.alocado} />
-                                    <span className="font-mono text-[10px] text-zen-text-tri">{formatDateTime(item.data_fim)}</span>
+                                    <span className="font-mono text-[10px] text-zen-text-tri">{formatDateTime(item.data_fim, locale)}</span>
                                 </div>
                                 <div className="text-xs font-semibold text-white line-clamp-1">{item.nometarefa}</div>
                                 <div className="mt-1.5 flex items-center gap-2">
@@ -271,13 +272,15 @@ const OverviewRail = ({ upcomingItems, metrics }) => {
 
 // ─── GanttPanel ───────────────────────────────────────────────────────────────
 const GanttPanel = ({ items, onOpenCard }) => {
+    const { t, i18n } = useTranslation()
+    const locale = i18n.resolvedLanguage || 'pt-BR'
     const [todayReferenceMs] = useState(() => Date.now())
 
     if (items.length === 0) {
         return (
             <EmptyPanel
-                title="Nenhum item para o Gantt"
-                description="O Gantt mostra tasks e bugs fora de Done. Adicione datas de início e fim aos cards para visualizar o planejamento."
+                title={t('projectsPage.gantt.emptyTitle')}
+                description={t('projectsPage.gantt.emptyDescription')}
             />
         )
     }
@@ -297,7 +300,7 @@ const GanttPanel = ({ items, onOpenCard }) => {
     const contentMinWidth = itemColumnWidth + timelineMinWidth
     const days = Array.from({ length: totalDays }, (_, i) => new Date(timelineStartMs + i * DAY_IN_MS))
     const sprintHeaders = Array.from({ length: Math.ceil(totalDays / 7) }, (_, i) => ({
-        label: `Sprint ${String(i + 1).padStart(2, '0')}`,
+        label: t('projectsPage.gantt.sprintLabel', { number: String(i + 1).padStart(2, '0') }),
         span: Math.min(7, totalDays - i * 7),
     }))
     const todayOffset = Math.floor((todayReferenceMs - timelineStartMs) / DAY_IN_MS)
@@ -330,12 +333,12 @@ const GanttPanel = ({ items, onOpenCard }) => {
         <article className="overflow-hidden border border-zen-border bg-zen-surface">
             <div className="flex items-center justify-between gap-4 border-b border-zen-border px-4 py-3 sm:px-5">
                 <div>
-                    <h3 className="text-sm font-semibold text-white">Planejamento Gantt · Scrum</h3>
-                    <p className="mt-0.5 font-mono text-[10px] text-zen-text-sec">Clique na barra para editar o item.</p>
+                    <h3 className="text-sm font-semibold text-white">{t('projectsPage.gantt.title')}</h3>
+                    <p className="mt-0.5 font-mono text-[10px] text-zen-text-sec">{t('projectsPage.gantt.subtitle')}</p>
                 </div>
                 <div className="inline-flex items-center gap-1.5 border border-zen-border bg-zen-bg/70 px-3 py-1 font-mono text-[10px] text-zen-text-sec">
                     <CalendarClock className="h-3.5 w-3.5 text-zen-blue" />
-                    {items.length} itens
+                    {t('projectsPage.gantt.itemsCount', { count: items.length })}
                 </div>
             </div>
 
@@ -343,7 +346,7 @@ const GanttPanel = ({ items, onOpenCard }) => {
                 <div className="min-w-max" style={{ minWidth: `${contentMinWidth}px` }}>
                     {/* Header */}
                     <div className="grid border-b border-zen-border bg-zen-bg/70" style={{ gridTemplateColumns }}>
-                        <div className="border-r border-zen-border px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Item</div>
+                        <div className="border-r border-zen-border px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('projectsPage.gantt.columns.item')}</div>
                         <div>
                             <div className="grid border-b border-zen-border" style={{ gridTemplateColumns: `repeat(${totalDays}, minmax(0, 1fr))` }}>
                                 {sprintHeaders.map((sprint) => (
@@ -355,8 +358,8 @@ const GanttPanel = ({ items, onOpenCard }) => {
                             <div className="grid" style={{ gridTemplateColumns: `repeat(${totalDays}, minmax(0, 1fr))` }}>
                                 {days.map((day) => (
                                     <div key={day.toISOString()} className="border-r border-zen-border/40 px-0.5 py-1.5 text-center font-mono text-[9px] text-zen-text-tri">
-                                        <div>{day.toLocaleDateString('pt-BR', { day: '2-digit' })}</div>
-                                        <div>{day.toLocaleDateString('pt-BR', { month: 'short' })}</div>
+                                        <div>{day.toLocaleDateString(locale, { day: '2-digit' })}</div>
+                                        <div>{day.toLocaleDateString(locale, { month: 'short' })}</div>
                                     </div>
                                 ))}
                             </div>
@@ -381,16 +384,16 @@ const GanttPanel = ({ items, onOpenCard }) => {
                                         <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
                                             <span
                                                 className="shrink-0 border border-zen-border/70 bg-zen-bg/70 px-2 py-0.5 font-mono text-[10px]"
-                                                title={formatDateTime(item.data_inicio || item.startDate)}
+                                                title={formatDateTime(item.data_inicio || item.startDate, locale)}
                                             >
-                                                {formatDateShort(item.data_inicio || item.startDate)}
+                                                {formatDateShort(item.data_inicio || item.startDate, locale)}
                                             </span>
                                             <ArrowRight className="h-3 w-3 shrink-0 text-zen-text-tri" />
                                             <span
                                                 className="shrink-0 border border-zen-border/70 bg-zen-bg/70 px-2 py-0.5 font-mono text-[10px]"
-                                                title={formatDateTime(item.data_fim || item.endDate)}
+                                                title={formatDateTime(item.data_fim || item.endDate, locale)}
                                             >
-                                                {formatDateShort(item.data_fim || item.endDate)}
+                                                {formatDateShort(item.data_fim || item.endDate, locale)}
                                             </span>
                                         </div>
                                         <span className={`shrink-0 px-2 py-0.5 font-mono text-[10px] ${getProgressTone(progress)}`}>{progress}%</span>
@@ -451,6 +454,8 @@ const BacklogPanel = ({
     onToggleRow,
     onOpenCard,
 }) => {
+    const { t, i18n } = useTranslation()
+    const locale = i18n.resolvedLanguage || 'pt-BR'
     const query = activeSearch.trim().toLowerCase()
 
     const matchesActivity = useCallback(
@@ -489,7 +494,7 @@ const BacklogPanel = ({
     }, [activitiesByStory, epics, featuresByEpic, matchesActivity, query, storiesByFeature])
 
     if (epics.length === 0) {
-        return <EmptyPanel title="Backlog vazio" description="Cadastre Epic, Feature e User Story para montar a árvore hierárquica." />
+        return <EmptyPanel title={t('projectsPage.backlog.emptyTitle')} description={t('projectsPage.backlog.emptyDescription')} />
     }
 
     return (
@@ -500,7 +505,7 @@ const BacklogPanel = ({
                     type="text"
                     value={activeSearch}
                     onChange={(e) => setActiveSearch(e.target.value)}
-                    placeholder="Buscar item, estado ou responsável..."
+                    placeholder={t('projectsPage.backlog.searchPlaceholder')}
                     className="min-w-[200px] flex-1 border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white placeholder:text-zen-text-tri outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                 />
                 <button
@@ -512,7 +517,7 @@ const BacklogPanel = ({
                             : 'border-zen-border text-zen-text-sec hover:bg-zen-border/30 hover:text-white'
                     }`}
                 >
-                    Somente abertos
+                    {t('projectsPage.backlog.openOnly')}
                 </button>
             </div>
 
@@ -521,15 +526,15 @@ const BacklogPanel = ({
                 <div className="min-w-[860px]">
                     {/* Header row */}
                     <div className="grid grid-cols-[minmax(300px,1.8fr)_1fr_0.9fr_0.8fr_0.8fr] border-b border-zen-border bg-zen-bg/60 px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
-                        <span>Item</span>
-                        <span>Responsável</span>
-                        <span>Estado</span>
-                        <span>Progresso</span>
-                        <span>Prazo</span>
+                        <span>{t('projectsPage.backlog.columns.item')}</span>
+                        <span>{t('projectsPage.backlog.columns.owner')}</span>
+                        <span>{t('projectsPage.backlog.columns.state')}</span>
+                        <span>{t('projectsPage.backlog.columns.progress')}</span>
+                        <span>{t('projectsPage.backlog.columns.dueDate')}</span>
                     </div>
 
                     {visibleTree.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-sm text-zen-text-sec">Nenhum item encontrado.</div>
+                        <div className="px-4 py-8 text-center text-sm text-zen-text-sec">{t('projectsPage.backlog.noItemsFound')}</div>
                     ) : (
                         visibleTree.map(({ epic, features }) => {
                             const epicRowId      = `epic-${epic.id}`
@@ -544,7 +549,7 @@ const BacklogPanel = ({
                                             <span className="text-sm font-semibold text-white">{epic.nome_epic}</span>
                                         </button>
                                         <div className="text-xs text-zen-text-tri flex items-center">—</div>
-                                        <div className="text-xs text-zen-text-tri flex items-center">{features.length} features</div>
+                                        <div className="text-xs text-zen-text-tri flex items-center">{t('projectsPage.backlog.featuresCount', { count: features.length })}</div>
                                         <div className="text-xs text-zen-text-tri flex items-center">—</div>
                                         <div className="text-xs text-zen-text-tri flex items-center">—</div>
                                     </div>
@@ -562,7 +567,7 @@ const BacklogPanel = ({
                                                         <span className="text-sm font-medium text-white">{feature.nome_feature}</span>
                                                     </button>
                                                     <div className="text-xs text-zen-text-tri flex items-center">—</div>
-                                                    <div className="text-xs text-zen-text-tri flex items-center">{stories.length} stories</div>
+                                                    <div className="text-xs text-zen-text-tri flex items-center">{t('projectsPage.backlog.storiesCount', { count: stories.length })}</div>
                                                     <div className="text-xs text-zen-text-tri flex items-center">—</div>
                                                     <div className="text-xs text-zen-text-tri flex items-center">—</div>
                                                 </div>
@@ -581,15 +586,15 @@ const BacklogPanel = ({
                                                                     <span className="text-sm font-medium text-white">{story.nome_userstory}</span>
                                                                 </button>
                                                                 <div className="text-xs text-zen-text-tri flex items-center">—</div>
-                                                                <div className="text-xs text-zen-text-tri flex items-center">{activities.length} itens</div>
-                                                                <div className="text-xs text-zen-text-tri flex items-center">{bugsCount > 0 ? `${bugsCount} bug${bugsCount > 1 ? 's' : ''}` : '—'}</div>
+                                                                <div className="text-xs text-zen-text-tri flex items-center">{t('projectsPage.backlog.itemsCount', { count: activities.length })}</div>
+                                                                <div className="text-xs text-zen-text-tri flex items-center">{bugsCount > 0 ? t('projectsPage.backlog.bugsCount', { count: bugsCount }) : '—'}</div>
                                                                 <div className="text-xs text-zen-text-tri flex items-center">—</div>
                                                             </div>
 
                                                             {!storyCollapsed && (
                                                                 activities.length === 0 ? (
                                                                     <div className="grid grid-cols-[minmax(300px,1.8fr)_1fr_0.9fr_0.8fr_0.8fr] border-b border-zen-border/40 px-4 py-2.5">
-                                                                        <div className="font-mono text-[10px] text-zen-text-tri" style={{ paddingLeft: 72 }}>Nenhuma task ou bug vinculado.</div>
+                                                                        <div className="font-mono text-[10px] text-zen-text-tri" style={{ paddingLeft: 72 }}>{t('projectsPage.backlog.noLinkedCards')}</div>
                                                                         <div /><div /><div /><div />
                                                                     </div>
                                                                 ) : (
@@ -604,10 +609,10 @@ const BacklogPanel = ({
                                                                                             <TypePill type={atividade.alocado} />
                                                                                             <span className="truncate text-sm font-medium text-white">{atividade.nometarefa}</span>
                                                                                         </div>
-                                                                                        <p className="mt-0.5 line-clamp-1 text-xs text-zen-text-sec">{stripHtml(atividade.descricao) || 'Sem descrição.'}</p>
+                                                                                        <p className="mt-0.5 line-clamp-1 text-xs text-zen-text-sec">{stripHtml(atividade.descricao) || t('projectsPage.backlog.noDescription')}</p>
                                                                                     </div>
                                                                                 </button>
-                                                                                <div className="flex items-center text-xs text-zen-text-sec">{participant?.nomeparticipante || '—'}</div>
+                                                                                <div className="flex items-center text-xs text-zen-text-sec">{participant?.nomeparticipante || t('projectsPage.backlog.noOwner')}</div>
                                                                                 <div className="flex items-center">
                                                                                     <span className={`inline-flex items-center border px-1.5 py-0.5 font-mono text-[10px] ${getStateBadgeClass(atividade.posicaoKanban)}`}>{atividade.stageLabel}</span>
                                                                                 </div>
@@ -618,7 +623,7 @@ const BacklogPanel = ({
                                                                                         <span className="font-mono text-[10px] text-zen-text-tri">0%</span>
                                                                                     )}
                                                                                 </div>
-                                                                                <div className="flex items-center font-mono text-[10px] text-zen-text-sec">{atividade.data_fim ? formatDateTime(atividade.data_fim) : '—'}</div>
+                                                                                <div className="flex items-center font-mono text-[10px] text-zen-text-sec">{atividade.data_fim ? formatDateTime(atividade.data_fim, locale) : '—'}</div>
                                                                             </div>
                                                                         )
                                                                     })
@@ -652,6 +657,7 @@ const CadastroControlModal = ({
     onDelete,
     deletingKey,
 }) => {
+    const { t } = useTranslation()
     const [search, setSearch] = useState('')
 
     const normalizedSearch = normalizeKey(search)
@@ -679,8 +685,8 @@ const CadastroControlModal = ({
                 {/* Modal header */}
                 <div className="flex items-start justify-between gap-4 border-b border-zen-border px-6 py-5">
                     <div>
-                        <h2 className="font-display text-lg font-semibold text-white">Painel de manutenção de cadastros</h2>
-                        <p className="mt-1 text-xs text-zen-text-sec">CRUD de Epic, Feature e User Story com visão hierárquica.</p>
+                        <h2 className="font-display text-lg font-semibold text-white">{t('projectsPage.manager.title')}</h2>
+                        <p className="mt-1 text-xs text-zen-text-sec">{t('projectsPage.manager.description')}</p>
                     </div>
                     <button type="button" onClick={onClose} className="border border-zen-border p-2 text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">
                         <X className="h-4 w-4" />
@@ -693,7 +699,7 @@ const CadastroControlModal = ({
                         <input
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Buscar por nome de Epic, Feature ou User Story..."
+                            placeholder={t('projectsPage.manager.searchPlaceholder')}
                             className="min-w-[260px] flex-1 border border-zen-border bg-zen-bg px-3 py-2 text-sm text-white placeholder:text-zen-text-tri outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                         />
                         <button
@@ -702,7 +708,7 @@ const CadastroControlModal = ({
                             className="inline-flex items-center gap-2 border border-blue-500/40 bg-blue-500/10 px-3 py-2 font-mono text-[10px] font-semibold text-white transition-colors hover:bg-blue-500/20"
                         >
                             <BadgePlus className="h-3.5 w-3.5 text-blue-300" />
-                            Novo Epic
+                            {t('projectsPage.actions.newEpic')}
                         </button>
                         <button
                             type="button"
@@ -710,7 +716,7 @@ const CadastroControlModal = ({
                             className="inline-flex items-center gap-2 border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 font-mono text-[10px] font-semibold text-white transition-colors hover:bg-cyan-500/20"
                         >
                             <BadgePlus className="h-3.5 w-3.5 text-cyan-300" />
-                            Nova Feature
+                            {t('projectsPage.actions.newFeature')}
                         </button>
                         <button
                             type="button"
@@ -718,7 +724,7 @@ const CadastroControlModal = ({
                             className="inline-flex items-center gap-2 border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-[10px] font-semibold text-white transition-colors hover:bg-amber-500/20"
                         >
                             <BadgePlus className="h-3.5 w-3.5 text-amber-300" />
-                            Nova User Story
+                            {t('projectsPage.actions.newStory')}
                         </button>
                     </div>
                 </div>
@@ -726,7 +732,7 @@ const CadastroControlModal = ({
                 <div className="space-y-3 p-6">
                     {filteredEpics.length === 0 ? (
                         <div className="border border-dashed border-zen-border bg-zen-bg/40 px-5 py-8 text-center text-sm text-zen-text-sec">
-                            Nenhum cadastro encontrado para o filtro informado.
+                            {t('projectsPage.manager.noResults')}
                         </div>
                     ) : (
                         filteredEpics.map((epic) => {
@@ -746,7 +752,7 @@ const CadastroControlModal = ({
                                                 className="inline-flex items-center gap-1 border border-zen-border px-2.5 py-1.5 font-mono text-[10px] font-semibold text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                                             >
                                                 <Pencil className="h-3.5 w-3.5" />
-                                                Editar
+                                                {t('projectsPage.manager.edit')}
                                             </button>
                                             <button
                                                 type="button"
@@ -755,14 +761,14 @@ const CadastroControlModal = ({
                                                 className="inline-flex items-center gap-1 border border-rose-500/40 px-2.5 py-1.5 font-mono text-[10px] font-semibold text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
                                             >
                                                 <Trash2 className="h-3.5 w-3.5" />
-                                                {deletingKey === `epic-${epic.id}` ? 'Excluindo...' : 'Excluir'}
+                                                {deletingKey === `epic-${epic.id}` ? t('projectsPage.manager.deleting') : t('projectsPage.manager.delete')}
                                             </button>
                                         </div>
                                     </div>
 
                                     <div className="divide-y divide-zen-border/50">
                                         {featureList.length === 0 ? (
-                                            <div className="px-4 py-3 font-mono text-[10px] text-zen-text-tri">Sem features vinculadas.</div>
+                                            <div className="px-4 py-3 font-mono text-[10px] text-zen-text-tri">{t('projectsPage.manager.noLinkedFeatures')}</div>
                                         ) : (
                                             featureList.map((feature) => {
                                                 const storyList = storiesByFeature.get(feature.id) || []
@@ -780,7 +786,7 @@ const CadastroControlModal = ({
                                                                     className="inline-flex items-center gap-1 border border-zen-border px-2 py-1 font-mono text-[10px] font-semibold text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                                                                 >
                                                                     <Pencil className="h-3 w-3" />
-                                                                    Editar
+                                                                    {t('projectsPage.manager.edit')}
                                                                 </button>
                                                                 <button
                                                                     type="button"
@@ -789,13 +795,13 @@ const CadastroControlModal = ({
                                                                     className="inline-flex items-center gap-1 border border-rose-500/40 px-2 py-1 font-mono text-[10px] font-semibold text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
                                                                 >
                                                                     <Trash2 className="h-3 w-3" />
-                                                                    {deletingKey === `feature-${feature.id}` ? 'Excluindo...' : 'Excluir'}
+                                                                    {deletingKey === `feature-${feature.id}` ? t('projectsPage.manager.deleting') : t('projectsPage.manager.delete')}
                                                                 </button>
                                                             </div>
                                                         </div>
                                                         <div className="mt-2 flex flex-wrap gap-2">
                                                             {storyList.length === 0 ? (
-                                                                <span className="font-mono text-[10px] text-zen-text-tri">Sem User Stories vinculadas.</span>
+                                                                <span className="font-mono text-[10px] text-zen-text-tri">{t('projectsPage.manager.noLinkedStories')}</span>
                                                             ) : (
                                                                 storyList.map((story) => (
                                                                     <div key={story.id} className="inline-flex items-center gap-2 border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5">
@@ -806,7 +812,7 @@ const CadastroControlModal = ({
                                                                             className="inline-flex items-center gap-1 border border-zen-border/70 px-1.5 py-0.5 font-mono text-[10px] text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                                                                         >
                                                                             <Pencil className="h-3 w-3" />
-                                                                            Editar
+                                                                            {t('projectsPage.manager.edit')}
                                                                         </button>
                                                                         <button
                                                                             type="button"
@@ -815,7 +821,7 @@ const CadastroControlModal = ({
                                                                             className="inline-flex items-center gap-1 border border-rose-500/40 px-1.5 py-0.5 font-mono text-[10px] text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
                                                                         >
                                                                             <Trash2 className="h-3 w-3" />
-                                                                            {deletingKey === `user-story-${story.id}` ? 'Excluindo...' : 'Excluir'}
+                                                                            {deletingKey === `user-story-${story.id}` ? t('projectsPage.manager.deleting') : t('projectsPage.manager.delete')}
                                                                         </button>
                                                                     </div>
                                                                 ))
@@ -838,6 +844,7 @@ const CadastroControlModal = ({
 
 // ─── Projetos (componente raiz) ───────────────────────────────────────────────
 const Projetos = () => {
+    const { t } = useTranslation()
     const [userId, setUserId]           = useState(null)
     const [loading, setLoading]         = useState(true)
     const [feedback, setFeedback]       = useState(null)
@@ -856,6 +863,18 @@ const Projetos = () => {
     const [activities, setActivities]   = useState([])
     const [participantsById, setParticipantsById] = useState({})
     const [categoriesById, setCategoriesById]     = useState({})
+    const cadastroActions = useMemo(() => [
+        { id: 'task', titulo: t('projectsPage.actions.newTask'), icone: CheckSquare, borda: 'border-emerald-500/40', bg: 'bg-emerald-500/10', destaque: 'text-emerald-300' },
+        { id: 'bug', titulo: t('projectsPage.actions.newBug'), icone: Bug, borda: 'border-rose-500/40', bg: 'bg-rose-500/10', destaque: 'text-rose-300' },
+        { id: 'user-story', titulo: t('projectsPage.actions.newStory'), icone: ListTodo, borda: 'border-amber-500/40', bg: 'bg-amber-500/10', destaque: 'text-amber-300' },
+        { id: 'feature', titulo: t('projectsPage.actions.newFeature'), icone: Workflow, borda: 'border-cyan-500/40', bg: 'bg-cyan-500/10', destaque: 'text-cyan-300' },
+        { id: 'epic', titulo: t('projectsPage.actions.newEpic'), icone: Layers3, borda: 'border-blue-500/40', bg: 'bg-blue-500/10', destaque: 'text-blue-300' },
+    ], [t])
+    const reportTabs = useMemo(() => [
+        { id: 'backlog', rotulo: t('projectsPage.tabs.backlog.title'), icone: ListTodo, apoio: t('projectsPage.tabs.backlog.support') },
+        { id: 'gantt', rotulo: t('projectsPage.tabs.gantt.title'), icone: CalendarClock, apoio: t('projectsPage.tabs.gantt.support') },
+        { id: 'kanban', rotulo: t('projectsPage.tabs.kanban.title'), icone: FolderKanban, apoio: t('projectsPage.tabs.kanban.support') },
+    ], [t])
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {
@@ -896,7 +915,7 @@ const Projetos = () => {
         ])
 
         if (epicsError || featuresError || storiesError || activitiesError) {
-            setFeedback({ type: 'error', message: 'Não foi possível carregar a workspace de projetos.' })
+            setFeedback({ type: 'error', message: t('projectsPage.feedback.loadError') })
             setEpics([]); setFeatures([]); setUserStories([]); setActivities([])
             setLoading(false)
             return
@@ -917,7 +936,7 @@ const Projetos = () => {
         )
 
         setLoading(false)
-    }, [userId])
+    }, [t, userId])
 
     useEffect(() => {
         const timer = setTimeout(() => loadWorkspace(), 0)
@@ -931,11 +950,11 @@ const Projetos = () => {
     const closeCadastroManager = () => setCadastroManagerOpen(false)
     const toggleRow            = useCallback((rowId) => { setCollapsedRows((c) => ({ ...c, [rowId]: !c[rowId] })) }, [])
 
-    const cadastroAtual  = useMemo(() => ACOES_CADASTRO.find((i) => i.id === cadastroAberto) || null, [cadastroAberto])
+    const cadastroAtual  = useMemo(() => cadastroActions.find((i) => i.id === cadastroAberto) || null, [cadastroAberto, cadastroActions])
     const acoesOrdenadas = useMemo(() => {
         const ordem = ['task', 'bug', 'epic', 'feature', 'user-story']
-        return ordem.map((id) => ACOES_CADASTRO.find((a) => a.id === id)).filter(Boolean)
-    }, [])
+        return ordem.map((id) => cadastroActions.find((a) => a.id === id)).filter(Boolean)
+    }, [cadastroActions])
 
     const featureById    = useMemo(() => new Map(features.map((f) => [f.id, f])),    [features])
     const storyById      = useMemo(() => new Map(userStories.map((s) => [s.id, s])), [userStories])
@@ -962,7 +981,7 @@ const Projetos = () => {
             const category    = categoriesById[a.idcategoria]              || null
             return {
                 ...a,
-                stageLabel: getStageLabelByState(a.posicaoKanban),
+                stageLabel: translateStageLabel(getStageLabelByState(a.posicaoKanban)),
                 isDone: isDoneState(a.posicaoKanban),
                 story, feature, epic, participant, category,
                 participanteNome: participant?.nomeparticipante || '',
@@ -1033,8 +1052,8 @@ const Projetos = () => {
         }
         const config = mapByType[type]
         if (!config) return
-        const itemName = item[config.field] || 'Sem nome'
-        const confirmed = window.confirm(`Excluir ${config.label} "${itemName}"?`)
+        const itemName = item[config.field] || t('projectsPage.feedback.noName')
+        const confirmed = window.confirm(t('projectsPage.feedback.deleteConfirm', { entity: t(`projectsPage.types.${config.id === 'user-story' ? 'story' : config.id}`), item: itemName }))
         if (!confirmed) return
 
         const key = `${config.id}-${item.id}`
@@ -1043,13 +1062,13 @@ const Projetos = () => {
         setDeletingCadastroKey('')
 
         if (error) {
-            setFeedback({ type: 'error', message: `Não foi possível excluir ${config.label}.` })
+            setFeedback({ type: 'error', message: t('projectsPage.feedback.deleteError', { entity: t(`projectsPage.types.${config.id === 'user-story' ? 'story' : config.id}`) }) })
             return
         }
 
-        setFeedback({ type: 'success', message: `${config.label} excluído com sucesso.` })
+        setFeedback({ type: 'success', message: t('projectsPage.feedback.deleteSuccess', { entity: t(`projectsPage.types.${config.id === 'user-story' ? 'story' : config.id}`) }) })
         setRefreshToken((c) => c + 1)
-    }, [userId])
+    }, [t, userId])
 
     // ── Loading state ──────────────────────────────────────────────────────────
     if (loading) {
@@ -1057,7 +1076,7 @@ const Projetos = () => {
             <div className="mx-auto flex w-full max-w-7xl items-center justify-center p-4 sm:p-6">
                 <div className="flex w-full items-center justify-center gap-3 border border-zen-border bg-zen-surface px-6 py-20">
                     <RefreshCw className="h-5 w-5 animate-spin text-zen-blue" />
-                    <span className="font-mono text-xs uppercase tracking-widest text-zen-text-sec">Carregando workspace de projetos...</span>
+                    <span className="font-mono text-xs uppercase tracking-widest text-zen-text-sec">{t('projectsPage.loading')}</span>
                 </div>
             </div>
         )
@@ -1095,20 +1114,20 @@ const Projetos = () => {
                         <div className="space-y-3">
                             <span className="inline-flex items-center gap-1.5 border border-sky-500/30 bg-sky-500/10 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-sky-300">
                                 <FolderKanban className="h-3 w-3" />
-                                Módulo de Projetos
+                                {t('projectsPage.badge')}
                             </span>
                             <div>
-                                <h1 className="font-display text-2xl font-bold tracking-tight text-white">Dashboard de Projetos</h1>
+                                <h1 className="font-display text-2xl font-bold tracking-tight text-white">{t('projectsPage.title')}</h1>
                                 <p className="mt-1 max-w-lg text-xs leading-relaxed text-zen-text-sec">
-                                    Backlog hierárquico, cronograma Gantt e Kanban operacional em uma única visão.
+                                    {t('projectsPage.description')}
                                 </p>
                             </div>
                             {/* Hierarchy chain */}
                             <div className="flex flex-wrap items-center gap-1.5">
-                                {HIERARQUIA.map((item, index) => (
+                                {HIERARCHY_ITEMS.map((item, index) => (
                                     <div key={item} className="flex items-center gap-1.5">
-                                        <span className="border border-zen-border bg-zen-bg/60 px-2.5 py-0.5 font-mono text-[10px] text-zen-text-sec">{item}</span>
-                                        {index < HIERARQUIA.length - 1 && <ArrowRight className="h-3 w-3 text-zen-text-tri" />}
+                                        <span className="border border-zen-border bg-zen-bg/60 px-2.5 py-0.5 font-mono text-[10px] text-zen-text-sec">{t(`projectsPage.hierarchy.chain.${item}`)}</span>
+                                        {index < HIERARCHY_ITEMS.length - 1 && <ArrowRight className="h-3 w-3 text-zen-text-tri" />}
                                     </div>
                                 ))}
                             </div>
@@ -1122,7 +1141,7 @@ const Projetos = () => {
                                 className="inline-flex items-center gap-2 border border-zen-border bg-zen-bg/50 px-3 py-2 font-mono text-[10px] font-semibold text-zen-text-sec transition-all hover:bg-zen-border/30 hover:text-white"
                             >
                                 <Settings2 className="h-3.5 w-3.5" />
-                                Gerenciar Cadastros
+                                {t('projectsPage.actions.manageRecords')}
                             </button>
                             {acoesOrdenadas.map((acao) => {
                                 const Icone = acao.icone
@@ -1146,10 +1165,10 @@ const Projetos = () => {
 
             {/* ── 2. MÉTRICAS ──────────────────────────────────────────────────── */}
             <div className="grid gap-px sm:grid-cols-2 xl:grid-cols-4 bg-zen-border">
-                <MetricCard icone={Layers3}  label="Epics"           value={epics.length}              apoio="Estrutura principal do portfólio."  tone="from-blue-500/30 to-transparent"    />
-                <MetricCard icone={Workflow} label="Features"        value={features.length}           apoio="Frentes funcionais por epic."       tone="from-cyan-500/30 to-transparent"    />
-                <MetricCard icone={ListTodo} label="User Stories"    value={userStories.length}        apoio="Escopo refinado para execução."     tone="from-amber-500/30 to-transparent"   />
-                <MetricCard icone={Target}   label="Progresso médio" value={`${metrics.avgProgress}%`} apoio="Média de tasks e bugs ativos."      tone="from-emerald-500/30 to-transparent"  />
+                <MetricCard icone={Layers3} label={t('projectsPage.metrics.epics.label')} value={epics.length} apoio={t('projectsPage.metrics.epics.support')} tone="from-blue-500/30 to-transparent" />
+                <MetricCard icone={Workflow} label={t('projectsPage.metrics.features.label')} value={features.length} apoio={t('projectsPage.metrics.features.support')} tone="from-cyan-500/30 to-transparent" />
+                <MetricCard icone={ListTodo} label={t('projectsPage.metrics.stories.label')} value={userStories.length} apoio={t('projectsPage.metrics.stories.support')} tone="from-amber-500/30 to-transparent" />
+                <MetricCard icone={Target} label={t('projectsPage.metrics.avgProgress.label')} value={`${metrics.avgProgress}%`} apoio={t('projectsPage.metrics.avgProgress.support')} tone="from-emerald-500/30 to-transparent" />
             </div>
 
             {/* ── 3. REPORTS + SIDEBAR ─────────────────────────────────────────── */}
@@ -1159,7 +1178,7 @@ const Projetos = () => {
                 <section className="overflow-hidden border border-zen-border bg-zen-surface">
                     {/* Tab bar */}
                     <div className="flex items-center gap-0 border-b border-zen-border bg-zen-bg/30 px-4 pt-0 sm:px-5">
-                        {REPORT_TABS.map((tab) => {
+                        {reportTabs.map((tab) => {
                             const active = activeTab === tab.id
                             const Icone  = tab.icone
                             return (
@@ -1223,14 +1242,14 @@ const Projetos = () => {
             {/* ── 4. VISÃO DA HIERARQUIA ───────────────────────────────────────── */}
             <section>
                 <div className="mb-3 flex items-center justify-between">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">Visão geral da hierarquia</h2>
+                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">{t('projectsPage.hierarchy.title')}</h2>
                     <button
                         type="button"
                         onClick={() => openCadastro('epic')}
                         className="inline-flex items-center gap-1.5 border border-zen-border px-3 py-1.5 font-mono text-[10px] text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                     >
                         <BadgePlus className="h-3.5 w-3.5" />
-                        Novo Epic
+                        {t('projectsPage.actions.newEpic')}
                     </button>
                 </div>
                 <HierarchyOverviewPanel

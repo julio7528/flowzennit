@@ -1,0 +1,2382 @@
+{
+  "brand": {
+    "logoAlt": "Logo da FlowZenit",
+    "minimalLogoAlt": "Logo minimalista da FlowZenit"
+  },
+  "common": {
+    "user": "Usuário",
+    "search": "Buscar...",
+    "refresh": "Atualizar",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "edit": "Editar",
+    "all": {
+      "feminine": "Todas",
+      "masculine": "Todos"
+    }
+  },
+  "languageSwitcher": {
+    "aria": "Selecionar idioma da aplicação",
+    "options": {
+      "pt-BR": {
+        "label": "Alterar idioma para português do Brasil"
+      },
+      "en": {
+        "label": "Alterar idioma para inglês"
+      }
+    }
+  },
+  "nav": {
+    "features": "Funcionalidades",
+    "methodology": "Metodologia",
+    "science": "Ciência",
+    "blog": "Blog",
+    "about": "Sobre",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
+  },
+  "auth": {
+    "accessAccount": "Acesse sua conta",
+    "startFree": "Começar gratuitamente",
+    "logout": "Sair",
+    "loading": "Carregando...",
+    "validatingAccess": "Validando acesso...",
+    "processingAuthentication": "Processando autenticação..."
+  },
+  "login": {
+    "hero": {
+      "subtitle": "Entre no vácuo. Foque como nunca antes.",
+      "orEmail": "ou continue com e-mail"
+    },
+    "fields": {
+      "email": "E-mail",
+      "password": "Senha"
+    },
+    "placeholders": {
+      "email": "seu@email.com",
+      "password": "........"
+    },
+    "actions": {
+      "google": "Acessar com Google",
+      "login": "Acessar",
+      "loggingIn": "Entrando...",
+      "forgotPassword": "Esqueci minha senha",
+      "createAccount": "Criar nova conta"
+    },
+    "signUp": {
+      "title": "Junte-se ao Flow",
+      "description": "Crie sua conta e entre no cockpit.",
+      "fields": {
+        "name": "Nome completo",
+        "email": "E-mail",
+        "password": "Senha",
+        "confirmPassword": "Confirmar senha"
+      },
+      "placeholders": {
+        "name": "Seu nome"
+      },
+      "termsPrefix": "Li e aceito os",
+      "termsLink": "Termos de uso",
+      "termsAnd": "e",
+      "privacyLink": "Privacidade",
+      "footer": "Já tem uma conta?",
+      "actions": {
+        "submit": "Criar conta",
+        "creating": "Criando...",
+        "backToLogin": "Entrar"
+      }
+    },
+    "reset": {
+      "title": "Recuperar acesso",
+      "description": "Digite o e-mail associado à sua conta para receber o link de redefinição.",
+      "placeholder": "nome@exemplo.com",
+      "actions": {
+        "submit": "Enviar link de recuperação",
+        "sending": "Enviando...",
+        "back": "Voltar para o login"
+      }
+    },
+    "errors": {
+      "missingAuthConfig": "Configuração de autenticação ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.",
+      "invalidEmail": "Por favor, insira um e-mail válido.",
+      "passwordMinLength": "A senha deve ter no mínimo 8 caracteres.",
+      "passwordMismatch": "As senhas não conferem.",
+      "controlRegistry": "Cadastro criado, mas não foi possível registrar o usuário no controle."
+    },
+    "feedback": {
+      "accessDenied": "Acesso negado",
+      "successTitle": "Sucesso",
+      "successDefault": "Operação realizada com sucesso.",
+      "errorTitle": "Erro",
+      "errorDefault": "Ocorreu um erro. Tente novamente.",
+      "backToLogin": "Voltar ao login",
+      "tryAgain": "Tentar novamente",
+      "verifyEmail": "Verifique seu e-mail para confirmar o cadastro.",
+      "resetLinkSent": "Enviamos um link de recuperação para o seu e-mail. Verifique sua caixa de entrada."
+    }
+  },
+  "banner": {
+    "message": "Cursos e treinamentos personalizados online. Fale com nossa equipe de suporte",
+    "link": "aqui"
+  },
+  "hero": {
+    "eyebrow": "O motor definitivo de produtividade",
+    "titleLine1": "Domine o caos.",
+    "titleLine2": "Escale a",
+    "titleAccent": "execução.",
+    "description": "Um sistema que orquestra suas demandas com <strong>GTD</strong>, prioriza com <strong>GUT</strong> e resolve problemas usando <strong>MASP</strong> dentro de um ciclo <strong>PDCA</strong> contínuo.",
+    "primaryAction": "Iniciar sistema integrado",
+    "diagram": {
+      "demands": "DEMANDAS",
+      "organization": "ORGANIZAÇÃO",
+      "prioritizes": "PRIORIZA",
+      "pdcaCycle": "CICLO PDCA"
+    }
+  },
+  "featureStrip": {
+    "learnMore": "Clique para saber mais",
+    "items": {
+      "opensource": {
+        "shortTitle": "OPEN SOURCE",
+        "title": "Código 100% aberto",
+        "description": "Transparência total é nosso pilar. Você tem controle sobre seus dados e a comunidade pode auditar a segurança a qualquer momento. Contribua, faça forks ou hospede você mesmo."
+      },
+      "methodology": {
+        "shortTitle": "METODOLOGIAS",
+        "title": "Agile e Scrum pragmático",
+        "description": "Utilizamos os melhores princípios do Scrum e Agile sem a burocracia excessiva. Removemos cerimônias desnecessárias para focar no que gera valor e entrega contínua."
+      },
+      "ai": {
+        "shortTitle": "IA INTEGRADA",
+        "title": "Inteligência auxiliar",
+        "description": "Nossos algoritmos analisam seu padrão de trabalho para sugerir prioridades e estimar prazos. A IA não substitui sua decisão; ela organiza o caos inicial e reduz fadiga de decisão."
+      },
+      "interface": {
+        "shortTitle": "INTERFACE INTUITIVA",
+        "title": "Design cognitivo",
+        "description": "Interface desenhada para reduzir a carga cognitiva. Cores, contrastes e disposição de elementos mantêm você em estado de fluxo por mais tempo, sem distrações visuais."
+      }
+    }
+  },
+  "mainFeatures": {
+    "eyebrow": "Stack tecnológico",
+    "titlePrefix": "Funcionalidades de",
+    "titleAccent": "alta performance",
+    "description": "Cada pixel foi desenhado para eliminar atrito cognitivo. Ferramentas poderosas escondidas sob uma interface minimalista.",
+    "items": {
+      "prioritization": {
+        "title": "Priorização algorítmica",
+        "description": "Não apenas liste tarefas. Nossa Matriz GUT digital calcula automaticamente gravidade e urgência para sugerir o que deve ser feito agora.",
+        "tag": "Matriz GUT"
+      },
+      "pdca": {
+        "title": "Ciclo PDCA contínuo",
+        "description": "Transforme melhoria contínua em hábito. Planeje, execute, verifique e aja dentro de cada sprint com frameworks nativos.",
+        "tag": "Melhoria contínua"
+      },
+      "copilot": {
+        "title": "Copiloto neural",
+        "description": "IA treinada para identificar gargalos. Ela aprende seu ritmo e ajusta estimativas de prazo automaticamente para evitar burnout.",
+        "tag": "Powered by AI"
+      },
+      "analytics": {
+        "title": "Deep analytics",
+        "description": "Dashboards que revelam a verdade. Visualize métricas de fluxo, lead time e cycle time sem depender de planilhas complexas.",
+        "tag": "Tempo real"
+      },
+      "gitops": {
+        "title": "Workflow GitOps",
+        "description": "O código é a fonte da verdade. Vincule commits a tarefas e mova cards automaticamente com base em pull requests e merges.",
+        "tag": "GitHub · GitLab"
+      },
+      "security": {
+        "title": "Segurança militar",
+        "description": "Seus dados são criptografados de ponta a ponta. Controle de acesso granular e auditoria completa para compliance.",
+        "tag": "Criptografia ponta a ponta"
+      }
+    }
+  },
+  "newFeatures": {
+    "title": "Novas funcionalidades",
+    "cards": {
+      "calendar": {
+        "title": "Integração Google Calendar",
+        "description": "Sincronize suas tarefas diretamente com seus slots de tempo. Nunca mais perca uma reunião ou prazo de entrega.",
+        "imageAlt": "Interface do Google Calendar integrada à FlowZenit"
+      },
+      "whatsapp": {
+        "title": "Integração WhatsApp",
+        "description": "Capture tarefas via áudio, receba resumos diários e consulte sua agenda diretamente no seu aplicativo de mensagens favorito.",
+        "imageAlt": "Interface do WhatsApp integrada à FlowZenit"
+      }
+    }
+  },
+  "contacts": {
+    "title": "Fale conosco",
+    "description": "Dúvidas sobre o plano Enterprise? Envie uma mensagem.",
+    "fields": {
+      "name": {
+        "label": "Nome completo",
+        "placeholder": "Seu nome"
+      },
+      "email": {
+        "label": "E-mail corporativo",
+        "placeholder": "voce@empresa.com"
+      },
+      "message": {
+        "label": "Mensagem",
+        "placeholder": "Como podemos ajudar?"
+      }
+    },
+    "validation": {
+      "required": "Este campo é obrigatório.",
+      "invalidEmail": "E-mail corporativo inválido."
+    },
+    "feedback": {
+      "success": "Mensagem enviada com sucesso. Agradecemos o contato.",
+      "errorGeneric": "Não foi possível enviar sua mensagem. Tente novamente mais tarde.",
+      "errorWithReason": "Não foi possível enviar sua mensagem: {{reason}}"
+    },
+    "actions": {
+      "processing": "Processando...",
+      "sent": "Enviado",
+      "submit": "Enviar mensagem"
+    },
+    "modal": {
+      "title": "Confirmação de envio",
+      "description": "Tem certeza de que deseja enviar os dados? Esta ação não poderá ser desfeita."
+    }
+  },
+  "cta": {
+    "title": "estamos apenas começando.",
+    "description": "Junte-se à nossa comunidade e vamos formar um ecossistema de inovação e organização para nossos projetos e dia a dia.",
+    "primary": "Criar conta gratuita",
+    "secondary": "Ler documentação",
+    "community": "Entrar na comunidade"
+  },
+  "footer": {
+    "description": "Plataforma open source para gestão de produtividade pessoal e pequenos negócios em busca de alta performance.",
+    "product": {
+      "title": "Produto",
+      "features": "Funcionalidades",
+      "integrations": "Integrações",
+      "changelog": "Changelog"
+    },
+    "learn": {
+      "title": "Aprender",
+      "documentation": "Documentação",
+      "training": "Treinamentos",
+      "apiGuide": "Guia API",
+      "community": "Comunidade",
+      "blog": "Blog"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacidade e cookies",
+      "requests": "Solicitações LGPD",
+      "manageCookies": "Gerenciar cookies"
+    },
+    "copyright": "© 2026 FlowZenit. Open source sob licença MIT."
+  },
+  "cookieConsent": {
+    "banner": {
+      "eyebrow": "Privacidade e cookies",
+      "title": "Você decide se a medição da plataforma pode ser ativada.",
+      "description": "Utilizamos cookies e tecnologias semelhantes para garantir o funcionamento do site, registrar suas preferências de privacidade e, com sua autorização, medir o uso da plataforma para melhorias contínuas.",
+      "link": "Ler política de privacidade e cookies"
+    },
+    "modal": {
+      "eyebrow": "Preferências de cookies",
+      "title": "Configure o que pode ser ativado na sua navegação.",
+      "description": "Os cookies necessários ficam sempre ativos. Analytics permanece desligado até que você autorize.",
+      "closeAria": "Fechar preferências de cookies",
+      "privacyByDefault": "Privacidade por padrão",
+      "localStorageNotice": "Esta preferência é salva localmente no seu navegador com versionamento para futuras revisões da política.",
+      "statusLine": "Necessários ativos • Analytics {{analytics}}",
+      "authorized": "autorizado",
+      "blocked": "bloqueado"
+    },
+    "actions": {
+      "accept": "Aceitar opcionais",
+      "reject": "Rejeitar opcionais",
+      "configure": "Configurar preferências",
+      "save": "Salvar preferências"
+    },
+    "category": {
+      "alwaysOn": "Sempre ativo",
+      "active": "Ativo",
+      "blocked": "Bloqueado"
+    }
+  },
+  "privacy": {
+    "lastUpdated": "05 de abril de 2026",
+    "stickyHeader": "PRIVACIDADE // LGPD // CONTROLE ATIVO",
+    "stickyItems": ["Dados", "Cookies", "Solicitações LGPD"],
+    "statusBadges": [
+      "Privacidade por padrão",
+      "Cookies opcionais sob consentimento",
+      "Solicitações LGPD no próprio site"
+    ],
+    "hero": {
+      "eyebrow": "Política de privacidade e cookies",
+      "titleLine1": "Privacidade com",
+      "titleLine2": "controle real",
+      "titleAccent": "para o usuário.",
+      "description": "Esta página resume como a FlowZenit trata dados de conta, registros inseridos pelo próprio usuário, cookies e preferências de privacidade, além de abrir um canal direto para solicitações ligadas à LGPD.",
+      "formAction": "Abrir formulário LGPD"
+    },
+    "heroPoints": [
+      {
+        "label": "Dados tratados",
+        "value": "Conta, registros do usuário e preferência de consentimento"
+      },
+      {
+        "label": "Terceiros relevantes",
+        "value": "Supabase, Google Analytics e YouTube embed"
+      },
+      {
+        "label": "Controle do titular",
+        "value": "Banner, central de preferências e formulário LGPD"
+      }
+    ],
+    "runtime": {
+      "lastReview": "// Última revisão:",
+      "controllerTitle": "Controlador / projeto",
+      "controllerText": "A FlowZenit trata dados pessoais na medida necessária para operar a autenticação, manter a área logada e armazenar os registros criados pelo próprio usuário dentro da plataforma.",
+      "channelTitle": "Canal de privacidade",
+      "channelText": "O canal principal para solicitações LGPD nesta fase é o formulário disponível nesta página. Ele foi preparado para integração real com o stack atual do projeto.",
+      "updatesTitle": "Atualizações desta política",
+      "updatesText": "Esta política pode evoluir conforme o produto amadurece. Mudanças relevantes podem exigir uma nova confirmação de consentimento para cookies opcionais."
+    },
+    "sections": {
+      "data": {
+        "eyebrow": "Quais dados tratamos",
+        "title": "Inventário mínimo de dados desta versão",
+        "description": "A política reflete apenas o que já foi confirmado no projeto, sem ampliar escopo com categorias inexistentes."
+      },
+      "purposes": {
+        "eyebrow": "Finalidades do tratamento",
+        "title": "Por que esses dados são tratados",
+        "description": "As finalidades abaixo seguem o uso real da plataforma e deixam claro quando depende de consentimento."
+      },
+      "thirdParties": {
+        "eyebrow": "Compartilhamento com terceiros",
+        "title": "Terceiros relevantes nesta fase",
+        "description": "O compartilhamento e suporte externo considerados nesta política se limitam aos serviços realmente identificados no projeto."
+      },
+      "cookies": {
+        "eyebrow": "Política de cookies",
+        "title": "Categorias usadas no site",
+        "description": "Nesta versão, o site trabalha apenas com cookies estritamente necessários e com medição opcional para analytics. Nenhuma categoria adicional foi criada sem uso real.",
+        "alwaysOn": "Sempre ativo",
+        "defaultOff": "Desligado por padrão até consentimento",
+        "manageNotice": "Você pode revisar sua preferência a qualquer momento. O Google Analytics só é carregado após consentimento explícito para a categoria de medição e analytics."
+      },
+      "rights": {
+        "eyebrow": "Direitos do titular",
+        "title": "Como o usuário pode agir sobre seus dados",
+        "description": "Os direitos abaixo podem ser exercidos pelo formulário desta página, sem depender de uma área jurídica externa para o primeiro contato."
+      },
+      "retention": {
+        "eyebrow": "Retenção e eliminação",
+        "title": "Como tratamos permanência e descarte",
+        "description": "A governança inicial foi escrita para o cenário real do projeto, sem prometer automações que ainda não existem."
+      }
+    },
+    "dataGroups": [
+      {
+        "title": "Dados de conta",
+        "accent": "#00F0FF",
+        "description": "Dados básicos usados para criar, autenticar e manter a conta do usuário na FlowZenit.",
+        "items": ["Nome", "E-mail", "Identificadores necessários para autenticação e perfil"]
+      },
+      {
+        "title": "Dados cadastrados pelo próprio usuário",
+        "accent": "#BD00FF",
+        "description": "Registros operacionais, cadastros internos e demais informações inseridas pelo usuário para organizar o trabalho dentro da plataforma.",
+        "items": ["Cadastros internos", "Registros operacionais", "Conteúdo criado para gestão e uso do sistema"]
+      },
+      {
+        "title": "Dados técnicos de privacidade",
+        "accent": "#00FF41",
+        "description": "Informações necessárias para registrar preferências de privacidade e manter o funcionamento técnico do site.",
+        "items": [
+          "Preferência de consentimento salva localmente no navegador",
+          "Cookies e tecnologias semelhantes necessários para autenticação e funcionamento",
+          "Medição de uso somente quando houver autorização para analytics"
+        ]
+      }
+    ],
+    "purposes": [
+      "Criar e manter a conta do usuário.",
+      "Autenticar acessos e proteger a área logada.",
+      "Armazenar e organizar os registros cadastrados pelo próprio usuário.",
+      "Garantir funcionamento, estabilidade e segurança básica do serviço.",
+      "Registrar a escolha de privacidade do usuário.",
+      "Medir o uso da plataforma para melhoria contínua apenas quando houver consentimento para analytics.",
+      "Exibir conteúdos incorporados de terceiros quando o site utilizar mídias embarcadas, como YouTube."
+    ],
+    "thirdParties": [
+      {
+        "name": "Supabase",
+        "accent": "#00F0FF",
+        "summary": "Infraestrutura de backend, autenticação e armazenamento utilizada para operar a plataforma e os dados vinculados à conta."
+      },
+      {
+        "name": "Google Analytics",
+        "accent": "#BD00FF",
+        "summary": "Ferramenta de medição e análise de uso ativada somente após consentimento explícito para a categoria de medição e analytics."
+      },
+      {
+        "name": "YouTube embed",
+        "accent": "#00FF41",
+        "summary": "Pode ser utilizado quando houver vídeos incorporados no site. Nesses casos, o carregamento do conteúdo depende da infraestrutura do YouTube."
+      }
+    ],
+    "cookieCategories": [
+      {
+        "key": "necessary",
+        "title": "Necessários",
+        "accent": "#00F0FF",
+        "alwaysOn": true,
+        "description": "Mantêm autenticação, navegação, persistência técnica básica e o registro da sua preferência de privacidade."
+      },
+      {
+        "key": "analytics",
+        "title": "Medição e analytics",
+        "accent": "#BD00FF",
+        "alwaysOn": false,
+        "description": "Controlam o carregamento do Google Analytics para medir uso e apoiar melhorias de produto."
+      }
+    ],
+    "rights": [
+      "Solicitar confirmação sobre o tratamento de seus dados.",
+      "Solicitar acesso aos dados pessoais tratados na plataforma.",
+      "Solicitar correção de informações desatualizadas ou incompletas.",
+      "Solicitar exclusão da conta e dos dados aplicáveis.",
+      "Revogar o consentimento de cookies opcionais.",
+      "Pedir informações adicionais sobre as finalidades e terceiros envolvidos."
+    ],
+    "retentionRules": [
+      {
+        "title": "Dados de conta",
+        "text": "São mantidos enquanto a conta estiver ativa ou enquanto forem necessários para autenticação, suporte ao serviço e segurança operacional."
+      },
+      {
+        "title": "Dados cadastrados pelo usuário",
+        "text": "Permanecem disponíveis enquanto fizerem parte do uso normal da plataforma. Em solicitações válidas de exclusão, o tratamento passa por análise e execução conforme o caso."
+      },
+      {
+        "title": "Consentimento e cookies",
+        "text": "A preferência de consentimento fica salva no navegador até que o usuário a altere, limpe os dados locais ou uma nova versão da política exija nova escolha."
+      }
+    ],
+    "governance": {
+      "eyebrow": "Governança mínima",
+      "title": "Base inicial para evolução futura da privacidade.",
+      "description": "Esta entrega já organiza o inventário mínimo, o ponto de coleta de consentimento e a trilha inicial para evoluções futuras sem retrabalho estrutural grande."
+    },
+    "governanceItems": [
+      "Inventário inicial limitado a dados de conta, registros criados pelo usuário e dados técnicos de consentimento.",
+      "Inventário inicial de terceiros limitado a Supabase, Google Analytics e YouTube embed.",
+      "Consentimento persistido localmente com versionamento para futura revisão da política.",
+      "Estrutura preparada para evolução futura com trilha de auditoria, retenção refinada e backend de consentimento."
+    ],
+    "footerCard": {
+      "eyebrow": "Última atualização",
+      "description": "Esta política poderá ser revista para refletir novas integrações, novas bases de tratamento ou melhorias de governança.",
+      "requestsAction": "Ir para solicitações LGPD"
+    },
+    "requestTypes": [
+      { "value": "confirm_processing", "label": "Confirmar tratamento de dados" },
+      { "value": "access_data", "label": "Solicitar acesso aos dados" },
+      { "value": "correct_data", "label": "Solicitar correção de dados" },
+      { "value": "delete_data", "label": "Solicitar exclusão de dados" },
+      { "value": "privacy_information", "label": "Solicitar informações sobre o tratamento" },
+      { "value": "revoke_cookie_consent", "label": "Revogar consentimento de cookies opcionais" }
+    ],
+    "form": {
+      "eyebrow": "Solicitações LGPD",
+      "title": "Canal atual de privacidade da plataforma.",
+      "description": "Enquanto o projeto não possui um e-mail dedicado para privacidade, este formulário é o canal oficial para pedidos ligados à LGPD.",
+      "scopeTitle": "Escopo do atendimento",
+      "scopeItems": [
+        "Dados de conta e autenticação.",
+        "Registros inseridos pelo próprio usuário na plataforma.",
+        "Informações sobre tratamento, correção, acesso e exclusão."
+      ],
+      "immediateControlTitle": "Controle imediato",
+      "immediateControlDescription": "Para revogar cookies opcionais, você também pode ajustar sua preferência diretamente agora.",
+      "fields": {
+        "name": "Nome",
+        "email": "E-mail",
+        "requestType": "Tipo de solicitação",
+        "details": "Detalhes"
+      },
+      "placeholders": {
+        "name": "Seu nome",
+        "email": "voce@empresa.com",
+        "details": "Explique o contexto da solicitação para agilizar a análise.",
+        "cookieDetails": "Descreva se deseja revogar apenas analytics ou receber retorno adicional sobre a preferência."
+      },
+      "genericRequest": "Solicitação",
+      "confirmDeletionLabel": "Confirmo que desejo registrar um pedido de exclusão de dados e entendo que a solicitação será analisada antes da execução.",
+      "validation": {
+        "nameRequired": "Informe seu nome.",
+        "emailInvalid": "Informe um e-mail válido.",
+        "requestTypeInvalid": "Selecione um tipo de solicitação válido.",
+        "messageMin": "Descreva sua solicitação com pelo menos 12 caracteres.",
+        "messageMax": "Limite de 4000 caracteres excedido.",
+        "deletionConfirmation": "Confirme que deseja solicitar a exclusão antes de enviar."
+      },
+      "errors": {
+        "supabaseUnavailable": "Configuração do Supabase indisponível.",
+        "fallbackTooLong": "Detalhe da solicitação excede o limite suportado no canal de fallback atual."
+      },
+      "feedback": {
+        "success": "Solicitação enviada com sucesso. Nossa equipe analisará o pedido e retornará pelo e-mail informado.",
+        "error": "Não foi possível registrar sua solicitação agora.",
+        "errorWithReason": "Não foi possível registrar sua solicitação agora: {{reason}}"
+      },
+      "fallbackHeader": "[LGPD] Solicitação recebida pela página de privacidade",
+      "fallbackSelectedType": "Tipo selecionado: {{requestLabel}}",
+      "fallbackInternalCode": "Código interno: {{requestType}}",
+      "fallbackDeletionConfirmation": "Confirmação de exclusão: sim",
+      "actions": {
+        "submit": "Enviar solicitação",
+        "sending": "Enviando solicitação..."
+      }
+    }
+  },
+  "methodology": {
+    "hero": {
+      "badge": "METODOLOGIA FLOWZENIT",
+      "titleLine1": "Metodo para sair",
+      "titleLine2": "do ruido operacional.",
+      "description": "A plataforma combina GTD, GUT, MASP e PDCA para transformar entradas soltas em execucao orientada por prioridade, analise e melhoria continua."
+    },
+    "labels": {
+      "what": "O que:",
+      "how": "Como:"
+    },
+    "explainers": {
+      "gtd": {
+        "title": "GTD",
+        "what": "Captura e organiza tudo o que entra no sistema.",
+        "how": "Transforma pendencias soltas em proximas acoes e revisoes confiaveis."
+      },
+      "gut": {
+        "title": "GUT",
+        "what": "Prioriza por gravidade, urgencia e tendencia.",
+        "how": "Distingue o que exige resposta imediata do que pode esperar."
+      },
+      "masp": {
+        "title": "MASP",
+        "what": "Estrutura a resolucao de problemas em etapas.",
+        "how": "Vai da identificacao da causa ate a padronizacao do aprendizado."
+      },
+      "pdca": {
+        "title": "PDCA",
+        "what": "Fecha o ciclo de melhoria continua.",
+        "how": "Planeja, executa, verifica e ajusta a operacao em cada iteracao."
+      }
+    },
+    "gtdSection": {
+      "eyebrow": "GTD // FLUXO DE CAPTURA",
+      "title": "Clareza antes da execucao.",
+      "description": "O GTD entra como camada de confianca operacional: tudo pode ser capturado, esclarecido e reposicionado sem depender da memoria do usuario."
+    },
+    "gtdSteps": [
+      {
+        "title": "Capturar",
+        "what": "Registrar demandas, ideias e interrupcoes assim que surgem.",
+        "how": "O backlog inicial absorve entradas sem forcar decisao imediata."
+      },
+      {
+        "title": "Esclarecer",
+        "what": "Entender se a entrada exige acao, referencia ou descarte.",
+        "how": "Cada item ganha contexto, tipo de acao e proximo passo."
+      },
+      {
+        "title": "Organizar",
+        "what": "Colocar a informacao na estrutura correta do sistema.",
+        "how": "Categorias, projetos, boxes e estados evitam ambiguidade operacional."
+      },
+      {
+        "title": "Refletir",
+        "what": "Revisar o fluxo para manter o sistema confiavel.",
+        "how": "As revisoes verificam prioridades, pendencias e desvios."
+      },
+      {
+        "title": "Engajar",
+        "what": "Executar com foco no que faz mais sentido agora.",
+        "how": "A priorizacao orienta a escolha da proxima acao."
+      }
+    ],
+    "gutSection": {
+      "eyebrow": "GUT // PRIORIZACAO",
+      "title": "Criterio para decidir sob pressao.",
+      "description": "Gravidade, urgencia e tendencia entram como linguagem comum para ordenar o backlog e evitar decisao baseada apenas em impulso."
+    },
+    "gutFactors": [
+      {
+        "title": "Gravidade",
+        "score": "WT: 5",
+        "width": "w-[80%]",
+        "what": "Mede o impacto real se nada for feito.",
+        "how": "Considera dano operacional, risco e efeito no resultado."
+      },
+      {
+        "title": "Urgencia",
+        "score": "WT: 4",
+        "width": "w-[60%]",
+        "what": "Mede a pressao de prazo para resposta.",
+        "how": "Traz o tempo para dentro da decisao de prioridade."
+      },
+      {
+        "title": "Tendencia",
+        "score": "WT: 3",
+        "width": "w-[40%]",
+        "what": "Mede a chance de o problema piorar.",
+        "how": "Ajuda a antecipar gargalos antes que virem crise."
+      }
+    ],
+    "maspSection": {
+      "eyebrow": "MASP // RESOLUCAO ESTRUTURADA",
+      "title": "Problema tratado com metodo.",
+      "description": "O MASP organiza analise, acao e verificacao para que a operacao nao apenas reaja, mas aprenda com cada desvio."
+    },
+    "maspSteps": [
+      {
+        "title": "Identificacao",
+        "what": "Definir claramente o problema observado.",
+        "how": "Delimita escopo, impacto e contexto antes de agir."
+      },
+      {
+        "title": "Observacao",
+        "what": "Levantar dados do problema no ambiente real.",
+        "how": "Coleta sinais, recorrencias e condicoes associadas."
+      },
+      {
+        "title": "Analise",
+        "what": "Investigar causas provaveis e relacoes de origem.",
+        "how": "Separa sintoma de causa raiz para evitar retrabalho."
+      },
+      {
+        "title": "Plano de acao",
+        "what": "Definir resposta estruturada para correcao.",
+        "how": "Organiza responsaveis, prazos e estrategia de execucao."
+      },
+      {
+        "title": "Execucao",
+        "what": "Aplicar as acoes definidas no plano.",
+        "how": "Move o problema do diagnostico para a intervencao real."
+      },
+      {
+        "title": "Verificacao",
+        "what": "Checar se o efeito esperado aconteceu.",
+        "how": "Compara antes e depois para validar resultado."
+      },
+      {
+        "title": "Padronizacao",
+        "what": "Consolidar o que funcionou como pratica.",
+        "how": "Evita que a mesma causa reapareca no fluxo."
+      },
+      {
+        "title": "Conclusao",
+        "what": "Registrar o aprendizado e encerrar o ciclo.",
+        "how": "Fecha a trilha com documentacao e referencia futura."
+      }
+    ],
+    "pdcaSection": {
+      "eyebrow": "PDCA // MELHORIA CONTINUA",
+      "title": "O ciclo que mantem a operacao evoluindo."
+    },
+    "pdcaPhases": [
+      {
+        "title": "PLAN",
+        "what": "Planejar o caminho e os criterios de sucesso.",
+        "how": "Define objetivo, escopo e como a entrega sera validada."
+      },
+      {
+        "title": "DO",
+        "what": "Executar o plano no fluxo operacional.",
+        "how": "Transforma estrategia em atividade acompanhada."
+      },
+      {
+        "title": "CHECK",
+        "what": "Verificar aderencia, resultado e desvios.",
+        "how": "Confere se a execucao bate com o planejado."
+      },
+      {
+        "title": "ACT",
+        "what": "Agir sobre aprendizados e ajustes necessarios.",
+        "how": "Padroniza melhorias e reposiciona o proximo ciclo."
+      }
+    ],
+    "footer": {
+      "title": "Metodo visivel dentro da plataforma.",
+      "description": "A proposta nao e ensinar frameworks isolados, e sim mostrar como eles estruturam o fluxo real de trabalho dentro do produto."
+    }
+  },
+  "about": {
+    "statusBar": {
+      "title": "JULIO GOMES // STATUS: DISPONIVEL PARA PROJETOS",
+      "items": ["9+ ANOS_EXP", "LATAM REMOTE", "RPA + AI + FULLSTACK"]
+    },
+    "hero": {
+      "firstName": "Julio",
+      "lastName": "Gomes",
+      "linkedinAction": "Contato",
+      "githubAction": "GitHub",
+      "linkedinAlt": "LinkedIn",
+      "githubAlt": "GitHub"
+    },
+    "terminal": {
+      "fileName": "julio_gomes_profile.js",
+      "roleLabel": "role",
+      "roleValue": "RPA Developer & Automation Specialist",
+      "experienceLabel": "experience",
+      "experienceValue": "9+ anos",
+      "locationLabel": "location",
+      "locationValue": "Mato Grosso, Brasil",
+      "stackLabel": "stack",
+      "stack": ["Python", "Automation Anywhere", "UiPath", "LLM / AI Automation", "React / Next.js"],
+      "currentRoleLabel": "currentRole",
+      "currentRoleValue": "Semantix AI - LATAM",
+      "missionLabel": "mission",
+      "missionValue": "Automatizar para liberar o potencial humano.",
+      "bootMessage": "// Executando inicializacao..."
+    },
+    "timeline": {
+      "title": "Trajetoria:",
+      "items": [
+        {
+          "period": "[INIT] :: 2014 - 2021",
+          "company": "34 INVESTIMENTOS",
+          "role": "Controller & RPA Dev - Power Automate, WinAutomation"
+        },
+        {
+          "period": "[UPDATE] :: 2021 - 2023",
+          "company": "VIAFLOW",
+          "role": "AMS Analyst & RPA Dev - AA, Power Automate, IBM RPA"
+        },
+        {
+          "period": "[UPDATE] :: 2023 - 2025",
+          "company": "MAASLO",
+          "role": "RPA Developer - AA, Python, QA & Arquitetura"
+        },
+        {
+          "period": "[CURRENT] :: 2025 - Hoje",
+          "company": "SEMANTIX AI",
+          "role": ">> RPA Support LATAM - Python, UiPath, AA"
+        }
+      ]
+    },
+    "featureCard": {
+      "badge": "ESPECIALIDADE: RPA & AI",
+      "titleLine1": "9 anos automatizando o que importa.",
+      "titleLine2": "Para que humanos foquem no que realmente importa.",
+      "description": "Especialista em RPA e automacao de processos empresariais, com historico solido em areas fiscais, financeiras e operacionais. Hoje tambem desenvolve solucoes com LLMs e IA para ampliar o alcance das automacoes.",
+      "projectsLabel": "PROJETOS EM ANDAMENTO",
+      "projectsValue": "FLOWZENIT PLATFORM",
+      "yearsLabel": "ANOS EXP"
+    },
+    "focusAreas": [
+      {
+        "title": "RPA",
+        "description": "UiPath, Automation Anywhere, IBM RPA, Power Automate, BotCity."
+      },
+      {
+        "title": "AI & LLM",
+        "description": "Automacoes inteligentes com modelos de linguagem e agentes de IA."
+      },
+      {
+        "title": "FULL STACK",
+        "description": "React, Next.js, Python e Docker para produtos web modernos."
+      },
+      {
+        "title": "FINANCEIRO",
+        "description": "Automacao de tesouraria, faturamento, conciliacoes e relatorios gerenciais."
+      }
+    ],
+    "workflowSteps": [
+      {
+        "title": "MAPEAMENTO",
+        "description": "Analise do processo e levantamento de requisitos"
+      },
+      {
+        "title": "DESENVOLVIMENTO",
+        "description": "Automacao com Python, RPA e integracoes de IA"
+      },
+      {
+        "title": "ENTREGA & QA",
+        "description": "Documentacao, code review e melhoria continua"
+      }
+    ],
+    "certifications": {
+      "title": "Certificacoes & Credenciais",
+      "items": [
+        { "label": "AA Advanced RPA Professional", "sub": "A360", "color": "#00F0FF" },
+        { "label": "AA Master RPA Professional", "sub": "Automation Anywhere", "color": "#00F0FF" },
+        { "label": "UiPath Advanced Developer", "sub": "UiPath", "color": "#BD00FF" },
+        { "label": "IBM RPA", "sub": "IBM", "color": "#BD00FF" },
+        { "label": "Blue Prism Developer", "sub": "Blue Prism", "color": "#00FF41" },
+        { "label": "BotCity Python RPA", "sub": "BotCity", "color": "#00FF41" }
+      ]
+    },
+    "education": {
+      "title": "Formacao Academica",
+      "items": [
+        { "status": "[x]", "color": "#00FF41", "label": "Bacharelado em Engenharia de Software - Estacio" },
+        { "status": "[x]", "color": "#00FF41", "label": "Bacharelado em Ciencias Contabeis - Unopar" },
+        { "status": "[ ]", "color": "#BD00FF", "label": "Pos-Graduacao em Gestao & Inovacao em Negocios e Tecnologia - UNEMAT (12/2026)" },
+        { "status": "[ ]", "color": "#BD00FF", "label": "Pos-Graduacao em Agrocomputacao - UFMT (06/2026)" }
+      ]
+    },
+    "highlightProjects": {
+      "title": "Projetos em Destaque",
+      "items": [
+        "FlowZenit - Plataforma de organizacao e produtividade",
+        "ServCasa - Sistema web com automacao e IA",
+        "ModeloMarketingTop - Automacao de marketing",
+        "UFMT - Analise de plantas via sensoriamento remoto com IA"
+      ]
+    }
+  },
+  "science": {
+    "hero": {
+      "eyebrow": "INIT_SEQUENCE",
+      "titleLine1": "A FORMULA",
+      "titleLine2": "DA MENTE.",
+      "paragraphs": [
+        "Nos nao fomos projetados para a era da informacao. Nosso hardware biologico evoluiu para lidar com ameacas imediatas e recompensas tangiveis.",
+        "Hoje operamos em um ambiente de inputs infinitos. O resultado e ansiedade cognitiva, loops mentais e um sistema operacional sob excesso de carga."
+      ],
+      "quote": "A mente e para ter ideias, nao para guarda-las.",
+      "quoteSource": "David Allen // GTD Origin"
+    },
+    "gut": {
+      "badge": "MODULE_02",
+      "titlePrefix": "MATRIZ",
+      "titleAccent": "G.U.T.",
+      "description": "Quando tudo parece urgente, a resposta nao e intuicao. A matriz GUT decompoe o caos em vetores mensuraveis para orientar a prioridade.",
+      "cards": [
+        {
+          "title": "Gravidade",
+          "weight": "WT: 5",
+          "description": "Impacto se nada for feito. Danos, prejuizos e colapso do sistema.",
+          "barWidth": "w-[80%]"
+        },
+        {
+          "title": "Urgencia",
+          "weight": "WT: 4",
+          "description": "Tempo disponivel para resolucao. O prazo esta expirando agora?",
+          "barWidth": "w-[60%]"
+        },
+        {
+          "title": "Tendencia",
+          "weight": "WT: 3",
+          "description": "Potencial de crescimento do problema. Vai piorar progressivamente?",
+          "barWidth": "w-[40%]"
+        }
+      ]
+    },
+    "mentalFlow": {
+      "badge": "MODULE_03",
+      "titlePrefix": "FLUXO",
+      "titleAccent": "MENTAL",
+      "paragraphs": [
+        "Getting Things Done (GTD) nao e sobre fazer mais. E sobre construir um estado de resposta proporcional a cada novo input.",
+        "Quando voce confia no sistema, o cerebro deixa de gastar RAM tentando lembrar pendencias e passa a operar estrategia."
+      ],
+      "algorithmTitle": "CORE_ALGORITHM:",
+      "algorithmSteps": [
+        "CAPTURE: Esvazie a mente.",
+        "CLARIFY: E acionavel? (Y/N)",
+        "ORGANIZE: Coloque no lugar certo.",
+        "REFLECT: Revisao semanal.",
+        "ENGAGE: Execute."
+      ]
+    },
+    "visibility": {
+      "badge": "MODULE_04",
+      "titlePrefix": "VISIBILIDADE",
+      "titleAccent": "TOTAL",
+      "paragraphs": [
+        "O cerebro humano processa imagens mais rapido do que texto. O Kanban transforma trabalho abstrato em objetos visuais que se movem no espaco.",
+        "Limitar WIP (Work In Progress) e a unica forma de evitar gargalos. Se tudo e prioridade, nada e prioridade."
+      ]
+    },
+    "analysis": {
+      "eyebrow": "SECAO 02 // ANALISE",
+      "titlePrefix": "DINAMICA",
+      "titleAccent": "COMPARATIVA",
+      "paragraphs": [
+        "Eficiencia nao e monolitica. Ela surge do equilibrio entre carga cognitiva e throughput.",
+        "Sistemas visuais reduzem ansiedade imediata, enquanto sistemas estruturados por listas maximizam precisao de recuperacao no longo prazo."
+      ],
+      "tableTitle": "METODOS x FOCO",
+      "tableSubtitle": "FEED DE DADOS AO VIVO • ANALISE COMPARATIVA EM TEMPO REAL",
+      "tableHeaders": ["Methodology", "Focus Area", "Core Mechanic", "Impact"],
+      "tableRows": [
+        { "methodology": "GTD", "focusArea": "Individual", "coreMechanic": "Mental Flow", "impact": "0.85", "barWidth": "w-[85%]", "color": "#8b5cf6" },
+        { "methodology": "KANBAN", "focusArea": "Visual", "coreMechanic": "Workflow", "impact": "0.72", "barWidth": "w-[72%]", "color": "#3be1f7", "highlight": true },
+        { "methodology": "MASP", "focusArea": "Problem", "coreMechanic": "Root Cause", "impact": "0.91", "barWidth": "w-[91%]", "color": "#ff4fd8" }
+      ],
+      "dataset": "DATASET: SYS_OPT_24",
+      "legend": ["Speed", "Quality", "Cost"],
+      "closing": "A metodologia Kanban, destacada acima, otimiza a visibilidade do fluxo, mas frequentemente sacrifica a captura de detalhes granulares."
+    },
+    "visualizer": {
+      "speed": "SPEED",
+      "quality": "QUALITY",
+      "cost": "COST",
+      "highVelocity": "High Vel.",
+      "mediumQuality": "Med Qual.",
+      "stateLabel": "VISUALIZER_STATE",
+      "stateValue": "SYNCED: KANBAN",
+      "gutIndex": "G.U.T. INDEX",
+      "kanbanState": "KANBAN_STATE"
+    },
+    "final": {
+      "title": "SAIDA_FINAL //",
+      "sessionLog": "ID DO LOG DA SESSAO: #88X-GAMMA",
+      "tipBadge": "PRO TIP_LOG",
+      "tipTitle": "ESTRATEGIA_DE_OTIMIZACAO",
+      "tipText": "Para vender esta metodologia aos stakeholders, foque em 'Reducao de Risco' (MASP) em vez de 'Velocidade' (Kanban).",
+      "referencesTitle": "LOG_DE_REFERENCIA",
+      "references": [
+        { "ref": "[REF-01]", "title": "GTD: The Art of Stress-Free Productivity", "src": "David Allen Co." },
+        { "ref": "[REF-02]", "title": "Kanban: Successful Evolutionary Change", "src": "David J. Anderson" },
+        { "ref": "[REF-03]", "title": "The Toyota Way (Lean Principles)", "src": "Jeffrey Liker" },
+        { "ref": "[REF-04]", "title": "Atomic Habits: Tiny Changes", "src": "James Clear" }
+      ],
+      "cta": "ACESSAR SISTEMA",
+      "status": "V2.4.0 // SYS_READY"
+    }
+  },
+  "training": {
+    "statusBar": {
+      "title": "CURSOS & TREINAMENTOS // STATUS: DISPONIVEL",
+      "items": ["3 MODULOS", "GUT + GTD + PDCA + MASP", "LIVE + VOD"]
+    },
+    "hero": {
+      "badge": "> INIT TRAINING_MODULE",
+      "titleLine1": "Conhecimento,",
+      "titleLine2": "metodo e",
+      "titleAccent": "resultado.",
+      "exploreAction": "Explorar modulos",
+      "startAction": "Iniciar treino"
+    },
+    "highlights": [
+      { "label": "Trilhas estruturadas", "value": "3", "unit": "modulos" },
+      { "label": "Metodologias", "value": "5+", "unit": "frameworks" },
+      { "label": "Formatos de ensino", "value": "2", "unit": "modalidades" }
+    ],
+    "journey": {
+      "fileName": "training_journey.log",
+      "goalLabel": "objetivo",
+      "goalValue": "Do conceito ate a execucao",
+      "methodologiesLabel": "metodologias",
+      "platformLabel": "plataforma",
+      "platformValue": "FlowZenit",
+      "formatLabel": "formato",
+      "formatValue": "Live + VOD",
+      "loading": "// Carregando trilha de capacitacao..."
+    },
+    "pillarsSection": {
+      "eyebrow": "Por que aprender antes de operar",
+      "title": "A ferramenta sozinha nao garante resultado."
+    },
+    "pillars": [
+      {
+        "title": "Metodo antes do clique",
+        "description": "A plataforma organiza a operacao, mas os melhores resultados surgem quando o usuario entende a logica por tras das decisoes, prioridades e rotinas."
+      },
+      {
+        "title": "Teoria aplicada no sistema",
+        "description": "Cada treinamento conecta conceito, tela e acao pratica para reduzir erro, acelerar execucao e melhorar a adocao da equipe."
+      },
+      {
+        "title": "Capacitacao continua",
+        "description": "A aprendizagem estruturada ajuda a padronizar processos, elevar produtividade e sustentar melhoria continua ao longo do uso da plataforma."
+      }
+    ],
+    "modulesSection": {
+      "eyebrow": "Organizacao por modulos",
+      "title": "Tres frentes para formar dominio real da plataforma."
+    },
+    "modules": [
+      {
+        "id": "01",
+        "title": "Modulo Ciencia",
+        "badge": "Base metodologica",
+        "objective": "Apresentar os fundamentos conceituais que sustentam analise, priorizacao e melhoria continua.",
+        "relation": "Traduz o raciocinio por tras de tarefas, projetos, prioridades e ciclos de evolucao refletidos na plataforma.",
+        "items": [
+          "Matriz GUT para definir prioridades com criterio.",
+          "GTD para capturar, organizar e executar com clareza.",
+          "Galley de Fingstone para estruturar analise e orientacao.",
+          "PDCA para guiar melhoria continua no uso do sistema.",
+          "MASP para investigar causas e corrigir problemas com metodo."
+        ]
+      },
+      {
+        "id": "02",
+        "title": "Modulo Funcionalidades",
+        "badge": "Operacao no sistema",
+        "objective": "Apresentar os recursos operacionais e mostrar como cada funcionalidade apoia a execucao diaria.",
+        "relation": "Mostra como planejamento, acompanhamento, registro e entrega saem da teoria e viram rotina dentro da plataforma.",
+        "items": [
+          "Agendador de tarefas para compromissos, recorrencias e acompanhamento.",
+          "Tipos de cadastro para sustentar fluxos com padronizacao de dados.",
+          "Paineis Kanban para visualizacao de status, etapas e progresso.",
+          "Gerenciamento de projeto para organizar responsaveis, prioridades e entregas."
+        ]
+      },
+      {
+        "id": "03",
+        "title": "Modulo Fluxo de Metodologia",
+        "badge": "Conexao entre teoria e pratica",
+        "objective": "Demonstrar como teoria, processo e funcionalidade participam do mesmo fluxo operacional.",
+        "relation": "Explica como demandas entram, sao organizadas, acompanhadas, executadas, verificadas e melhoradas dentro da plataforma.",
+        "items": [
+          "Relacao entre metodologia e funcionalidade no dia a dia.",
+          "Fluxo operacional dos componentes da entrada ate a padronizacao.",
+          "Jornada do usuario em um processo guiado por metodo.",
+          "Conexao entre PDCA, MASP, Kanban e gestao de tarefas."
+        ]
+      }
+    ],
+    "flowSection": {
+      "eyebrow": "Integracao entre metodologia e sistema"
+    },
+    "flowSteps": [
+      {
+        "title": "Entrada e entendimento",
+        "description": "A demanda nasce, ganha contexto e passa a ser entendida com criterio antes de virar apenas mais uma tarefa.",
+        "tag": "FASE_01"
+      },
+      {
+        "title": "Organizacao e classificacao",
+        "description": "Cadastros, tipos e regras organizam o trabalho para manter padrao, visibilidade e consistencia operacional.",
+        "tag": "FASE_02"
+      },
+      {
+        "title": "Execucao acompanhada",
+        "description": "Kanban, tarefas e projetos mostram o progresso com clareza e ajudam a manter foco nas proximas acoes.",
+        "tag": "FASE_03"
+      },
+      {
+        "title": "Conferencia e melhoria",
+        "description": "Indicadores, revisoes e metodo fecham o ciclo para ajustar rota, padronizar aprendizados e melhorar continuamente.",
+        "tag": "FASE_04"
+      }
+    ],
+    "modalitiesSection": {
+      "eyebrow": "Modalidades de ensino",
+      "title": "Flexibilidade para aprender com suporte ou no proprio ritmo.",
+      "description": "A proposta combina encontros ao vivo com conteudo gravado para atender equipes em momentos diferentes de maturidade e necessidade operacional."
+    },
+    "modalities": [
+      {
+        "title": "Aulas ao vivo",
+        "description": "Treinamentos guiados por Google Meet com interacao direta, duvidas em tempo real e alinhamento pratico de uso.",
+        "tag": "LIVE"
+      },
+      {
+        "title": "Conteudo gravado",
+        "description": "Videos organizados em playlists no YouTube para consumo sob demanda, revisao rapida e aprendizagem no proprio ritmo.",
+        "tag": "VOD"
+      }
+    ],
+    "benefitsSection": {
+      "title": "Beneficios das modalidades"
+    },
+    "benefits": [
+      "Flexibilidade para perfis diferentes de aprendizagem.",
+      "Revisao de conteudo sempre que necessario.",
+      "Escalabilidade para capacitar equipes inteiras.",
+      "Combinacao entre teoria, processo e pratica operacional.",
+      "Acompanhamento ao vivo quando o contexto exigir suporte guiado."
+    ],
+    "cta": {
+      "eyebrow": "> PROXIMO_PASSO",
+      "titlePrefix": "O treinamento conecta metodo,",
+      "titleAccent": "sistema e resultado operacional.",
+      "description": "Ao entender os conceitos e as funcionalidades em conjunto, o usuario passa a operar a plataforma com mais eficiencia, clareza e estrategia.",
+      "primary": "Comecar treinamento",
+      "secondary": "Ver modulos disponiveis"
+    }
+  },
+  "documentation": {
+    "hero": {
+      "eyebrow": "Documentacao do Projeto",
+      "title": "Guia funcional da plataforma FlowZenit",
+      "description": "Esta pagina resume a metodologia aplicada no sistema, a arquitetura funcional da area logada e o papel de cada modulo principal. Os blocos sinalizados com placeholders foram deixados para insercao de capturas de tela."
+    },
+    "coverAlt": "Capa da documentacao",
+    "methodologySection": {
+      "eyebrow": "Metodologia",
+      "title": "Base conceitual do projeto",
+      "aside": "O sistema combina organizacao pessoal, priorizacao e melhoria continua para controlar backlog, operacao e portfolio."
+    },
+    "methodologyItems": [
+      {
+        "title": "GTD",
+        "summary": "Organiza a captura e a execucao das demandas para transformar entradas soltas em acoes objetivas.",
+        "usage": "A logica do projeto separa capturas, backlog, fluxo operacional e caixas auxiliares para manter a visao clara."
+      },
+      {
+        "title": "GUT",
+        "summary": "Prioriza itens com base em gravidade, urgencia e tendencia.",
+        "usage": "A priorizacao aparece nas telas analiticas e operacionais para destacar riscos e apoiar decisao."
+      },
+      {
+        "title": "MASP",
+        "summary": "Estrutura a resolucao de problemas em etapas de identificacao, analise, acao e padronizacao.",
+        "usage": "O Kanban e os reports refletem uma trilha de evolucao que ajuda a sair do problema ate o registro final."
+      },
+      {
+        "title": "PDCA",
+        "summary": "Mantem a melhoria continua em ciclos de planejar, executar, verificar e agir.",
+        "usage": "A distribuicao das macroetapas no fluxo reforca acompanhamento, validacao e consolidacao do conhecimento."
+      }
+    ],
+    "projectLabel": "No projeto",
+    "pagesSection": {
+      "eyebrow": "Area Logada",
+      "title": "Funcionalidades por pagina",
+      "description": "Documentacao funcional dos componentes de src/components/arealogada."
+    },
+    "pageSections": [
+      {
+        "title": "AreaLogadaLayout",
+        "objective": "Estrutura principal da area autenticada.",
+        "features": [
+          "Sidebar com acesso aos modulos de dashboard, projetos, tarefas, kanban e boxes.",
+          "Cabecalho com breadcrumb, indicadores do workspace, notificacoes e atualizacao manual.",
+          "Modal global para cadastro rapido de novos itens a partir de qualquer tela."
+        ]
+      },
+      {
+        "title": "DashboardHome",
+        "objective": "Painel executivo com leitura consolidada do workspace.",
+        "features": [
+          "Indicadores de volume ativo, risco GUT, planejamento, portfolio e progresso.",
+          "Cards de analise quantitativa e qualitativa para leitura rapida do cenario.",
+          "Blocos de projetos em operacao, operacao corrente, radar GUT, capacidade e ultimos movimentos."
+        ]
+      },
+      {
+        "title": "CadCategorias",
+        "objective": "Cadastro e manutencao das categorias do sistema.",
+        "features": [
+          "Criacao, edicao e exclusao de categorias.",
+          "Associacao de cor para identificacao visual.",
+          "Listagem ordenada com feedback visual para operacoes de salvamento e exclusao."
+        ]
+      },
+      {
+        "title": "CadSubcategoria",
+        "objective": "Cadastro de subcategorias vinculadas a categorias.",
+        "features": [
+          "Criacao e edicao de subcategorias com vinculo direto a uma categoria existente.",
+          "Modal para cadastrar categoria sem sair da tela.",
+          "Listagem com relacionamento entre categoria pai e subcategoria."
+        ]
+      },
+      {
+        "title": "CadParticipantes",
+        "objective": "Gestao dos participantes responsaveis pelas atividades.",
+        "features": [
+          "Cadastro, edicao e remocao de participantes.",
+          "Upload de imagem com conversao para base64 e preview imediato.",
+          "Lista de participantes para apoio a atribuicao de ownership nas demais telas."
+        ]
+      },
+      {
+        "title": "Tarefas",
+        "objective": "Visao tabular das atividades operacionais em backlog.",
+        "features": [
+          "Filtros por alocacao, participante, categoria e intervalo de datas.",
+          "Ordenacao por nome, participante, categoria, datas e GUT dinamico.",
+          "Acoes de edicao e exclusao com leitura resumida para desktop e mobile."
+        ]
+      },
+      {
+        "title": "Reports",
+        "objective": "Kanban analitico e operacional com foco em consistencia do fluxo.",
+        "features": [
+          "Macrocolunas alinhadas a backlog, plan, do, check, act e done.",
+          "Movimentacao de cards entre estados com regras de transicao e modal de definicao.",
+          "Auditoria de consistencia, distribuicao por macrocoluna e filtros por estado e busca textual."
+        ]
+      },
+      {
+        "title": "Projetos",
+        "objective": "Modulo de projetos com hierarquia de produto e execucao.",
+        "features": [
+          "Estrutura Epic > Feature > User Story > Task/Bug.",
+          "Abas para backlog, Gantt e Kanban de projetos.",
+          "Metricas, visao hierarquica, proximas entregas e cadastro rapido de artefatos do portfolio."
+        ]
+      },
+      {
+        "title": "Stuff",
+        "objective": "Boxes auxiliares para itens fora do fluxo principal.",
+        "features": [
+          "Separacao entre Stuff, Trash, Algum dia / Talvez e Referencia futura.",
+          "Recuperacao rapida de itens via acao de ativacao.",
+          "Remocao de registros sem poluir o fluxo operacional principal."
+        ]
+      }
+    ],
+    "placeholder": {
+      "label": "Placeholder",
+      "description": "Substitua por captura da tela correspondente."
+    },
+    "footerSections": {
+      "architectureEyebrow": "Arquitetura funcional",
+      "architectureTitle": "Pilares do sistema",
+      "architectureItems": [
+        "Autenticacao e persistencia com Supabase.",
+        "Navegacao protegida com React Router e layout compartilhado na area logada.",
+        "Interface orientada a indicadores, listas operacionais, fluxo Kanban e portfolio de projetos."
+      ],
+      "evidenceEyebrow": "Evidencias futuras",
+      "evidenceTitle": "Sugestao de anexos",
+      "evidenceItems": [
+        "Fluxo completo do usuario autenticado: dashboard, projetos, tarefas e kanban.",
+        "Capturas comparativas dos cadastros para demonstrar consistencia visual do design system.",
+        "Evidencias de uso das metodologias nas telas analiticas e operacionais."
+      ]
+    }
+  },
+  "detailedFeatures": {
+    "hero": {
+      "status": "SYSTEM ONLINE",
+      "titleLine1": "Gestao",
+      "titleAccent": "Inteligente",
+      "titleLine2": "de Tarefas",
+      "descriptionLine1": "Orquestracao automatica. Do caos a execucao em milissegundos.",
+      "descriptionLine2": "Um sistema operacional vivo para seu fluxo de trabalho.",
+      "primaryAction": "Iniciar Sistema",
+      "secondaryAction": "Ver Demo",
+      "imageAlt": "Dashboard futurista com analiticos em neon sobre fundo escuro",
+      "capabilities": "Capabilities",
+      "introTitle": "MODULARIDADE ABSOLUTA",
+      "systemCheck": "SYSTEM_CHECK:",
+      "latency": "LATENCY:"
+    },
+    "introCards": [
+      {
+        "icon": "inbox",
+        "title": "Backlog Infinito",
+        "desc": "Capture tudo sem friccao. Um repositorio centralizado que processa inputs brutos em tarefas acionaveis.",
+        "module": "Stuff",
+        "color": "primary"
+      },
+      {
+        "icon": "view_kanban",
+        "title": "Fluxo Cinetico",
+        "desc": "Visualizacao Kanban que respira. Cards se movem como dados vivos, nao post-its estaticos.",
+        "module": "Kanban",
+        "color": "secondary"
+      },
+      {
+        "icon": "insights",
+        "title": "Analytics Preditivo",
+        "desc": "Matriz GUT automatizada. O sistema decide o que e urgente antes que se torne um incendio.",
+        "module": "Intel",
+        "color": "accent"
+      }
+    ],
+    "stuff": {
+      "label": "Modulo Stuff",
+      "titleLine1": "O Banco",
+      "titleAccent": "Central",
+      "description": "Capture tudo. Processe depois. O Stuff funciona como um poco gravitacional para pensamentos brutos, eliminando carga cognitiva instantanea.",
+      "input": "INPUT: 12 ITEMS",
+      "status": "STATUS: ACTIVE",
+      "incomingLabel": "Incoming Data",
+      "cardTitle": "Fix Vercel Deployment",
+      "cardDescription": "Build failed due to missing environmental variables in the production branch.",
+      "cardTag": "DevOps",
+      "cardSeverity": "Critical"
+    },
+    "kanban": {
+      "label": "Modulo Kanban",
+      "titleLine1": "Fluxo",
+      "titleAccent": "Visual",
+      "description": "Orquestracao algoritmica. Visualize o movimento de energia do caos para a conclusao em colunas de vidro cristalino.",
+      "velocity": "Velocity",
+      "cycleTime": "Cycle Time",
+      "todo": "To Do",
+      "doing": "Doing",
+      "done": "Done",
+      "ghostCardId": "#SYS-102",
+      "ghostCardTitle": "Refactor Auth Middleware",
+      "todoCardId": "#UI-204",
+      "todoCardTitlePast": "Review Design System",
+      "todoCardTitle": "Update Icon Set",
+      "doingCardId": "#API-88",
+      "doingCardTitle": "Optimize Database Queries",
+      "doingCardProgress": "65% Complete",
+      "doingCardRemaining": "2h left",
+      "doneCards": [
+        { "id": "#MKT-12", "title": "Q4 Planning Deck" },
+        { "id": "#BUG-02", "title": "Fix Header z-index" }
+      ]
+    },
+    "calendar": {
+      "label": "Temporal Sync",
+      "titleLine1": "Synchronize",
+      "titleAccent": "Reality",
+      "description": "Onde o 'o que' encontra o 'quando'. Uma visualizacao granular de compromissos com atualizacoes em tempo real.",
+      "activeEvents": "Active Events",
+      "onSchedule": "On Schedule",
+      "weekdays": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+      "popoverTitle": "Product Launch",
+      "popoverStatus": "NOW",
+      "popoverTime": "14:00 - 15:30",
+      "popoverTeam": "Design Team",
+      "popoverAction": "View Details"
+    },
+    "gantt": {
+      "label": "Orquestracao Avancada",
+      "titleLine1": "Visualize o",
+      "titleAccent": "Efeito Domino",
+      "description": "Gerencie dependencias criticas com precisao cirurgica. Veja como um unico atraso repercute em toda a sua linha do tempo em tempo real.",
+      "headerTitle": "Project Alpha Timeline",
+      "weeks": ["WK 41", "WK 42", "WK 43", "WK 44"],
+      "tracks": {
+        "strategy": "Strategy",
+        "strategyItem": "Initial Scope",
+        "design": "Design",
+        "designItem": "UI & Prototyping",
+        "dev": "Dev",
+        "devItem": "Frontend Impl.",
+        "qa": "QA",
+        "qaItem": "Review"
+      },
+      "featureOneTitle": "Mapeamento de Dependencias",
+      "featureOneDescription": "Linhas do tempo que se ajustam automaticamente apos resolucao de bloqueios.",
+      "featureTwoTitle": "Analise de Caminho Critico",
+      "featureTwoDescription": "Identifique gargalos antes que virem bloqueios."
+    }
+  },
+  "blog": {
+    "masthead": {
+      "title": "Blog FlowZenit - Por Julio Gomes",
+      "postsCount": "{{count}} publicacoes",
+      "live": "ao vivo"
+    },
+    "states": {
+      "supabaseMissing": "Supabase nao configurado.",
+      "loadingPosts": "Carregando postagens publicadas...",
+      "empty": "Nenhuma postagem publicada no momento.",
+      "notFound": "Postagem nao encontrada ou ainda nao publicada."
+    },
+    "sidebar": {
+      "index": "Indice do Blog",
+      "archive": "Arquivo"
+    },
+    "indexView": {
+      "latest": "Ultima postagem",
+      "readFull": "Ler postagem completa",
+      "historyEyebrow": "Historico",
+      "historyTitle": "Demais postagens publicadas"
+    },
+    "postView": {
+      "backToIndex": "Voltar ao indice",
+      "publishedAt": "Publicado em {{date}}",
+      "engagement": "Engajamento",
+      "engagementTitle": "Curtiu o conteudo?",
+      "likeRegistered": "Like registrado",
+      "likeAction": "Curtir postagem",
+      "commentsEyebrow": "Comentarios",
+      "commentsTitle": "Participe da conversa",
+      "namePlaceholder": "Seu nome",
+      "commentPlaceholder": "Compartilhe seu comentario",
+      "commentRule": "Cada navegador pode registrar um comentario e um like por postagem.",
+      "commentRegistered": "Comentario registrado",
+      "commentAction": "Enviar comentario",
+      "emptyComments": "Ainda nao ha comentarios publicados nesta postagem."
+    },
+    "feedback": {
+      "duplicateLike": "Este navegador ja registrou like para esta postagem.",
+      "requiredCommentFields": "Nome e comentario sao obrigatorios.",
+      "duplicateComment": "Este navegador ja enviou um comentario para esta postagem."
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "workspace": "Workspace",
+      "boxes": "Boxes",
+      "records": "Cadastros",
+      "items": {
+        "dashboard": "Dashboard",
+        "projects": "Projetos",
+        "tasks": "Tarefas",
+        "kanban": "Kanban",
+        "categories": "Categorias",
+        "subcategories": "Subcategorias",
+        "participants": "Participantes",
+        "stuff": "Stuff",
+        "trash": "Trash",
+        "someday": "Algum dia / talvez",
+        "reference": "Referência futura"
+      }
+    },
+    "headerMetrics": {
+      "active": "Ativos",
+      "alerts": "Alertas",
+      "portfolio": "Portfólio"
+    },
+    "actions": {
+      "newItem": "Novo item",
+      "refreshIndicators": "Atualizar indicadores",
+      "blogAdmin": "Blog Admin",
+      "openSidebar": "Abrir sidebar",
+      "closeSidebar": "Fechar sidebar",
+      "expandSidebar": "Expandir sidebar",
+      "minimizeSidebar": "Minimizar sidebar",
+      "notifications": "Notificações"
+    }
+  },
+  "tasks": {
+    "header": {
+      "eyebrow": "Backlog · tbf_atividades",
+      "title": "Tarefas",
+      "description": "Lancamentos do backlog por tipo de alocacao, filtros e ordenacao GUT dinamica."
+    },
+    "filters": {
+      "sectionTitle": "Filtros",
+      "allocation": "Filtro de alocacao",
+      "participant": "Participante",
+      "allParticipants": "Todos os participantes",
+      "category": "Categoria",
+      "allCategories": "Todas as categorias",
+      "startDate": "Data inicio",
+      "endDate": "Data fim",
+      "options": {
+        "all": "Todos",
+        "delegate": "Delegar",
+        "schedule": "Agendar",
+        "completed": "Concluidas",
+        "inProgress": "Em andamento"
+      }
+    },
+    "metrics": {
+      "total": "Total",
+      "delegate": "Delegar",
+      "schedule": "Agendar",
+      "averageGut": "Media GUT"
+    },
+    "list": {
+      "title": "Lista de atividades",
+      "records": "{{count}} registro(s)",
+      "loading": "Carregando registros...",
+      "emptyTitle": "Nenhum registro encontrado.",
+      "emptyDescription": "Nao ha atividades para os filtros aplicados.",
+      "uncategorized": "Sem categoria",
+      "columns": {
+        "name": "Nome",
+        "participant": "Participante",
+        "category": "Categoria",
+        "allocation": "Alocado",
+        "start": "Inicio",
+        "end": "Fim",
+        "gut": "GUT",
+        "createdAt": "Criado em",
+        "actions": "Acoes"
+      }
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "feedback": {
+      "loadError": "Nao foi possivel carregar as atividades.",
+      "editLoadError": "Nao foi possivel carregar os dados para edicao.",
+      "deleteConfirm": "Excluir a tarefa \"{{name}}\"?",
+      "deleteError": "Nao foi possivel excluir a tarefa.",
+      "deleteSuccess": "Tarefa excluida com sucesso."
+    }
+  },
+  "dashboardAnalytics": {
+    "defaults": {
+      "pulseLabel": "Sem dados",
+      "pulseDescription": "Conecte o workspace para montar os indicadores.",
+      "headline": "Sem dados operacionais carregados."
+    },
+    "stages": {
+      "backlog": "Backlog",
+      "analysis": "Analise (Plan)",
+      "doing": "Doing (Do)",
+      "check": "Conferindo (Check)",
+      "review": "Revisao e Padronizacao (Act)",
+      "done": "Done",
+      "unassigned": "Sem etapa"
+    },
+    "riskBuckets": {
+      "critical": "Critico",
+      "high": "Alto",
+      "medium": "Moderado",
+      "low": "Controlado",
+      "empty": "Sem GUT"
+    },
+    "allocation": {
+      "task": "Task",
+      "bug": "Bug",
+      "schedule": "Agendar",
+      "delegate": "Delegar",
+      "unknown": "Sem tipo"
+    },
+    "relativeTime": {
+      "inMinutes": "em {{count}} min",
+      "minutesAgo": "{{count}} min atras",
+      "inHours": "em {{count}} h",
+      "hoursAgo": "{{count}} h atras",
+      "inDays": "em {{count}} dias",
+      "daysAgo": "{{count}} dias atras"
+    },
+    "pulse": {
+      "critical": {
+        "label": "Operacao pressionada",
+        "description": "Ha atrasos ou cards com GUT critico exigindo resposta imediata."
+      },
+      "warning": {
+        "label": "Fluxo em atencao",
+        "description": "O pipeline esta ativo, mas ainda com gargalos de planejamento ou estruturacao."
+      },
+      "healthy": {
+        "label": "Operacao estavel",
+        "description": "O workspace tem cobertura operacional consistente e baixa pressao imediata."
+      },
+      "neutral": {
+        "label": "Operacao em formacao",
+        "description": "Ainda ha pouca base historica para cravar uma tendencia operacional."
+      }
+    },
+    "insights": {
+      "empty": {
+        "title": "Workspace vazio",
+        "text": "Nao ha cards suficientes para gerar leitura operacional. O primeiro ganho sera estruturar tarefas, responsaveis e datas."
+      },
+      "riskPressure": {
+        "title": "Pressao de risco",
+        "text": "{{overdueCount}} item(ns) em atraso e {{criticalCount}} card(s) em GUT critico indicam risco operacional imediato."
+      },
+      "highPriority": {
+        "title": "Prioridades altas",
+        "text": "{{highCount}} card(s) com GUT alto pedem sequenciamento cuidadoso para evitar escalada de impacto."
+      },
+      "backlogAccumulation": {
+        "title": "Acumulo em backlog",
+        "text": "{{backlogRate}} do volume ainda esta parado no backlog. O gargalo atual esta antes da execucao."
+      },
+      "deliveryFlow": {
+        "title": "Fluxo com entrega",
+        "text": "{{doneRate}} do funil ja foi encerrado em Done, sinalizando capacidade de fechar ciclos."
+      },
+      "governance": {
+        "title": "Governanca operacional",
+        "text": "Cobertura de planejamento em {{planning}} e ownership em {{ownership}}. Falta amarrar prazo ou responsavel em parte da carteira ativa."
+      },
+      "incompleteHierarchy": {
+        "title": "Hierarquia de projetos incompleta",
+        "text": "{{storyLink}} dos cards de projeto estao ligados a user stories. {{unlinkedProjectItems}} item(ns) ainda nao conversam com a cadeia epic > feature > story."
+      },
+      "connectedPortfolio": {
+        "title": "Portifolio conectado",
+        "text": "A cadeia de projetos esta ativa e o progresso medio dos cards de projeto esta em {{avgProgress}}."
+      },
+      "currentLoad": {
+        "title": "Carga atual",
+        "text": "{{activeTotal}} item(ns) seguem operando agora. O foco deve ficar nos cards com maior GUT e prazo mais curto."
+      }
+    },
+    "headline": {
+      "noActive": "Sem itens ativos no momento. O dashboard esta pronto para acompanhar a proxima rodada operacional.",
+      "critical": "{{criticalCount}} card(s) critico(s) e {{dueSoonCount}} entrega(s) proximas puxam o foco para resposta de curto prazo.",
+      "withHierarchy": "{{activeTotal}} item(ns) ativos conectam a operacao diaria com a hierarquia de projetos ja cadastrada.",
+      "default": "{{activeTotal}} item(ns) ativos em execucao, com leitura de fluxo, risco GUT e cobertura operacional."
+    },
+    "errors": {
+      "supabaseMissing": "Supabase nao configurado.",
+      "loadActivities": "Nao foi possivel carregar as atividades do dashboard.",
+      "partialSources": "Parte das fontes auxiliares falhou. Os KPIs foram montados com o que estava disponivel."
+    }
+  },
+  "dashboardHome": {
+    "loading": "Carregando leitura analitica do workspace...",
+    "greetings": {
+      "morning": "Bom dia",
+      "afternoon": "Boa tarde",
+      "evening": "Boa noite"
+    },
+    "meta": {
+      "lastRead": "Ultima leitura:",
+      "updatedAt": "Atualizacao:",
+      "alerts": "Alertas: {{count}}"
+    },
+    "quickActions": {
+      "projects": "Abrir projetos",
+      "tasks": "Abrir tarefas",
+      "reports": "Abrir reports",
+      "records": "Cadastros"
+    },
+    "heroStats": {
+      "activeNow": "Ativos agora",
+      "activeNowSupport": "{{inFlow}} em fluxo · {{backlog}} em backlog",
+      "gutRisk": "Risco GUT",
+      "gutRiskSupport": "{{criticalCount}} criticos · {{highCount}} altos",
+      "portfolio": "Portfolio",
+      "portfolioSupport": "Epics, features e stories"
+    },
+    "kpis": {
+      "activeVolume": {
+        "label": "Volume ativo",
+        "support": "{{workspaceTotal}} cards validos no workspace e {{doneTotal}} ja encerrados."
+      },
+      "flowOutput": {
+        "label": "Saida do fluxo",
+        "support": "{{done}} cards em Done. Backlog hoje: {{backlogRate}}% da carteira ativa."
+      },
+      "averageRisk": {
+        "label": "Risco GUT medio",
+        "support": "{{overdueCount}} atrasados, {{dueSoonCount}} vencendo em 72h e {{criticalCount}} criticos."
+      },
+      "planning": {
+        "label": "Planejamento",
+        "support": "Ownership {{ownership}}% e cards de projeto ligados a story em {{storyLink}}%."
+      },
+      "portfolio": {
+        "label": "Portfolio",
+        "support": "Hierarquia consolidada em {{hierarchyDepth}}% da profundidade esperada."
+      },
+      "projectProgress": {
+        "label": "Progresso do projeto",
+        "support": "{{projectActive}} card(s) de projeto ativos e {{unlinkedProjectItems}} sem vinculo de story."
+      }
+    },
+    "common": {
+      "unnamed": "Sem nome",
+      "notDefined": "Nao definido",
+      "unlinked": "Nao vinculada"
+    },
+    "sections": {
+      "quantitative": {
+        "title": "Analise quantitativa",
+        "subtitle": "Distribuicao do fluxo e matriz GUT a partir das tabelas do banco.",
+        "from": "De:",
+        "to": "Ate:",
+        "stages": "Macroetapas",
+        "cardsShare": "{{count}} cards · {{share}}%",
+        "gutBands": "Faixas GUT",
+        "activePortfolioShare": "{{share}}% da carteira ativa"
+      },
+      "qualitative": {
+        "title": "Analise qualitativa",
+        "subtitle": "Leitura interpretativa do banco, cruzando volume, risco, cobertura e hierarquia."
+      },
+      "projects": {
+        "title": "Projetos e tarefas em operacao",
+        "subtitle": "Hierarquia epic > feature > story com contagem de cards ativos, risco e progresso.",
+        "action": "Abrir projetos",
+        "emptyTitle": "Portfolio ainda nao estruturado",
+        "emptyDescription": "Crie epics, features e user stories para conectar a operacao diaria ao modulo de projetos.",
+        "emptyAction": "Ir para projetos",
+        "epicLabel": "Epic",
+        "internalRisk": "Risco interno",
+        "criticalCards": "cards criticos",
+        "noStories": "Sem stories vinculadas a este epic.",
+        "tags": {
+          "features": "{{count}} features",
+          "stories": "{{count}} stories",
+          "cards": "{{count}} cards",
+          "active": "{{count}} ativos",
+          "progress": "{{count}}% progresso"
+        }
+      },
+      "current": {
+        "title": "Operacao corrente",
+        "subtitle": "Cards em andamento, ordenados por pressao de prazo, etapa e GUT.",
+        "emptyTitle": "Sem itens correntes",
+        "emptyDescription": "Nao ha cards ativos para monitorar neste momento.",
+        "ownerLabel": "Responsavel:",
+        "cells": {
+          "deadline": "Prazo",
+          "temporalStatus": "Status temporal",
+          "progress": "Progresso",
+          "story": "Story"
+        },
+        "status": {
+          "overdue": "Atrasado",
+          "dueSoon": "Vence em 72h",
+          "noImmediatePressure": "Sem pressao imediata"
+        }
+      },
+      "radar": {
+        "title": "Radar GUT",
+        "subtitle": "Prioridades operacionais calculadas pela combinacao de GUT e janela temporal.",
+        "emptyTitle": "Sem prioridades ativas",
+        "emptyDescription": "Nao ha cards suficientes para montar o ranking GUT.",
+        "priority": "Prioridade #{{index}}",
+        "deadlineStage": "Prazo {{deadline}} · etapa {{stage}}"
+      },
+      "capacity": {
+        "title": "Capacidade e ownership",
+        "subtitle": "Quem esta operando a carga atual e onde faltam responsaveis.",
+        "emptyTitle": "Sem distribuicao por participante",
+        "emptyDescription": "Ainda nao ha carga ativa atribuida para participantes.",
+        "ownerSummary": "{{activeCount}} card(s) ativos · progresso medio {{progress}}%",
+        "highRisk": "{{count}} alto(s)",
+        "overdue": "{{count}} atrasado(s)",
+        "withoutOwner": "Cards ativos sem responsavel:"
+      },
+      "recent": {
+        "title": "Ultimos movimentos",
+        "subtitle": "Ultimos registros lidos nas tabelas operacionais e de projetos.",
+        "emptyTitle": "Sem historico recente",
+        "emptyDescription": "Assim que houver novos registros eles aparecerao aqui.",
+        "createdStage": "Criado em {{createdAt}} · etapa {{stage}}"
+      }
+    }
+  },
+  "kanbanCommon": {
+    "defaults": {
+      "title": "Board Kanban",
+      "description": "Arraste cards entre colunas para mover entre macroetapas."
+    },
+    "viewOptions": {
+      "all": {
+        "label": "Todos",
+        "description": "Exibe todos os cards validos do workspace."
+      },
+      "projects": {
+        "label": "Projetos",
+        "description": "Mostra apenas cards taskproj e bugproj."
+      },
+      "initial": {
+        "label": "Agendar e delegar",
+        "description": "Foca no fluxo inicial de agendar e delegar."
+      }
+    },
+    "stages": {
+      "backlog": "Backlog",
+      "analysis": "Analise (Plan)",
+      "doing": "Doing (Do)",
+      "check": "Conferindo (Check)",
+      "review": "Revisao e Padronizacao (Act)",
+      "done": "Done",
+      "unassigned": "Sem etapa"
+    },
+    "states": {
+      "none": "Sem estado",
+      "backlog": "Backlog",
+      "problemIdentification": "Identificacao do problema",
+      "observation": "Observacao",
+      "analysis": "Analise",
+      "actionPlanning": "Planejamento de acao",
+      "waitingPlan": "Aguardando Plan",
+      "blockedPlan": "Bloqueado Plan",
+      "inExecution": "Em execucao",
+      "waitingDoing": "Aguardando Doing",
+      "blockedDoing": "Bloqueado Doing",
+      "verification": "Verificacao",
+      "validation": "Validacao",
+      "adherenceCheck": "Conferencia de aderencia",
+      "standardization": "Padronizacao",
+      "conclusion": "Conclusao",
+      "documented": "Documentado",
+      "knowledgeConsolidated": "Conhecimento consolidado",
+      "done": "Done"
+    },
+    "allocation": {
+      "task": "Task",
+      "bug": "Bug",
+      "schedule": "Agendar",
+      "delegate": "Delegar"
+    },
+    "actions": {
+      "move": "Mover",
+      "edit": "Editar"
+    },
+    "feedback": {
+      "loadError": "Nao foi possivel carregar os cards do Kanban.",
+      "cannotReturnToBacklog": "Nao e permitido retornar um card para backlog apos sair desse estado.",
+      "updateError": "Nao foi possivel atualizar a posicao Kanban.",
+      "moveSuccess": "Card movido para \"{{state}}\"."
+    },
+    "cardsCount": "{{count}} card(s)",
+    "loading": "Carregando cards do Kanban...",
+    "statesLabel": "Estados:",
+    "emptyStage": "Sem cards nesta etapa.",
+    "noDescription": "Sem descricao.",
+    "modal": {
+      "moveToStage": "Mover para macrocoluna",
+      "selectExactState": "Selecione o estado exato",
+      "chooseStage": "Escolha a macrocoluna de destino.",
+      "select": "Selecione...",
+      "selectState": "Selecione o estado...",
+      "multipleStates": "A etapa \"{{stage}}\" possui multiplos estados."
+    }
+  },
+  "projects": {
+    "kanban": {
+      "title": "Kanban do projeto",
+      "description": "Fluxo operacional das tasks e bugs do modulo de projetos."
+    }
+  },
+  "projectModal": {
+    "actions": {
+      "back": "Voltar",
+      "create": "Criar",
+      "finish": "Finalizar cadastro",
+      "next": "Avancar",
+      "saveChanges": "Salvar alteracoes",
+      "saving": "Salvando..."
+    },
+    "charactersRemaining": "{{count}} caracteres restantes",
+    "description": {
+      "basic": "Estruture o registro base antes de seguir para os detalhes operacionais.",
+      "details": "Conecte responsavel, datas e taxonomia para integrar a atividade ao workspace.",
+      "progress": "Relacione a atividade com a hierarquia do produto e registre o andamento atual.",
+      "gut": "Defina a leitura GUT considerando gravidade, urgencia, tendencia e prazo."
+    },
+    "feedback": {
+      "activityNameRequired": "Informe o nome da atividade.",
+      "epicCreateError": "Nao foi possivel cadastrar o epic.",
+      "epicNameRequired": "Informe o nome do epic.",
+      "epicUpdateError": "Nao foi possivel atualizar o epic.",
+      "featureCreateError": "Nao foi possivel cadastrar a feature.",
+      "featureNameRequired": "Informe o nome da feature.",
+      "featureUpdateError": "Nao foi possivel atualizar a feature.",
+      "linkedEpicRequired": "Selecione o epic vinculado.",
+      "linkedFeatureRequired": "Selecione a feature vinculada.",
+      "saveError": "Nao foi possivel salvar a atividade.",
+      "storyCreateError": "Nao foi possivel cadastrar a user story.",
+      "storyNameRequired": "Informe o nome da user story.",
+      "storyRequired": "Selecione a user story vinculada.",
+      "storyUpdateError": "Nao foi possivel atualizar a user story.",
+      "taskSaved": "Registro de {{item}} salvo com sucesso.",
+      "taskUpdated": "Registro de {{item}} atualizado com sucesso.",
+      "updateError": "Nao foi possivel atualizar a atividade."
+    },
+    "fields": {
+      "bugActivityName": "Nome do bug",
+      "category": "Categoria",
+      "description": "Descricao detalhada",
+      "endDateTime": "Fim previsto",
+      "epicName": "Nome do epic",
+      "featureName": "Nome da feature",
+      "linkedEpic": "Epic vinculado",
+      "linkedFeature": "Feature vinculada",
+      "linkedStory": "User story vinculada",
+      "owner": "Responsavel",
+      "predecessor": "Predecessora",
+      "progressPercent": "Progresso (%)",
+      "severity": "Gravidade",
+      "startDateTime": "Inicio previsto",
+      "storyName": "Nome da user story",
+      "subcategory": "Subcategoria",
+      "successor": "Sucessora",
+      "taskActivityName": "Nome da task",
+      "trend": "Tendencia",
+      "urgency": "Urgencia"
+    },
+    "gut": {
+      "baseScore": "Score base GUT",
+      "deadlineWeight": "Peso temporal",
+      "finalScore": "Score final",
+      "severityScale": {
+        "1": "1 · Impacto minimo e facilmente reversivel",
+        "2": "2 · Impacto muito baixo e localizado",
+        "3": "3 · Impacto baixo com pouca repercussao",
+        "4": "4 · Impacto controlado em uma frente",
+        "5": "5 · Impacto moderado na entrega",
+        "6": "6 · Impacto relevante com retrabalho visivel",
+        "7": "7 · Impacto alto em mais de uma frente",
+        "8": "8 · Impacto severo no fluxo operacional",
+        "9": "9 · Impacto critico com parada ampla",
+        "10": "10 · Colapso critico imediato"
+      },
+      "trendScale": {
+        "1": "1 · Tende a permanecer estavel",
+        "2": "2 · Crescimento quase imperceptivel",
+        "3": "3 · Crescimento lento e previsivel",
+        "4": "4 · Aumento gradual com baixa pressao",
+        "5": "5 · Aumento moderado ao longo do tempo",
+        "6": "6 · Crescimento consistente sem intervencao",
+        "7": "7 · Agravamento acelerado na sprint",
+        "8": "8 · Agravamento forte e recorrente",
+        "9": "9 · Escalada critica muito rapida",
+        "10": "10 · Escalada explosiva e inevitavel"
+      },
+      "urgencyScale": {
+        "1": "1 · Pode esperar sem impacto relevante",
+        "2": "2 · Baixa urgencia operacional",
+        "3": "3 · Resolver quando houver folga",
+        "4": "4 · Requer acompanhamento em breve",
+        "5": "5 · Requer priorizacao moderada",
+        "6": "6 · Precisa entrar no plano atual",
+        "7": "7 · Exige acao rapida nesta sprint",
+        "8": "8 · Exige resposta imediata do time",
+        "9": "9 · Critico para as proximas horas",
+        "10": "10 · Imediato sem margem de espera"
+      }
+    },
+    "linkPrompt": "Informe a URL para inserir no texto:",
+    "placeholders": {
+      "activityName": "Ex: Validar fluxo de onboarding",
+      "epicName": "Ex: Estruturar jornada de implantacao",
+      "featureName": "Ex: Painel de saude operacional",
+      "selectCategory": "Selecione uma categoria...",
+      "selectEpic": "Selecione um epic...",
+      "selectFeature": "Selecione uma feature...",
+      "selectOwner": "Selecione um responsavel...",
+      "selectStory": "Selecione uma user story...",
+      "selectSubcategory": "Selecione uma subcategoria...",
+      "selectTask": "Selecione uma task ou bug...",
+      "storyName": "Ex: Como gestor, quero visualizar gargalos..."
+    },
+    "selectedCategory": "Categoria selecionada:",
+    "title": {
+      "createBug": "Cadastrar bug",
+      "createTask": "Cadastrar task",
+      "details": "Detalhes operacionais",
+      "editBug": "Editar bug",
+      "editEntity": "Editar {{entity}}",
+      "editTask": "Editar task",
+      "gut": "Priorizacao GUT",
+      "progress": "Vinculos e progresso"
+    },
+    "unmapped": "Cadastre participantes e categorias para concluir os detalhes da atividade."
+  },
+  "projectsPage": {
+    "actions": {
+      "manageRecords": "Gerenciar cadastros",
+      "newBug": "Novo bug",
+      "newEpic": "Novo epic",
+      "newFeature": "Nova feature",
+      "newStory": "Nova user story",
+      "newTask": "Nova task"
+    },
+    "backlog": {
+      "bugsCount_one": "{{count}} bug",
+      "bugsCount_other": "{{count}} bugs",
+      "columns": {
+        "dueDate": "Prazo",
+        "item": "Item",
+        "owner": "Responsavel",
+        "progress": "Progresso",
+        "state": "Estado"
+      },
+      "emptyDescription": "Cadastre epic, feature e user story para montar a arvore hierarquica.",
+      "emptyTitle": "Backlog vazio",
+      "featuresCount_one": "{{count}} feature",
+      "featuresCount_other": "{{count}} features",
+      "itemsCount_one": "{{count}} item",
+      "itemsCount_other": "{{count}} itens",
+      "noDescription": "Sem descricao.",
+      "noItemsFound": "Nenhum item encontrado.",
+      "noLinkedCards": "Nenhuma task ou bug vinculado.",
+      "noOwner": "Nao definido",
+      "openOnly": "Somente abertos",
+      "searchPlaceholder": "Buscar item, estado ou responsavel...",
+      "storiesCount_one": "{{count}} story",
+      "storiesCount_other": "{{count}} stories"
+    },
+    "badge": "Portfolio · entrega",
+    "description": "Painel tatico para estruturar epics, features, stories, tasks e bugs em uma leitura unica do backlog ao fluxo de execucao.",
+    "feedback": {
+      "deleteConfirm": "Excluir {{entity}} \"{{item}}\"?",
+      "deleteError": "Nao foi possivel remover {{entity}}.",
+      "deleteSuccess": "{{entity}} removido com sucesso.",
+      "loadError": "Nao foi possivel carregar o workspace de projetos.",
+      "noName": "Sem nome"
+    },
+    "gantt": {
+      "columns": {
+        "item": "Item"
+      },
+      "emptyDescription": "O Gantt mostra tasks e bugs fora de Done. Adicione datas de inicio e fim aos cards para visualizar o planejamento.",
+      "emptyTitle": "Nenhum item para o Gantt",
+      "itemsCount_one": "{{count}} item",
+      "itemsCount_other": "{{count}} itens",
+      "sprintLabel": "Sprint {{number}}",
+      "subtitle": "Clique na barra para editar o item.",
+      "title": "Planejamento Gantt · Scrum"
+    },
+    "hierarchy": {
+      "chain": {
+        "delivery": "Task / Bug",
+        "epic": "Epic",
+        "feature": "Feature",
+        "project": "Projeto",
+        "story": "User Story"
+      },
+      "title": "Visao da hierarquia"
+    },
+    "hierarchyPanel": {
+      "counts": {
+        "features_one": "{{count}} feature",
+        "features_other": "{{count}} features",
+        "items_one": "{{count}} item",
+        "items_other": "{{count}} itens",
+        "stories_one": "{{count}} story",
+        "stories_other": "{{count}} stories"
+      },
+      "emptyDescription": "Crie o primeiro epic para estruturar o backlog na cadeia Epic → Feature → User Story → Task/Bug.",
+      "emptyTitle": "Nenhum epic encontrado",
+      "noLinkedFeatures": "Sem features vinculadas.",
+      "noLinkedStories": "Sem user stories vinculadas."
+    },
+    "loading": "Carregando workspace de projetos...",
+    "manager": {
+      "delete": "Excluir",
+      "deleting": "Excluindo...",
+      "description": "CRUD de epic, feature e user story com visao hierarquica.",
+      "edit": "Editar",
+      "noLinkedFeatures": "Sem features vinculadas.",
+      "noLinkedStories": "Sem user stories vinculadas.",
+      "noResults": "Nenhum cadastro encontrado para o filtro informado.",
+      "searchPlaceholder": "Buscar por nome de epic, feature ou user story...",
+      "title": "Painel de manutencao de cadastros"
+    },
+    "metrics": {
+      "avgProgress": {
+        "label": "Progresso medio",
+        "support": "Media consolidada de avanço das tasks e bugs do modulo."
+      },
+      "epics": {
+        "label": "Epics",
+        "support": "Estruturas macro do portfolio registradas no workspace."
+      },
+      "features": {
+        "label": "Features",
+        "support": "Frentes funcionais conectadas aos epics ativos."
+      },
+      "stories": {
+        "label": "User stories",
+        "support": "Demandas descritas antes da execucao operacional."
+      }
+    },
+    "overview": {
+      "sprintHealth": {
+        "backlog": "Backlog",
+        "bugs": "Bugs",
+        "done": "Done",
+        "flowing": "Em fluxo",
+        "title": "Saude da sprint"
+      },
+      "upcoming": {
+        "empty": "Nenhuma entrega com prazo definido.",
+        "title": "Proximas entregas"
+      }
+    },
+    "tabs": {
+      "backlog": {
+        "support": "Hierarquia do produto",
+        "title": "Backlog"
+      },
+      "gantt": {
+        "support": "Planejamento de sprint",
+        "title": "Gantt"
+      },
+      "kanban": {
+        "support": "Fluxo operacional",
+        "title": "Kanban"
+      }
+    },
+    "title": "Projetos",
+    "types": {
+      "bug": "Bug",
+      "epic": "Epic",
+      "feature": "Feature",
+      "story": "User Story",
+      "task": "Task"
+    }
+  },
+  "reportsPage": {
+    "audit": {
+      "ambiguous": "Cards em estado ambiguo entre macrocolunas: {{count}}",
+      "missing": "Cards sem estado Kanban: {{count}}",
+      "noIssues": "Nenhuma inconsistencia encontrada no snapshot atual.",
+      "title": "Auditoria de consistencia",
+      "unknown": "Cards em estado fora do modelo: {{count}}"
+    },
+    "board": {
+      "closeBoard": "Fechar Kanban",
+      "description": "Macrocolunas no quadro · estado interno como label no card.",
+      "emptyStage": "Sem cards nesta etapa.",
+      "eyebrow": "Visualizacao",
+      "openBoard": "Acesso ao Kanban",
+      "scrollLeft": "Rolar para esquerda",
+      "scrollRight": "Rolar para direita",
+      "title": "Kanban classico"
+    },
+    "card": {
+      "gut": "GUT",
+      "noParticipant": "Sem participante",
+      "participantAlt": "Participante"
+    },
+    "classification": {
+      "ambiguousStage": "Ambiguo ({{stages}})",
+      "noStage": "Sem etapa",
+      "unmappedStage": "Nao mapeado"
+    },
+    "distribution": {
+      "countSummary": "{{count}} card(s) ({{percent}}%)",
+      "mappedCards": "{{count}} cards mapeados de forma univoca",
+      "title": "Distribuicao por macrocoluna"
+    },
+    "feedback": {
+      "loadError": "Nao foi possivel carregar os dados de report.",
+      "moveError": "Nao foi possivel mover o card no Kanban.",
+      "moveSuccess": "Card movido para {{stage}} com estado \"{{state}}\"."
+    },
+    "filtered": {
+      "columns": {
+        "createdAt": "Criado em",
+        "stage": "Macrocoluna",
+        "state": "Estado interno",
+        "task": "Tarefa"
+      },
+      "empty": "Nenhum card encontrado para os filtros atuais.",
+      "results_one": "{{count}} resultado",
+      "results_other": "{{count}} resultados",
+      "title": "Cards filtrados"
+    },
+    "filters": {
+      "search": "Busca",
+      "searchPlaceholder": "Nome, descricao, estado...",
+      "stage": "Macrocoluna",
+      "state": "Estado interno",
+      "title": "Filtros"
+    },
+    "header": {
+      "description": "Macrocolunas fixas: Backlog, Analise (Plan), Doing (Do), Conferindo (Check), Revisao e Padronizacao (Act), Done.",
+      "eyebrow": "PDCA · MASP · Fluxo de estado",
+      "title": "Relatorio de Fluxo PDCA + MASP"
+    },
+    "loading": "Carregando dados do report...",
+    "metrics": {
+      "activeStages": "Macrocolunas ativas",
+      "cards": "Cards",
+      "inconsistencies": "Inconsistencias",
+      "stateCoverage": "Cobertura estado"
+    },
+    "moveModal": {
+      "description": "Selecione o estado interno que sera salvo em posicao Kanban.",
+      "stageLabel": "Coluna Kanban",
+      "stagePlaceholder": "Selecione a macrocoluna...",
+      "stateLabel": "Estado Kanban",
+      "statePlaceholder": "Selecione o estado...",
+      "title": "Definir estado da coluna",
+      "transition": "Movimento de \"{{from}}\" para \"{{to}}\"."
+    },
+    "transitionRules": {
+      "rule1": "Nenhum item entra em Doing sem passar por Analise.",
+      "rule2": "Todo item deve passar por Conferindo antes de Revisao.",
+      "rule3": "Revisao e Padronizacao consolidam a melhoria.",
+      "rule4": "Done representa encerramento formal e registro organizacional.",
+      "title": "Regras de transicao"
+    }
+  },
+  "categories": {
+    "title": "Cadastro de categorias",
+    "description": "Crie e gerencie as categorias do sistema.",
+    "form": {
+      "name": "Nome da categoria",
+      "namePlaceholder": "Ex: Atendimento, Suporte, Vendas...",
+      "color": "Cor"
+    },
+    "actions": {
+      "new": "Nova categoria",
+      "save": "Salvar categoria",
+      "update": "Atualizar",
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "feedback": {
+      "loadError": "Não foi possível carregar as categorias.",
+      "nameRequired": "Informe o nome da categoria.",
+      "createError": "Não foi possível cadastrar a categoria.",
+      "createSuccess": "Categoria cadastrada com sucesso.",
+      "updateError": "Não foi possível atualizar a categoria.",
+      "updateSuccess": "Categoria atualizada com sucesso.",
+      "deleteConfirm": "Deseja excluir esta categoria?",
+      "deleteError": "Não foi possível excluir a categoria.",
+      "deleteSuccess": "Categoria excluída com sucesso."
+    },
+    "list": {
+      "title": "Categorias cadastradas",
+      "color": "Cor",
+      "name": "Nome",
+      "actions": "Ações",
+      "loading": "Carregando categorias...",
+      "emptyTitle": "Nenhuma categoria encontrada.",
+      "emptyDescription": "Clique em \"Nova categoria\" para começar a organizar."
+    }
+  },
+  "participants": {
+    "title": "Cadastro de participantes",
+    "description": "Crie e gerencie os participantes do sistema.",
+    "form": {
+      "name": "Nome do participante",
+      "namePlaceholder": "Ex: Ana Silva",
+      "image": "Imagem do participante",
+      "previewAlt": "Prévia do participante"
+    },
+    "actions": {
+      "new": "Novo participante",
+      "save": "Salvar participante",
+      "update": "Atualizar",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "chooseImage": "Escolher imagem",
+      "removeImage": "Remover"
+    },
+    "feedback": {
+      "loadError": "Não foi possível carregar os participantes.",
+      "imageError": "Não foi possível carregar a imagem.",
+      "nameRequired": "Informe o nome do participante.",
+      "createError": "Não foi possível cadastrar o participante.",
+      "createSuccess": "Participante cadastrado com sucesso.",
+      "updateError": "Não foi possível atualizar o participante.",
+      "updateSuccess": "Participante atualizado com sucesso.",
+      "deleteConfirm": "Deseja excluir este participante?",
+      "deleteError": "Não foi possível excluir o participante.",
+      "deleteSuccess": "Participante excluído com sucesso."
+    },
+    "list": {
+      "title": "Participantes cadastrados",
+      "profile": "Perfil",
+      "name": "Nome",
+      "actions": "Ações",
+      "loading": "Carregando participantes...",
+      "emptyTitle": "Nenhum participante encontrado.",
+      "emptyDescription": "Clique em \"Novo participante\" para adicionar."
+    }
+  },
+  "subcategories": {
+    "title": "Cadastro de subcategorias",
+    "description": "Crie e gerencie subcategorias vinculadas a categorias.",
+    "form": {
+      "name": "Nome da subcategoria",
+      "namePlaceholder": "Ex: Atendimento VIP",
+      "category": "Categoria vinculada",
+      "categoryPlaceholder": "Selecione uma categoria...",
+      "color": "Cor da subcategoria",
+      "inherited": "Herdado de:"
+    },
+    "categoryModal": {
+      "title": "Nova categoria",
+      "description": "Cadastre uma categoria para vincular.",
+      "name": "Nome da categoria",
+      "namePlaceholder": "Ex: Atendimento",
+      "color": "Cor",
+      "submit": "Cadastrar"
+    },
+    "actions": {
+      "new": "Nova subcategoria",
+      "save": "Salvar subcategoria",
+      "update": "Atualizar",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "newCategory": "Nova categoria"
+    },
+    "feedback": {
+      "categoriesLoadError": "Não foi possível carregar as categorias.",
+      "loadError": "Não foi possível carregar as subcategorias.",
+      "nameRequired": "Informe o nome da subcategoria.",
+      "categoryRequired": "Selecione uma categoria vinculada.",
+      "createError": "Não foi possível cadastrar a subcategoria.",
+      "createSuccess": "Subcategoria cadastrada com sucesso.",
+      "updateError": "Não foi possível atualizar a subcategoria.",
+      "updateSuccess": "Subcategoria atualizada com sucesso.",
+      "deleteConfirm": "Deseja excluir esta subcategoria?",
+      "deleteError": "Não foi possível excluir a subcategoria.",
+      "deleteSuccess": "Subcategoria excluída com sucesso.",
+      "newCategoryNameRequired": "Informe o nome da categoria.",
+      "newCategoryCreateError": "Não foi possível cadastrar a categoria.",
+      "newCategoryCreateSuccess": "Categoria cadastrada com sucesso."
+    },
+    "list": {
+      "title": "Subcategorias cadastradas",
+      "color": "Cor",
+      "subcategory": "Subcategoria",
+      "category": "Categoria vinculada",
+      "actions": "Ações",
+      "loading": "Carregando subcategorias...",
+      "emptyTitle": "Nenhuma subcategoria encontrada.",
+      "emptyDescription": "Clique em \"Nova subcategoria\" para começar."
+    }
+  },
+  "boxes": {
+    "description": "Atividades com alocação em {{allocation}}.",
+    "feedback": {
+      "loadError": "Não foi possível carregar os registros de {{box}}.",
+      "activateAuthError": "Usuário não autenticado para carregar a atividade.",
+      "removeAuthError": "Usuário não autenticado para remover a atividade.",
+      "deleting": "Excluindo registro {{id}}...",
+      "deleteError": "Falha ao excluir o registro {{id}}.",
+      "deleteSuccess": "Registro {{id}} excluído com sucesso.",
+      "removeConfirm": "Deseja realmente excluir este registro?"
+    },
+    "actions": {
+      "activate": "Ativar",
+      "remove": "Remover"
+    },
+    "list": {
+      "name": "Nome",
+      "createdAt": "Data de inclusão",
+      "loading": "Carregando registros...",
+      "emptyTitle": "Nenhum registro encontrado.",
+      "emptyDescription": "Não há atividades com alocação \"{{allocation}}\"."
+    },
+    "items": {
+      "stuff": {
+        "title": "Stuff",
+        "allocation": "Stuff",
+        "listTitle": "Lista de stuff"
+      },
+      "trash": {
+        "title": "Trash",
+        "allocation": "Trash",
+        "listTitle": "Lista de trash"
+      },
+      "someday": {
+        "title": "Algum dia / talvez",
+        "allocation": "Incubado",
+        "listTitle": "Lista de incubado"
+      },
+      "reference": {
+        "title": "Referência futura",
+        "allocation": "Referência",
+        "listTitle": "Lista de referência"
+      }
+    }
+  },
+  "routes": {
+    "dashboard": "Dashboard",
+    "projetos": "Projetos",
+    "tarefas": "Tarefas",
+    "reports": "Reports",
+    "cad-categorias": "Categorias",
+    "cad-subcategorias": "Subcategorias",
+    "cad-participantes": "Participantes",
+    "blog-admin": "Blog Admin",
+    "boxes": "Boxes",
+    "stuff": "Stuff",
+    "trash": "Trash",
+    "algum-dia": "Algum dia / talvez",
+    "referencia": "Referência futura"
+  }
+}

@@ -1,7 +1,9 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useAdminRole from '../hooks/useAdminRole.js'
 
 export default function AdminRoute() {
+  const { t } = useTranslation()
   const location = useLocation()
   const { loading, user, isAdmin } = useAdminRole()
 
@@ -10,7 +12,7 @@ export default function AdminRoute() {
       <div className="flex min-h-screen items-center justify-center bg-bgDark">
         <div className="flex flex-col items-center gap-4">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-neonCyan border-t-transparent" />
-          <p className="font-mono text-sm uppercase tracking-widest text-textMuted">Validando acesso...</p>
+          <p className="font-mono text-sm uppercase tracking-widest text-textMuted">{t('auth.validatingAccess')}</p>
         </div>
       </div>
     )

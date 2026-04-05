@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, Loader2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../../lib/supabase.js'
+import { translateStageLabel, translateStateLabel } from './kanban-model.js'
 
 const EXCLUDED_ALOCADO_CLAUSE = '("Stuff","Trash","Referencia","Incubado")'
 const DAY_IN_MS = 1000 * 60 * 60 * 24
@@ -25,12 +27,7 @@ const STAGE_ACCENT = {
     done:    '#4ade80',
 }
 
-const TRANSITION_RULES = [
-    'Nenhum item entra em Doing sem passar por Analise.',
-    'Todo item deve passar por Conferindo antes de Revisao.',
-    'Revisao e Padronizacao consolidam a melhoria.',
-    'Done representa encerramento formal e registro organizacional.',
-]
+const TRANSITION_RULE_KEYS = ['rule1', 'rule2', 'rule3', 'rule4']
 
 const DEFAULT_STATE_BY_STAGE = {
     backlog: 'backlog',
@@ -104,7 +101,9 @@ const KanbanCard = ({
     onMoveTooltip,
     onHideTooltip,
 }) => {
-    const stateLabel          = classification.stateLabel || 'Sem estado'
+    const { t } = useTranslation()
+    const stateLabel          = classification.stateLabel || t('kanbanCommon.states.none')
+    const translatedStateLabel = classification.type === 'known' ? translateStateLabel(classification.stateValue || stateLabel) : stateLabel
     const corCategoria        = categoria?.corcategoria   || '#64748b'
     const corSubcategoria     = subcategoria?.corsubcategoria || '#94a3b8'
     const participanteInicial = participante?.nomeparticipante?.trim()?.charAt(0)?.toUpperCase() || '?'
@@ -148,9 +147,9 @@ const KanbanCard = ({
                 <div className="flex items-start justify-between gap-2">
                     <span
                         className={`inline-flex items-center border font-mono text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 max-w-[calc(100%-2.5rem)] truncate ${getStateBadgeClass(stateLabel)}`}
-                        title={stateLabel.length > STATE_MAX ? stateLabel : undefined}
+                        title={translatedStateLabel.length > STATE_MAX ? translatedStateLabel : undefined}
                     >
-                        {truncateLabel(stateLabel, STATE_MAX)}
+                        {truncateLabel(translatedStateLabel, STATE_MAX)}
                     </span>
 
                     {/* Avatar — square */}
@@ -158,7 +157,7 @@ const KanbanCard = ({
                         {participante?.fotobase64 ? (
                             <img
                                 src={participante.fotobase64}
-                                alt={participante.nomeparticipante || 'Participante'}
+                                alt={participante.nomeparticipante || t('reportsPage.card.participantAlt')}
                                 className="h-full w-full object-cover"
                             />
                         ) : (
@@ -214,10 +213,10 @@ const KanbanCard = ({
                         className="font-mono text-[10px] text-zen-text-tri truncate max-w-[7rem]"
                         title={participante?.nomeparticipante?.length > PARTIC_MAX ? participante.nomeparticipante : undefined}
                     >
-                        {truncateLabel(participante?.nomeparticipante || 'Sem participante', PARTIC_MAX)}
+                        {truncateLabel(participante?.nomeparticipante || t('reportsPage.card.noParticipant'), PARTIC_MAX)}
                     </span>
                     <span className="inline-flex items-center border border-zen-blue/40 px-2 py-0.5 font-mono text-[10px] font-semibold text-blue-200 bg-zen-blue/15 shrink-0">
-                        GUT {gutScore > 0 ? gutScore : '-'}
+                        {t('reportsPage.card.gut')} {gutScore > 0 ? gutScore : '-'}
                     </span>
                 </div>
             </div>
@@ -227,7 +226,9 @@ const KanbanCard = ({
 
 // ── Componente principal ──────────────────────────────────────────────────────
 const Reports = () => {
+    const { t, i18n } = useTranslation()
     const navigate = useNavigate()
+    const locale = i18n.resolvedLanguage || 'pt-BR'
     const [userId,           setUserId]           = useState(null)
     const [loading,          setLoading]          = useState(true)
     const [feedback,         setFeedback]         = useState(null)
@@ -246,6 +247,9 @@ const Reports = () => {
     const [labelTooltip,     setLabelTooltip]     = useState({ visible: false, text: '', x: 0, y: 0 })
 
     const scrollContainerRef = useRef(null)
+    const transitionRules = useMemo(() => (
+        TRANSITION_RULE_KEYS.map((key) => t(`reportsPage.transitionRules.${key}`))
+    ), [t])
 
     const scrollKanban = (direction) => {
         if (scrollContainerRef.current) {
@@ -299,7 +303,7 @@ const Reports = () => {
         ])
 
         if (atividadesError) {
-            setFeedback({ type: 'error', message: 'Não foi possível carregar os dados de report.' })
+            setFeedback({ type: 'error', message: t('reportsPage.feedback.loadError') })
             setAtividades([])
             setLoading(false)
             return
@@ -322,7 +326,7 @@ const Reports = () => {
             }))
         )
         setLoading(false)
-    }, [userId])
+    }, [t, userId])
 
     const getBaseGutScore = useCallback((atividade) => {
         const { gravidade, urgencia, tendencia } = atividade
@@ -381,7 +385,15 @@ const Reports = () => {
     const classifyState = useCallback(
         (rawState) => {
             const normalized = normalizeState(rawState)
-            if (!normalized) return { type: 'missing', stageId: null, stageLabel: 'Sem estado', stateLabel: 'Sem estado' }
+            if (!normalized) {
+                return {
+                    type: 'missing',
+                    stageId: null,
+                    stageLabel: t('reportsPage.classification.noStage'),
+                    stateValue: '',
+                    stateLabel: t('kanbanCommon.states.none'),
+                }
+            }
 
             const normalizedKey  = normalizeKey(normalized)
             const stageMatches   = statesIndex.get(normalizedKey) || []
@@ -389,14 +401,16 @@ const Reports = () => {
             if (stageMatches.length === 0) {
                 const macroStageId = stageAliasIndex.get(normalizedKey)
                 if (macroStageId) {
+                    const defaultState = DEFAULT_STATE_BY_STAGE[macroStageId] || normalized
                     return {
                         type: 'known',
                         stageId: macroStageId,
-                        stageLabel: stageById.get(macroStageId)?.label || macroStageId,
-                        stateLabel: DEFAULT_STATE_BY_STAGE[macroStageId] || normalized,
+                        stageLabel: translateStageLabel(stageById.get(macroStageId)?.label || macroStageId),
+                        stateValue: defaultState,
+                        stateLabel: translateStateLabel(defaultState),
                     }
                 }
-                return { type: 'unknown', stageId: null, stageLabel: 'Não mapeado', stateLabel: normalized }
+                return { type: 'unknown', stageId: null, stageLabel: t('reportsPage.classification.unmappedStage'), stateValue: normalized, stateLabel: normalized }
             }
 
             if (stageMatches.length > 1) {
@@ -405,23 +419,33 @@ const Reports = () => {
                     return {
                         type: 'known',
                         stageId: macroStageId,
-                        stageLabel: stageById.get(macroStageId)?.label || macroStageId,
-                        stateLabel: DEFAULT_STATE_BY_STAGE[macroStageId] || normalized,
+                        stageLabel: translateStageLabel(stageById.get(macroStageId)?.label || macroStageId),
+                        stateValue: DEFAULT_STATE_BY_STAGE[macroStageId] || normalized,
+                        stateLabel: translateStateLabel(DEFAULT_STATE_BY_STAGE[macroStageId] || normalized),
                     }
                 }
                 return {
                     type: 'ambiguous',
                     stageId: null,
-                    stageLabel: `Ambíguo (${stageMatches.map((id) => stageById.get(id)?.label || id).join(' / ')})`,
+                    stageLabel: t('reportsPage.classification.ambiguousStage', {
+                        stages: stageMatches.map((id) => translateStageLabel(stageById.get(id)?.label || id)).join(' / '),
+                    }),
+                    stateValue: normalized,
                     stateLabel: normalized,
                     candidateStageIds: stageMatches,
                 }
             }
 
             const stageId = stageMatches[0]
-            return { type: 'known', stageId, stageLabel: stageById.get(stageId)?.label || stageId, stateLabel: normalized }
+            return {
+                type: 'known',
+                stageId,
+                stageLabel: translateStageLabel(stageById.get(stageId)?.label || stageId),
+                stateValue: normalized,
+                stateLabel: translateStateLabel(normalized),
+            }
         },
-        [stageAliasIndex, stageById, statesIndex]
+        [stageAliasIndex, stageById, statesIndex, t]
     )
 
     const diagnostics = useMemo(() => {
@@ -488,7 +512,7 @@ const Reports = () => {
                 .eq('idusuario', userId)
 
             if (error) {
-                setFeedback({ type: 'error', message: 'Não foi possível mover o card no Kanban.' })
+                setFeedback({ type: 'error', message: t('reportsPage.feedback.moveError') })
                 setIsMovingCard(false)
                 return
             }
@@ -498,10 +522,10 @@ const Reports = () => {
                     item.id === atividadeId ? { ...item, posicaoKanban: nextState, 'posicao Kanban': nextState } : item
                 )
             )
-            setFeedback({ type: 'success', message: `Card movido para ${targetStageLabel} com estado "${nextState}".` })
+            setFeedback({ type: 'success', message: t('reportsPage.feedback.moveSuccess', { stage: targetStageLabel, state: translateStateLabel(nextState) }) })
             setIsMovingCard(false)
         },
-        [atividades, userId]
+        [atividades, t, userId]
     )
 
     const closeMoveModal = useCallback(() => { setMoveModal(null) }, [])
@@ -515,7 +539,7 @@ const Reports = () => {
                     ? {
                           ...current,
                           selectedStageId:  nextStageId,
-                          targetStageLabel: targetStage.label,
+                          targetStageLabel: translateStageLabel(targetStage.label),
                           options:          targetStage.states,
                           selectedState:    DEFAULT_STATE_BY_STAGE[nextStageId] || targetStage.states[0] || '',
                       }
@@ -558,11 +582,11 @@ const Reports = () => {
             setMoveModal({
                 atividadeId:      atividade.id,
                 selectedStageId,
-                targetStageLabel: targetStage.label,
+                targetStageLabel: translateStageLabel(targetStage.label),
                 fromStageLabel:   classification.stageLabel,
-                selectedState:    classification.stateLabel || DEFAULT_STATE_BY_STAGE[selectedStageId] || targetStage.states[0] || '',
+                selectedState:    classification.stateValue || DEFAULT_STATE_BY_STAGE[selectedStageId] || targetStage.states[0] || '',
                 options:          targetStage.states,
-                stageOptions:     MACRO_STRUCTURE.map((stage) => ({ id: stage.id, label: stage.label })),
+                stageOptions:     MACRO_STRUCTURE.map((stage) => ({ id: stage.id, label: translateStageLabel(stage.label) })),
             })
         },
         [classifyState, stageById]
@@ -583,11 +607,11 @@ const Reports = () => {
             setMoveModal({
                 atividadeId:      draggedCardId,
                 selectedStageId:  stageId,
-                targetStageLabel: targetStage.label,
+                targetStageLabel: translateStageLabel(targetStage.label),
                 fromStageLabel:   currentClassification.stageLabel,
                 selectedState:    DEFAULT_STATE_BY_STAGE[stageId] || targetStage.states[0] || '',
                 options:          targetStage.states,
-                stageOptions:     MACRO_STRUCTURE.map((stage) => ({ id: stage.id, label: stage.label })),
+                stageOptions:     MACRO_STRUCTURE.map((stage) => ({ id: stage.id, label: translateStageLabel(stage.label) })),
             })
             setDraggedCardId(null)
         },
@@ -597,13 +621,13 @@ const Reports = () => {
     const activeStatesForFilter = useMemo(() => {
         if (stageFilter === 'all') {
             return MACRO_STRUCTURE.flatMap((stage) =>
-                stage.states.map((state) => ({ value: `${stage.id}::${state}`, label: `${state} - ${stage.label}`, stageId: stage.id }))
+                stage.states.map((state) => ({ value: `${stage.id}::${state}`, label: `${translateStateLabel(state)} - ${translateStageLabel(stage.label)}`, stageId: stage.id }))
             )
         }
         const stage = stageById.get(stageFilter)
         if (!stage) return []
-        return stage.states.map((state) => ({ value: `${stage.id}::${state}`, label: state, stageId: stage.id }))
-    }, [stageById, stageFilter])
+        return stage.states.map((state) => ({ value: `${stage.id}::${state}`, label: translateStateLabel(state), stageId: stage.id }))
+    }, [i18n.resolvedLanguage, stageById, stageFilter])
 
     const handleStageFilterChange = useCallback(
         (nextStage) => {
@@ -625,8 +649,8 @@ const Reports = () => {
             const stageLabel = classification.stageLabel
             const stateLabel = classification.stateLabel
             const stageOk  = stageFilter === 'all' || stageId === stageFilter
-            const stateOk  = stateFilter === 'all' || (classification.type === 'known' && stateFilter === `${classification.stageId}::${classification.stateLabel}`)
-            const searchOk = !term || normalizeKey(atividade.nometarefa).includes(term) || normalizeKey(stripHtml(atividade.descricao)).includes(term) || normalizeKey(stageLabel).includes(term) || normalizeKey(stateLabel).includes(term)
+            const stateOk  = stateFilter === 'all' || (classification.type === 'known' && stateFilter === `${classification.stageId}::${classification.stateValue}`)
+            const searchOk = !term || normalizeKey(atividade.nometarefa).includes(term) || normalizeKey(stripHtml(atividade.descricao)).includes(term) || normalizeKey(stageLabel).includes(term) || normalizeKey(stateLabel).includes(term) || normalizeKey(classification.stateValue).includes(term)
             return stageOk && stateOk && searchOk
         })
     }, [atividades, classifyState, search, stageFilter, stateFilter])
@@ -646,10 +670,10 @@ const Reports = () => {
                 <div className="h-[2px] w-full bg-gradient-to-r from-sky-500/60 via-cyan-400/30 to-transparent" />
                 <span className="pointer-events-none absolute right-0 top-[2px] h-8 w-8 border-r border-t border-zen-border/50" />
                 <div className="px-5 py-5 sm:px-6 flex flex-col gap-1">
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">PDCA · MASP · Fluxo de estado</span>
-                    <h1 className="font-display text-2xl font-bold tracking-tight text-white">Relatório de Fluxo PDCA + MASP</h1>
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.header.eyebrow')}</span>
+                    <h1 className="font-display text-2xl font-bold tracking-tight text-white">{t('reportsPage.header.title')}</h1>
                     <p className="text-[13px] text-zen-text-sec">
-                        Macrocolunas fixas: Backlog, Análise (Plan), Doing (Do), Conferindo (Check), Revisão e Padronização (Act), Done.
+                        {t('reportsPage.header.description')}
                     </p>
                 </div>
             </header>
@@ -669,7 +693,7 @@ const Reports = () => {
             {loading && (
                 <div className="flex items-center gap-3 text-xs text-zen-text-sec">
                     <Loader2 className="w-4 h-4 animate-spin text-zen-blue" />
-                    <span className="font-mono uppercase tracking-widest">Carregando dados do report...</span>
+                    <span className="font-mono uppercase tracking-widest">{t('reportsPage.loading')}</span>
                 </div>
             )}
 
@@ -677,9 +701,9 @@ const Reports = () => {
             <section className="border border-zen-border bg-zen-surface">
                 <div className="px-5 py-4 border-b border-zen-border flex items-center justify-between gap-4">
                     <div className="flex flex-col gap-0.5">
-                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Visualização</span>
-                        <h2 className="text-[15px] font-semibold text-white">Kanban clássico</h2>
-                        <p className="font-mono text-[10px] text-zen-text-tri">Macrocolunas no quadro · estado interno como label no card</p>
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.board.eyebrow')}</span>
+                        <h2 className="text-[15px] font-semibold text-white">{t('reportsPage.board.title')}</h2>
+                        <p className="font-mono text-[10px] text-zen-text-tri">{t('reportsPage.board.description')}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {showKanbanBoard && (
@@ -688,7 +712,7 @@ const Reports = () => {
                                     type="button"
                                     onClick={() => scrollKanban('left')}
                                     className="inline-flex items-center justify-center border border-zen-border bg-zen-surface hover:bg-zen-surface-hl w-8 h-8 transition-colors text-zen-text-sec hover:text-white"
-                                    title="Rolar para esquerda"
+                                    title={t('reportsPage.board.scrollLeft')}
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </button>
@@ -696,7 +720,7 @@ const Reports = () => {
                                     type="button"
                                     onClick={() => scrollKanban('right')}
                                     className="inline-flex items-center justify-center border border-zen-border bg-zen-surface hover:bg-zen-surface-hl w-8 h-8 transition-colors text-zen-text-sec hover:text-white"
-                                    title="Rolar para direita"
+                                    title={t('reportsPage.board.scrollRight')}
                                 >
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
@@ -707,7 +731,7 @@ const Reports = () => {
                             onClick={() => setShowKanbanBoard((current) => !current)}
                             className="inline-flex items-center border border-zen-blue/50 bg-zen-blue/15 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-white hover:bg-zen-blue/30 transition-colors shrink-0"
                         >
-                            {showKanbanBoard ? 'Fechar Kanban' : 'Acesso ao Kanban'}
+                            {showKanbanBoard ? t('reportsPage.board.closeBoard') : t('reportsPage.board.openBoard')}
                         </button>
                     </div>
                 </div>
@@ -734,7 +758,7 @@ const Reports = () => {
                                                 <div className="h-[2px] w-full" style={{ backgroundColor: accentColor, opacity: 0.7 }} />
                                                 <div className="px-3 py-2.5 flex items-center justify-between gap-2">
                                                     <h3 className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-white truncate leading-tight">
-                                                        {stage.label}
+                                                        {translateStageLabel(stage.label)}
                                                     </h3>
                                                     <span className="font-mono text-[9px] font-semibold border border-zen-border px-2 py-0.5 text-zen-text-sec bg-zen-surface shrink-0">
                                                         {cards.length}
@@ -746,7 +770,7 @@ const Reports = () => {
                                             <div className="flex flex-col gap-2 px-2 pb-2 min-h-[320px]">
                                                 {cards.length === 0 ? (
                                                     <div className="border border-dashed border-zen-border px-3 py-4 text-center font-mono text-[9px] text-zen-text-tri">
-                                                        Sem cards nesta etapa.
+                                                        {t('reportsPage.board.emptyStage')}
                                                     </div>
                                                 ) : (
                                                     cards.map((atividade) => {
@@ -794,20 +818,20 @@ const Reports = () => {
                     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeMoveModal} />
                     <div className="relative border border-zen-border bg-zen-surface p-5 w-full max-w-md shadow-2xl">
                         <div className="h-[2px] w-full bg-gradient-to-r from-sky-500/50 to-transparent absolute top-0 left-0" />
-                        <h3 className="font-display font-semibold text-lg text-white mt-1">Definir estado da coluna</h3>
+                        <h3 className="font-display font-semibold text-lg text-white mt-1">{t('reportsPage.moveModal.title')}</h3>
                         <p className="font-mono text-[10px] text-zen-text-sec mt-1">
-                            Movimento de "{moveModal.fromStageLabel}" para "{moveModal.targetStageLabel}".
+                            {t('reportsPage.moveModal.transition', { from: moveModal.fromStageLabel, to: moveModal.targetStageLabel })}
                         </p>
-                        <p className="font-mono text-[10px] text-zen-text-sec mt-0.5">Selecione o estado interno que será salvo em posição Kanban.</p>
+                        <p className="font-mono text-[10px] text-zen-text-sec mt-0.5">{t('reportsPage.moveModal.description')}</p>
 
                         <label className="mt-4 flex flex-col gap-2">
-                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Coluna Kanban</span>
+                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.moveModal.stageLabel')}</span>
                             <select
                                 value={moveModal.selectedStageId || ''}
                                 onChange={(event) => handleMoveModalStageChange(event.target.value)}
                                 className="w-full bg-zen-bg border border-zen-border py-2.5 px-3 text-sm text-white focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none transition-all"
                             >
-                                <option value="">Selecione a macrocoluna...</option>
+                                <option value="">{t('reportsPage.moveModal.stagePlaceholder')}</option>
                                 {moveModal.stageOptions.map((stage) => (
                                     <option key={stage.id} value={stage.id}>{stage.label}</option>
                                 ))}
@@ -815,7 +839,7 @@ const Reports = () => {
                         </label>
 
                         <label className="mt-3 flex flex-col gap-2">
-                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Estado Kanban</span>
+                            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.moveModal.stateLabel')}</span>
                             <select
                                 value={moveModal.selectedState}
                                 onChange={(event) =>
@@ -823,9 +847,9 @@ const Reports = () => {
                                 }
                                 className="w-full bg-zen-bg border border-zen-border py-2.5 px-3 text-sm text-white focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none transition-all"
                             >
-                                <option value="">Selecione o estado...</option>
+                                <option value="">{t('reportsPage.moveModal.statePlaceholder')}</option>
                                 {moveModal.options.map((state) => (
-                                    <option key={state} value={state}>{state}</option>
+                                    <option key={state} value={state}>{translateStateLabel(state)}</option>
                                 ))}
                             </select>
                         </label>
@@ -836,7 +860,7 @@ const Reports = () => {
                                 onClick={closeMoveModal}
                                 className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-zen-text-sec hover:text-white hover:bg-zen-border/30 py-2.5 px-4 transition-colors"
                             >
-                                Cancelar
+                                {t('common.cancel')}
                             </button>
                             <div className="flex items-center gap-3">
                                 <button
@@ -845,7 +869,7 @@ const Reports = () => {
                                     disabled={!moveModal.selectedState || !moveModal.selectedStageId || isMovingCard}
                                     className="flex items-center justify-center min-w-[120px] bg-zen-blue hover:bg-blue-600 text-white font-mono text-[10px] font-semibold uppercase tracking-[0.12em] py-2.5 px-5 shadow-lg shadow-blue-900/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
-                                    Confirmar
+                                    {t('common.confirm')}
                                 </button>
                                 <button
                                     type="button"
@@ -853,7 +877,7 @@ const Reports = () => {
                                     className="inline-flex items-center justify-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-zen-text-sec hover:text-white hover:bg-zen-border/30 py-2.5 px-4 border border-zen-border transition-colors"
                                 >
                                     <Pencil className="h-3.5 w-3.5" />
-                                    Editar
+                                    {t('common.edit')}
                                 </button>
                             </div>
                         </div>
@@ -864,10 +888,10 @@ const Reports = () => {
             {/* ── MÉTRICAS ──────────────────────────────────────────────────────── */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-zen-border">
                 {[
-                    { label: 'Cards',               value: diagnostics.total,      tone: 'from-sky-500/40 to-transparent'   },
-                    { label: 'Macrocolunas ativas',  value: `${activeStagesCount}/${MACRO_STRUCTURE.length}`, tone: 'from-blue-500/40 to-transparent' },
-                    { label: 'Cobertura estado',     value: `${coveragePercent}%`,  tone: 'from-cyan-500/40 to-transparent'  },
-                    { label: 'Inconsistências',      value: inconsistenciesCount,   tone: 'from-rose-500/40 to-transparent'  },
+                    { label: t('reportsPage.metrics.cards'), value: diagnostics.total, tone: 'from-sky-500/40 to-transparent' },
+                    { label: t('reportsPage.metrics.activeStages'), value: `${activeStagesCount}/${MACRO_STRUCTURE.length}`, tone: 'from-blue-500/40 to-transparent' },
+                    { label: t('reportsPage.metrics.stateCoverage'), value: `${coveragePercent}%`, tone: 'from-cyan-500/40 to-transparent' },
+                    { label: t('reportsPage.metrics.inconsistencies'), value: inconsistenciesCount, tone: 'from-rose-500/40 to-transparent' },
                 ].map(({ label, value, tone }) => (
                     <article key={label} className="relative overflow-hidden border border-zen-border bg-zen-surface">
                         <div className={`h-[2px] w-full bg-gradient-to-r ${tone}`} />
@@ -883,42 +907,42 @@ const Reports = () => {
             {/* ── FILTROS ───────────────────────────────────────────────────────── */}
             <section className="border border-zen-border bg-zen-surface">
                 <div className="border-b border-zen-border px-4 py-3">
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Filtros</span>
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.filters.title')}</span>
                 </div>
                 <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <label className="flex flex-col gap-2">
-                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Macrocoluna</span>
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.filters.stage')}</span>
                         <select
                             value={stageFilter}
                             onChange={(event) => handleStageFilterChange(event.target.value)}
                             className="bg-zen-bg border border-zen-border py-2.5 px-3 text-sm text-white focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none"
                         >
-                            <option value="all">Todas</option>
+                            <option value="all">{t('common.all.feminine')}</option>
                             {MACRO_STRUCTURE.map((stage) => (
-                                <option key={stage.id} value={stage.id}>{stage.label}</option>
+                                <option key={stage.id} value={stage.id}>{translateStageLabel(stage.label)}</option>
                             ))}
                         </select>
                     </label>
                     <label className="flex flex-col gap-2">
-                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Estado interno</span>
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.filters.state')}</span>
                         <select
                             value={stateFilter}
                             onChange={(event) => setStateFilter(event.target.value)}
                             className="bg-zen-bg border border-zen-border py-2.5 px-3 text-sm text-white focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none"
                         >
-                            <option value="all">Todos</option>
+                            <option value="all">{t('common.all.masculine')}</option>
                             {activeStatesForFilter.map((entry) => (
                                 <option key={entry.value} value={entry.value}>{entry.label}</option>
                             ))}
                         </select>
                     </label>
                     <label className="flex flex-col gap-2">
-                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">Busca</span>
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">{t('reportsPage.filters.search')}</span>
                         <input
                             type="text"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Nome, descrição, estado..."
+                            placeholder={t('reportsPage.filters.searchPlaceholder')}
                             className="bg-zen-bg border border-zen-border py-2.5 px-3 text-sm text-white placeholder:text-zen-text-tri focus:border-zen-blue focus:ring-1 focus:ring-zen-blue outline-none"
                         />
                     </label>
@@ -928,8 +952,8 @@ const Reports = () => {
             {/* ── DISTRIBUIÇÃO POR MACROCOLUNA ──────────────────────────────────── */}
             <section className="border border-zen-border bg-zen-surface">
                 <div className="border-b border-zen-border px-5 py-4 flex items-center justify-between gap-4">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">Distribuição por macrocoluna</h2>
-                    <span className="font-mono text-[10px] text-zen-text-tri">{diagnostics.known} cards mapeados de forma unívoca</span>
+                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">{t('reportsPage.distribution.title')}</h2>
+                    <span className="font-mono text-[10px] text-zen-text-tri">{t('reportsPage.distribution.mappedCards', { count: diagnostics.known })}</span>
                 </div>
                 <div className="p-4 flex flex-col gap-2">
                     {MACRO_STRUCTURE.map((stage) => {
@@ -941,10 +965,10 @@ const Reports = () => {
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1.5 h-4" style={{ backgroundColor: accentColor, opacity: 0.8 }} />
-                                        <div className="text-sm text-white font-semibold">{stage.label}</div>
+                                        <div className="text-sm text-white font-semibold">{translateStageLabel(stage.label)}</div>
                                     </div>
                                     <div className="font-mono text-[10px] text-zen-text-tri">
-                                        {count} card{count === 1 ? '' : 's'} ({percent}%)
+                                        {t('reportsPage.distribution.countSummary', { count, percent })}
                                     </div>
                                 </div>
                                 <div className="mt-2 h-1.5 w-full bg-zen-border/70 overflow-hidden">
@@ -958,7 +982,7 @@ const Reports = () => {
                                                 key={`${stage.id}-${state}`}
                                                 className="inline-flex items-center gap-1 border border-zen-border px-2 py-0.5 font-mono text-[10px] text-zen-text-sec"
                                             >
-                                                {state}
+                                                {translateStateLabel(state)}
                                                 <strong className="text-white ml-1">{stateCount}</strong>
                                             </span>
                                         )
@@ -973,18 +997,18 @@ const Reports = () => {
             {/* ── AUDITORIA ─────────────────────────────────────────────────────── */}
             <section className="border border-zen-border bg-zen-surface">
                 <div className="border-b border-zen-border px-5 py-4">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">Auditoria de consistência</h2>
+                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">{t('reportsPage.audit.title')}</h2>
                 </div>
                 <div className="p-4">
                     {inconsistenciesCount === 0 ? (
-                        <p className="font-mono text-[11px] text-zen-success">Nenhuma inconsistência encontrada no snapshot atual.</p>
+                        <p className="font-mono text-[11px] text-zen-success">{t('reportsPage.audit.noIssues')}</p>
                     ) : (
                         <div className="flex flex-col gap-2">
                             {diagnostics.missing.length > 0 && (
                                 <article className="border border-yellow-500/40 bg-yellow-500/10 p-3 flex items-center gap-2">
                                     <AlertTriangle className="w-4 h-4 text-yellow-300 shrink-0" />
                                     <span className="font-mono text-[10px] text-yellow-300 font-semibold">
-                                        Cards sem estado Kanban: {diagnostics.missing.length}
+                                        {t('reportsPage.audit.missing', { count: diagnostics.missing.length })}
                                     </span>
                                 </article>
                             )}
@@ -992,7 +1016,7 @@ const Reports = () => {
                                 <article className="border border-zen-error/40 bg-zen-error/10 p-3 flex items-center gap-2">
                                     <AlertTriangle className="w-4 h-4 text-zen-error shrink-0" />
                                     <span className="font-mono text-[10px] text-zen-error font-semibold">
-                                        Cards em estado fora do modelo: {diagnostics.unknown.length}
+                                        {t('reportsPage.audit.unknown', { count: diagnostics.unknown.length })}
                                     </span>
                                 </article>
                             )}
@@ -1000,7 +1024,7 @@ const Reports = () => {
                                 <article className="border border-orange-500/40 bg-orange-500/10 p-3 flex items-center gap-2">
                                     <AlertTriangle className="w-4 h-4 text-orange-300 shrink-0" />
                                     <span className="font-mono text-[10px] text-orange-300 font-semibold">
-                                        Cards em estado ambíguo entre macrocolunas: {diagnostics.ambiguous.length}
+                                        {t('reportsPage.audit.ambiguous', { count: diagnostics.ambiguous.length })}
                                     </span>
                                 </article>
                             )}
@@ -1012,14 +1036,14 @@ const Reports = () => {
             {/* ── TABELA DE CARDS FILTRADOS ──────────────────────────────────────── */}
             <section className="border border-zen-border bg-zen-surface overflow-hidden">
                 <div className="px-5 py-4 border-b border-zen-border bg-zen-surface/50 flex items-center justify-between">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">Cards filtrados</h2>
-                    <span className="font-mono text-[10px] text-zen-text-tri">{filteredAtividades.length} resultado(s)</span>
+                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">{t('reportsPage.filtered.title')}</h2>
+                    <span className="font-mono text-[10px] text-zen-text-tri">{t('reportsPage.filtered.results', { count: filteredAtividades.length })}</span>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead className="bg-zen-bg/60">
                             <tr className="text-left">
-                                {['Tarefa', 'Macrocoluna', 'Estado interno', 'Criado em'].map((col) => (
+                                {[t('reportsPage.filtered.columns.task'), t('reportsPage.filtered.columns.stage'), t('reportsPage.filtered.columns.state'), t('reportsPage.filtered.columns.createdAt')].map((col) => (
                                     <th key={col} className="px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
                                         {col}
                                     </th>
@@ -1030,7 +1054,7 @@ const Reports = () => {
                             {filteredAtividades.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-4 py-6 text-center font-mono text-[11px] text-zen-text-tri">
-                                        Nenhum card encontrado para os filtros atuais.
+                                        {t('reportsPage.filtered.empty')}
                                     </td>
                                 </tr>
                             ) : (
@@ -1054,7 +1078,7 @@ const Reports = () => {
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3 font-mono text-[11px] text-zen-text-sec">
-                                                {atividade.created_at ? new Date(atividade.created_at).toLocaleDateString('pt-BR') : '-'}
+                                                {atividade.created_at ? new Date(atividade.created_at).toLocaleDateString(locale) : '-'}
                                             </td>
                                         </tr>
                                     )
@@ -1068,10 +1092,10 @@ const Reports = () => {
             {/* ── REGRAS DE TRANSIÇÃO ───────────────────────────────────────────── */}
             <section className="border border-zen-border bg-zen-surface">
                 <div className="border-b border-zen-border px-5 py-4">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">Regras de transição</h2>
+                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white">{t('reportsPage.transitionRules.title')}</h2>
                 </div>
                 <ul className="p-4 flex flex-col gap-2">
-                    {TRANSITION_RULES.map((rule, i) => (
+                    {transitionRules.map((rule, i) => (
                         <li key={rule} className="flex items-start gap-3 border border-zen-border bg-zen-bg/70 px-3 py-2">
                             <span className="font-mono text-[10px] font-bold text-zen-text-tri shrink-0 mt-0.5">
                                 {String(i + 1).padStart(2, '0')}

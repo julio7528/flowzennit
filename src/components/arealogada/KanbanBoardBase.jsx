@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Filter, Loader2, MoveRight, Pencil } from 'lucide-react'
 import { supabase } from '../../lib/supabase.js'
 import {
@@ -7,19 +8,21 @@ import {
     EXCLUDED_ALOCADO_CLAUSE,
     KANBAN_GROUPS,
     PROJECT_KANBAN_GROUPS,
-    VIEW_OPTIONS,
+    getViewOptions,
     getStateBadgeClass,
     normalizeKey,
     normalizeState,
     stripHtml,
+    translateStageLabel,
+    translateStateLabel,
 } from './kanban-model.js'
 
-const formatAlocadoLabel = (alocado) => {
+const formatAlocadoLabel = (alocado, t) => {
     const normalized = normalizeKey(alocado)
-    if (normalized === 'taskproj') return 'Task'
-    if (normalized === 'bugproj') return 'Bug'
-    if (normalized === 'agendar') return 'Agendar'
-    if (normalized === 'delegar') return 'Delegar'
+    if (normalized === 'taskproj') return t('kanbanCommon.allocation.task')
+    if (normalized === 'bugproj') return t('kanbanCommon.allocation.bug')
+    if (normalized === 'agendar') return t('kanbanCommon.allocation.schedule')
+    if (normalized === 'delegar') return t('kanbanCommon.allocation.delegate')
     return alocado || '-'
 }
 
@@ -53,8 +56,8 @@ const toSeedData = (atividade) => ({
 })
 
 const KanbanBoardBase = ({
-    title = 'Board Kanban',
-    description = 'Arraste cards entre colunas para mover entre macroetapas.',
+    title,
+    description,
     defaultViewMode = 'all',
     forceViewMode = null,
     kanbanGroups = null,
@@ -63,6 +66,7 @@ const KanbanBoardBase = ({
     onCardOpen,
     onChanged,
 }) => {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const location = useLocation()
     const [userId, setUserId] = useState(null)
@@ -85,6 +89,9 @@ const KanbanBoardBase = ({
 
     const activeViewMode = forceViewMode || viewMode
     const activeAlocados = ALOCADOS_BY_VIEW_MODE[activeViewMode] || null
+    const resolvedTitle = title || t('kanbanCommon.defaults.title')
+    const resolvedDescription = description || t('kanbanCommon.defaults.description')
+    const viewOptions = getViewOptions()
     const groups = useMemo(
         () => {
             const sourceGroups = activeViewMode === 'projects' ? PROJECT_KANBAN_GROUPS : kanbanGroups || KANBAN_GROUPS
@@ -119,7 +126,7 @@ const KanbanBoardBase = ({
         const { data, error } = await query
 
         if (error) {
-            setFeedback({ type: 'error', message: 'Nao foi possivel carregar os cards do Kanban.' })
+            setFeedback({ type: 'error', message: t('kanbanCommon.feedback.loadError') })
             setAtividades([])
             setLoading(false)
             return
@@ -132,7 +139,7 @@ const KanbanBoardBase = ({
             }))
         )
         setLoading(false)
-    }, [activeAlocados, userId])
+    }, [activeAlocados, t, userId])
 
     useEffect(() => {
         const timer = setTimeout(() => loadAtividades(), 0)
@@ -148,7 +155,7 @@ const KanbanBoardBase = ({
             if (!atividadeId || !userId || !nextState || normalizeKey(nextState) === normalizeKey(currentState)) return
 
             if (normalizeKey(nextState) === normalizeKey('backlog') && !canMoveToBacklog(currentState)) {
-                setFeedback({ type: 'error', message: 'Nao e permitido retornar um card para backlog apos sair desse estado.' })
+                setFeedback({ type: 'error', message: t('kanbanCommon.feedback.cannotReturnToBacklog') })
                 return
             }
 
@@ -159,17 +166,22 @@ const KanbanBoardBase = ({
                 .eq('idusuario', userId)
 
             if (error) {
-                setFeedback({ type: 'error', message: 'Nao foi possivel atualizar a posicao Kanban.' })
+                setFeedback({ type: 'error', message: t('kanbanCommon.feedback.updateError') })
                 return
             }
 
             setAtividades((current) =>
                 current.map((item) => (item.id === atividadeId ? { ...item, posicaoKanban: nextState, 'posicao Kanban': nextState } : item))
             )
-            setFeedback({ type: 'success', message: `Card movido para "${nextState}".` })
+            setFeedback({
+                type: 'success',
+                message: t('kanbanCommon.feedback.moveSuccess', {
+                    state: translateStateLabel(nextState),
+                }),
+            })
             onChanged?.()
         },
-        [canMoveToBacklog, onChanged, userId]
+        [canMoveToBacklog, onChanged, t, userId]
     )
 
     const handleOpenCard = useCallback(
@@ -298,14 +310,14 @@ const KanbanBoardBase = ({
                 <div className="border-b border-zen-border bg-gradient-to-r from-sky-500/10 via-zen-surface to-emerald-500/10 px-4 py-4 sm:px-5">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                         <div className="space-y-1.5">
-                            <h2 className="font-display text-lg font-semibold text-white">{title}</h2>
-                            <p className="max-w-3xl text-sm text-zen-text-sec">{description}</p>
+                            <h2 className="font-display text-lg font-semibold text-white">{resolvedTitle}</h2>
+                            <p className="max-w-3xl text-sm text-zen-text-sec">{resolvedDescription}</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
                             {showViewOptions && (
                                 <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zen-border bg-zen-bg/60 p-1">
-                                    {VIEW_OPTIONS.map((option) => {
+                                    {viewOptions.map((option) => {
                                         const active = activeViewMode === option.value
                                         return (
                                             <button
@@ -327,7 +339,7 @@ const KanbanBoardBase = ({
                             )}
                             <div className="inline-flex items-center gap-2 rounded-xl border border-zen-border bg-zen-bg/70 px-3 py-2 text-xs text-zen-text-sec">
                                 <Filter className="h-3.5 w-3.5 text-zen-blue" />
-                                {atividades.length} card{atividades.length === 1 ? '' : 's'}
+                                {t('kanbanCommon.cardsCount', { count: atividades.length })}
                             </div>
                         </div>
                     </div>
@@ -336,7 +348,7 @@ const KanbanBoardBase = ({
                 {loading ? (
                     <div className="flex items-center gap-3 px-5 py-12 text-sm text-zen-text-sec">
                         <Loader2 className="h-4 w-4 animate-spin text-zen-blue" />
-                        Carregando cards do Kanban...
+                        {t('kanbanCommon.loading')}
                     </div>
                 ) : (
                     <div className="p-3 sm:p-4">
@@ -352,8 +364,10 @@ const KanbanBoardBase = ({
                                     >
                                         <header className="flex items-center justify-between gap-3 border-b border-zen-border/80 pb-3">
                                             <div className="space-y-1">
-                                                <h3 className="text-sm font-semibold text-white">{group.stage}</h3>
-                                                <p className="text-[11px] text-zen-text-tri hidden">Estados: {group.states.join(', ')}</p>
+                                                <h3 className="text-sm font-semibold text-white">{translateStageLabel(group.stage)}</h3>
+                                                <p className="text-[11px] text-zen-text-tri hidden">
+                                                    {t('kanbanCommon.statesLabel')} {group.states.map((state) => translateStateLabel(state)).join(', ')}
+                                                </p>
                                             </div>
                                             <span className="inline-flex min-w-8 items-center justify-center rounded-lg border border-zen-border bg-zen-surface px-2 py-1 text-xs font-medium text-zen-text-sec">
                                                 {cards.length}
@@ -363,7 +377,7 @@ const KanbanBoardBase = ({
                                         <div className="flex flex-1 flex-col gap-2">
                                             {cards.length === 0 ? (
                                                 <div className="rounded-xl border border-dashed border-zen-border px-3 py-6 text-center text-xs text-zen-text-tri">
-                                                    Sem cards nesta etapa.
+                                                    {t('kanbanCommon.emptyStage')}
                                                 </div>
                                             ) : (
                                                 cards.map((atividade) => (
@@ -382,14 +396,14 @@ const KanbanBoardBase = ({
                                                                         atividade.posicaoKanban
                                                                     )}`}
                                                                 >
-                                                                    {atividade.posicaoKanban || 'Sem estado'}
+                                                                    {translateStateLabel(atividade.posicaoKanban)}
                                                                 </span>
                                                                 <span
                                                                     className={`inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-medium ${getAlocadoBadgeClass(
                                                                         atividade.alocado
                                                                     )}`}
                                                                 >
-                                                                    {formatAlocadoLabel(atividade.alocado)}
+                                                                    {formatAlocadoLabel(atividade.alocado, t)}
                                                                 </span>
                                                                 {Number(atividade.percentual_progresso) > 0 && (
                                                                     <span className="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[11px] font-medium text-emerald-200">
@@ -406,13 +420,13 @@ const KanbanBoardBase = ({
                                                                 className="inline-flex items-center gap-1 rounded-md border border-zen-border px-2 py-1 text-[11px] text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                                                             >
                                                                 <MoveRight className="h-3 w-3" />
-                                                                Mover
+                                                                {t('kanbanCommon.actions.move')}
                                                             </button>
                                                         </div>
 
                                                         <h4 className="mt-3 text-sm font-semibold text-white">{atividade.nometarefa || '-'}</h4>
                                                         <p className="mt-1 line-clamp-3 text-xs leading-5 text-zen-text-sec">
-                                                            {stripHtml(atividade.descricao) || 'Sem descricao.'}
+                                                            {stripHtml(atividade.descricao) || t('kanbanCommon.noDescription')}
                                                         </p>
                                                     </article>
                                                 ))
@@ -431,12 +445,14 @@ const KanbanBoardBase = ({
                     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal} />
                     <div className="relative w-full max-w-md rounded-xl border border-zen-border bg-zen-surface p-5 shadow-2xl">
                         <h3 className="font-display text-lg font-semibold text-white">
-                            {modalState.mode === 'destination' ? 'Mover para macrocoluna' : 'Selecione o estado exato'}
+                            {modalState.mode === 'destination'
+                                ? t('kanbanCommon.modal.moveToStage')
+                                : t('kanbanCommon.modal.selectExactState')}
                         </h3>
 
                         {modalState.mode === 'destination' ? (
                             <>
-                                <p className="mt-1 text-sm text-zen-text-sec">Escolha a macrocoluna de destino.</p>
+                                <p className="mt-1 text-sm text-zen-text-sec">{t('kanbanCommon.modal.chooseStage')}</p>
                                 <select
                                     value={modalState.selectedStage}
                                     onChange={(event) =>
@@ -446,10 +462,10 @@ const KanbanBoardBase = ({
                                     }
                                     className="mt-4 w-full rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                                 >
-                                    <option value="">Selecione...</option>
+                                    <option value="">{t('kanbanCommon.modal.select')}</option>
                                     {modalState.stageOptions.map((stage) => (
                                         <option key={stage} value={stage}>
-                                            {stage}
+                                            {translateStageLabel(stage)}
                                         </option>
                                     ))}
                                 </select>
@@ -457,7 +473,9 @@ const KanbanBoardBase = ({
                         ) : (
                             <>
                                 <p className="mt-1 text-sm text-zen-text-sec">
-                                    A etapa "{modalState.selectedStage}" possui multiplos estados.
+                                    {t('kanbanCommon.modal.multipleStates', {
+                                        stage: translateStageLabel(modalState.selectedStage),
+                                    })}
                                 </p>
                                 <select
                                     value={modalState.selectedState}
@@ -468,10 +486,10 @@ const KanbanBoardBase = ({
                                     }
                                     className="mt-4 w-full rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                                 >
-                                    <option value="">Selecione o estado...</option>
+                                    <option value="">{t('kanbanCommon.modal.selectState')}</option>
                                     {modalState.stateOptions.map((state) => (
                                         <option key={state} value={state}>
-                                            {state}
+                                            {translateStateLabel(state)}
                                         </option>
                                     ))}
                                 </select>
@@ -484,7 +502,7 @@ const KanbanBoardBase = ({
                                 onClick={closeModal}
                                 className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                             >
-                                Cancelar
+                                {t('common.cancel')}
                             </button>
                             <div className="flex items-center gap-2">
                                 <button
@@ -493,7 +511,7 @@ const KanbanBoardBase = ({
                                     className="inline-flex items-center gap-2 rounded-lg border border-zen-border px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white"
                                 >
                                     <Pencil className="h-4 w-4" />
-                                    Editar
+                                    {t('kanbanCommon.actions.edit')}
                                 </button>
                                 <button
                                     type="button"
@@ -504,7 +522,7 @@ const KanbanBoardBase = ({
                                     }
                                     className="min-w-[120px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                    Confirmar
+                                    {t('common.confirm')}
                                 </button>
                             </div>
                         </div>

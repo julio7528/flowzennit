@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 
 const { insertMock, fromMock } = vi.hoisted(() => {
   const insert = vi.fn()
@@ -17,6 +17,7 @@ vi.mock('../lib/supabase', () => ({
 }))
 
 import Contacts from '../components/contacts.jsx'
+import { renderWithProviders } from './render-with-providers.jsx'
 
 describe('Contacts form', () => {
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('Contacts form', () => {
   it('envia o formulario e mostra mensagem de sucesso', async () => {
     insertMock.mockResolvedValue({ error: null })
 
-    render(<Contacts />)
+    renderWithProviders(<Contacts />)
 
     fireEvent.change(screen.getByLabelText(/nome completo/i), { target: { value: 'Maria Silva' } })
     fireEvent.change(screen.getByLabelText(/e-mail corporativo/i), { target: { value: 'maria@empresa.com' } })

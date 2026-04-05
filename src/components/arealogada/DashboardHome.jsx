@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Activity, ArrowRight, BriefcaseBusiness, CalendarDays, CheckCircle2, CircleDot, FolderKanban, Gauge, Layers3, ListTodo, RefreshCw, ShieldAlert, Target, TimerReset, Users, Workflow, } from 'lucide-react'
 import {
   buildRiskBreakdown,
@@ -92,6 +93,7 @@ const EmptyState = ({ title, description, ctaLabel, onClick }) => (
 
 
 const DashboardHome = () => {
+    const { t } = useTranslation()
     const today = new Date()
     const sevenDaysAgo = new Date(today)
     sevenDaysAgo.setDate(today.getDate() - 7)
@@ -122,10 +124,14 @@ const DashboardHome = () => {
     const { pulse, counts, flow, coverage, projects, risks } = analytics.summary
     const { currentItems, ownerLoad, portfolioRows, priorityItems, qualitativeInsights, recentItems, semResponsavel } = analytics.cards
 
-    const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuario'
-    const firstName = displayName.trim().split(' ')[0] || 'Usuario'
+    const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || t('common.user')
+    const firstName = displayName.trim().split(' ')[0] || t('common.user')
     const hour = new Date().getHours()
-    const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
+    const greeting = hour < 12
+        ? t('dashboardHome.greetings.morning')
+        : hour < 18
+        ? t('dashboardHome.greetings.afternoon')
+        : t('dashboardHome.greetings.evening')
 
   // Filtro de datas → recalcula riskBreakdown local para o painel "Faixas GUT"
     const nowRef = new Date().getTime()
@@ -156,10 +162,10 @@ const DashboardHome = () => {
     const pulseToneClass = getPulseToneClass(pulse.level)
 
     const quickActions = [
-        { label: 'Abrir projetos', icon: FolderKanban, onClick: () => navigate('/projetos') },
-        { label: 'Abrir tarefas', icon: CheckCircle2, onClick: () => navigate('/tarefas') },
-        { label: 'Abrir reports', icon: Activity, onClick: () => navigate('/reports') },
-        { label: 'Cadastros', icon: Users, onClick: () => navigate('/cad-participantes') },
+        { label: t('dashboardHome.quickActions.projects'), icon: FolderKanban, onClick: () => navigate('/projetos') },
+        { label: t('dashboardHome.quickActions.tasks'), icon: CheckCircle2, onClick: () => navigate('/tarefas') },
+        { label: t('dashboardHome.quickActions.reports'), icon: Activity, onClick: () => navigate('/reports') },
+        { label: t('dashboardHome.quickActions.records'), icon: Users, onClick: () => navigate('/cad-participantes') },
     ]
 
     if (analytics.loading && counts.workspaceTotal === 0) {
@@ -168,7 +174,7 @@ const DashboardHome = () => {
                 <div className="flex w-full items-center justify-center gap-3 border border-zen-border bg-zen-surface px-6 py-20">
                     <RefreshCw className="h-5 w-5 animate-spin text-zen-blue" />
                     <span className="font-mono text-xs text-zen-text-sec tracking-widest uppercase">
-                        Carregando leitura analitica do workspace...
+                        {t('dashboardHome.loading')}
                     </span>
                 </div>
             </div>
@@ -205,15 +211,15 @@ const DashboardHome = () => {
                             {/* meta badges */}
                             <div className="mt-4 flex flex-wrap gap-2">
                                 <span className="border border-zen-border bg-zen-bg/70 px-3 py-1 font-mono text-[10px] text-zen-text-sec">
-                                    Ultima leitura:{' '}
+                                    {t('dashboardHome.meta.lastRead')}{' '}
                                     {analytics.lastLoadedAt ? formatDateTime(analytics.lastLoadedAt) : '—'}
                                 </span>
                                 <span className="border border-zen-border bg-zen-bg/70 px-3 py-1 font-mono text-[10px] text-zen-text-sec">
-                                    Atualização:{' '}
+                                    {t('dashboardHome.meta.updatedAt')}{' '}
                                     {analytics.lastLoadedAt ? formatRelativeTime(analytics.lastLoadedAt) : '—'}
                                 </span>
                                 <span className="border border-zen-border bg-zen-bg/70 px-3 py-1 font-mono text-[10px] text-zen-text-sec">
-                                    Alertas: {risks.alertCount}
+                                    {t('dashboardHome.meta.alerts', { count: risks.alertCount })}
                                 </span>
                             </div>
 
@@ -236,7 +242,7 @@ const DashboardHome = () => {
                                     className="inline-flex items-center gap-2 bg-zen-blue px-4 py-2 text-xs font-semibold text-white hover:bg-blue-600 transition-colors"
                                 >
                                     <RefreshCw className={`h-3.5 w-3.5 ${analytics.refreshing ? 'animate-spin' : ''}`} />
-                                    Atualizar
+                                    {t('common.refresh')}
                                 </button>
                             </div>
                         </div>
@@ -245,35 +251,41 @@ const DashboardHome = () => {
                         <div className="grid w-full gap-px sm:grid-cols-3 xl:w-[400px] xl:max-w-[400px] bg-zen-border">
                             <div className="bg-zen-bg/90 p-5">
                                 <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
-                                    Ativos agora
+                                    {t('dashboardHome.heroStats.activeNow')}
                                 </div>
                                 <div className="mt-3 font-display text-4xl font-bold text-white leading-none">
                                     {counts.activeTotal}
                                 </div>
                                 <div className="mt-2 text-[11px] text-zen-text-sec leading-4">
-                                    {flow.inFlow} em fluxo · {flow.backlog} em backlog
+                                    {t('dashboardHome.heroStats.activeNowSupport', {
+                                        inFlow: flow.inFlow,
+                                        backlog: flow.backlog,
+                                    })}
                                 </div>
                             </div>
                             <div className="bg-zen-bg/90 p-5">
                                 <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
-                                    Risco GUT
+                                    {t('dashboardHome.heroStats.gutRisk')}
                                 </div>
                                 <div className="mt-3 font-display text-4xl font-bold text-white leading-none">
                                     {risks.averageDynamicGut}
                                 </div>
                                 <div className="mt-2 text-[11px] text-zen-text-sec leading-4">
-                                    {risks.criticalCount} críticos · {risks.highCount} altos
+                                    {t('dashboardHome.heroStats.gutRiskSupport', {
+                                        criticalCount: risks.criticalCount,
+                                        highCount: risks.highCount,
+                                    })}
                                 </div>
                             </div>
                             <div className="bg-zen-bg/90 p-5">
                                 <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
-                                    Portfolio
+                                    {t('dashboardHome.heroStats.portfolio')}
                                 </div>
                                 <div className="mt-3 font-display text-4xl font-bold text-white leading-none">
                                     {projects.epics}/{projects.features}/{projects.userStories}
                                 </div>
                                 <div className="mt-2 text-[11px] text-zen-text-sec leading-4">
-                                    Epics, features e stories
+                                    {t('dashboardHome.heroStats.portfolioSupport')}
                                 </div>
                             </div>
                         </div>
@@ -292,44 +304,62 @@ const DashboardHome = () => {
             <div className="grid gap-px md:grid-cols-2 xl:grid-cols-3 bg-zen-border">
                 <KpiCard
                     icon={Activity}
-                    label="Volume ativo"
+                    label={t('dashboardHome.kpis.activeVolume.label')}
                     value={formatCompactNumber(counts.activeTotal)}
-                    support={`${counts.workspaceTotal} cards válidos no workspace e ${counts.doneTotal} já encerrados.`}
+                    support={t('dashboardHome.kpis.activeVolume.support', {
+                        workspaceTotal: counts.workspaceTotal,
+                        doneTotal: counts.doneTotal,
+                    })}
                     tone="from-sky-500/50 to-transparent"
                 />
                 <KpiCard
                     icon={Target}
-                    label="Saída do fluxo"
+                    label={t('dashboardHome.kpis.flowOutput.label')}
                     value={`${flow.doneRate}%`}
-                    support={`${flow.done} cards em Done. Backlog hoje: ${flow.backlogRate}% da carteira ativa.`}
+                    support={t('dashboardHome.kpis.flowOutput.support', {
+                        done: flow.done,
+                        backlogRate: flow.backlogRate,
+                    })}
                     tone="from-emerald-500/50 to-transparent"
                 />
                 <KpiCard
                     icon={ShieldAlert}
-                    label="Risco GUT médio"
+                    label={t('dashboardHome.kpis.averageRisk.label')}
                     value={risks.averageDynamicGut}
-                    support={`${risks.overdueCount} atrasados, ${risks.dueSoonCount} vencendo em 72h e ${risks.criticalCount} críticos.`}
+                    support={t('dashboardHome.kpis.averageRisk.support', {
+                        overdueCount: risks.overdueCount,
+                        dueSoonCount: risks.dueSoonCount,
+                        criticalCount: risks.criticalCount,
+                    })}
                     tone="from-rose-500/50 to-transparent"
                 />
                 <KpiCard
                     icon={TimerReset}
-                    label="Planejamento"
+                    label={t('dashboardHome.kpis.planning.label')}
                     value={`${coverage.planning}%`}
-                    support={`Ownership ${coverage.ownership}% e cards de projeto ligados a story em ${coverage.storyLink}%.`}
+                    support={t('dashboardHome.kpis.planning.support', {
+                        ownership: coverage.ownership,
+                        storyLink: coverage.storyLink,
+                    })}
                     tone="from-amber-500/50 to-transparent"
                 />
                 <KpiCard
                     icon={Layers3}
-                    label="Portfolio"
+                    label={t('dashboardHome.kpis.portfolio.label')}
                     value={`${projects.epics}/${projects.features}/${projects.userStories}`}
-                    support={`Hierarquia consolidada em ${projects.hierarchyDepth}% da profundidade esperada.`}
+                    support={t('dashboardHome.kpis.portfolio.support', {
+                        hierarchyDepth: projects.hierarchyDepth,
+                    })}
                     tone="from-cyan-500/50 to-transparent"
                 />
                 <KpiCard
                     icon={Workflow}
-                    label="Progresso do projeto"
+                    label={t('dashboardHome.kpis.projectProgress.label')}
                     value={`${projects.avgProgress}%`}
-                    support={`${counts.projectActive} card(s) de projeto ativos e ${projects.unlinkedProjectItems} sem vínculo de story.`}
+                    support={t('dashboardHome.kpis.projectProgress.support', {
+                        projectActive: counts.projectActive,
+                        unlinkedProjectItems: projects.unlinkedProjectItems,
+                    })}
                     tone="from-indigo-500/50 to-transparent"
                 />
             </div>
@@ -337,13 +367,13 @@ const DashboardHome = () => {
             {/* ── ANALYTICS ROW ─────────────────────────────────────────────── */}
             <div className="grid gap-px xl:grid-cols-[1.5fr_1fr] bg-zen-border">
                 <SectionCard
-                    title="Análise quantitativa"
-                    subtitle="Distribuição do fluxo e matriz GUT a partir das tabelas do banco."
+                    title={t('dashboardHome.sections.quantitative.title')}
+                    subtitle={t('dashboardHome.sections.quantitative.subtitle')}
                     action={
                         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                             <CalendarDays className="h-3 w-3 text-zen-text-sec shrink-0" />
                             <label className="font-mono text-[9px] uppercase tracking-[0.18em] text-zen-text-sec">
-                                De:
+                                {t('dashboardHome.sections.quantitative.from')}
                             </label>
                             <input
                                 type="date"
@@ -353,7 +383,7 @@ const DashboardHome = () => {
                                 className="border border-zen-border bg-zen-bg/70 px-2 py-1 font-mono text-[10px] text-white focus:border-zen-blue focus:outline-none"
                             />
                             <label className="font-mono text-[9px] uppercase tracking-[0.18em] text-zen-text-sec">
-                                Até:
+                                {t('dashboardHome.sections.quantitative.to')}
                             </label>
                             <input
                                 type="date"
@@ -369,7 +399,7 @@ const DashboardHome = () => {
                         {/* stage breakdown */}
                         <div>
                             <div className="mb-4 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
-                                Macroetapas
+                                {t('dashboardHome.sections.quantitative.stages')}
                             </div>
                             <div className="space-y-4">
                                 {flow.stageBreakdown.map((stage) => (
@@ -377,7 +407,10 @@ const DashboardHome = () => {
                                         <div className="flex items-center justify-between gap-3 text-xs">
                                             <span className="text-white">{stage.label}</span>
                                             <span className="font-mono text-zen-text-sec">
-                                                {stage.count} cards · {stage.share}%
+                                                {t('dashboardHome.sections.quantitative.cardsShare', {
+                                                    count: stage.count,
+                                                    share: stage.share,
+                                                })}
                                             </span>
                                         </div>
                                         <div className="mt-2 h-1 bg-zen-bg/70 overflow-hidden">
@@ -394,7 +427,7 @@ const DashboardHome = () => {
                         {/* risk buckets */}
                         <div>
                             <div className="mb-3 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
-                                Faixas GUT
+                                {t('dashboardHome.sections.quantitative.gutBands')}
                             </div>
                             <div className="space-y-2">
                                 {filteredRiskBreakdown.map((bucket) => (
@@ -406,7 +439,9 @@ const DashboardHome = () => {
                                             <span className="text-sm font-bold text-white">{bucket.count}</span>
                                         </div>
                                         <div className="mt-1.5 font-mono text-[10px] text-zen-text-sec">
-                                            {bucket.share}% da carteira ativa
+                                            {t('dashboardHome.sections.quantitative.activePortfolioShare', {
+                                                share: bucket.share,
+                                            })}
                                         </div>
                                     </div>
                                 ))}
@@ -416,8 +451,8 @@ const DashboardHome = () => {
                 </SectionCard>
 
                 <SectionCard
-                    title="Análise qualitativa"
-                    subtitle="Leitura interpretativa do banco, cruzando volume, risco, cobertura e hierarquia."
+                    title={t('dashboardHome.sections.qualitative.title')}
+                    subtitle={t('dashboardHome.sections.qualitative.subtitle')}
                 >
                     <div className="space-y-2">
                         {qualitativeInsights.map((insight) => (
@@ -436,24 +471,24 @@ const DashboardHome = () => {
             {/* ── PORTFOLIO + CURRENT OPS ───────────────────────────────────── */}
             <div className="grid gap-px xl:grid-cols-[1.2fr_0.8fr] bg-zen-border">
                 <SectionCard
-                    title="Projetos e tarefas em operação"
-                    subtitle="Hierarquia epic › feature › story com contagem de cards ativos, risco e progresso."
+                    title={t('dashboardHome.sections.projects.title')}
+                    subtitle={t('dashboardHome.sections.projects.subtitle')}
                     action={
                         <button
                             type="button"
                             onClick={() => navigate('/projetos')}
                             className="inline-flex items-center gap-2 border border-zen-border px-3 py-2 text-xs text-zen-text-sec hover:bg-zen-surface-hl hover:text-white transition-colors"
                         >
-                            Abrir projetos
+                            {t('dashboardHome.sections.projects.action')}
                             <ArrowRight className="h-3.5 w-3.5" />
                         </button>
                     }
                 >
                     {portfolioRows.length === 0 ? (
                         <EmptyState
-                            title="Portfólio ainda não estruturado"
-                            description="Crie epics, features e user stories para conectar a operação diária ao módulo de projetos."
-                            ctaLabel="Ir para projetos"
+                            title={t('dashboardHome.sections.projects.emptyTitle')}
+                            description={t('dashboardHome.sections.projects.emptyDescription')}
+                            ctaLabel={t('dashboardHome.sections.projects.emptyAction')}
                             onClick={() => navigate('/projetos')}
                         />
                     ) : (
@@ -467,18 +502,18 @@ const DashboardHome = () => {
                                         <div>
                                             <div className="inline-flex items-center gap-2 border border-cyan-400/30 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] font-semibold text-cyan-200">
                                                 <BriefcaseBusiness className="h-3 w-3" />
-                                                Epic
+                                                {t('dashboardHome.sections.projects.epicLabel')}
                                             </div>
                                             <div className="mt-2 text-sm font-semibold text-white">
                                                 {row.title}
                                             </div>
                                             <div className="mt-2 flex flex-wrap gap-1.5">
                                                 {[
-                                                    `${row.featureCount} features`,
-                                                    `${row.storyCount} stories`,
-                                                    `${row.itemCount} cards`,
-                                                    `${row.activeCount} ativos`,
-                                                    `${row.progress}% progresso`,
+                                                    t('dashboardHome.sections.projects.tags.features', { count: row.featureCount }),
+                                                    t('dashboardHome.sections.projects.tags.stories', { count: row.storyCount }),
+                                                    t('dashboardHome.sections.projects.tags.cards', { count: row.itemCount }),
+                                                    t('dashboardHome.sections.projects.tags.active', { count: row.activeCount }),
+                                                    t('dashboardHome.sections.projects.tags.progress', { count: row.progress }),
                                                 ].map((tag) => (
                                                     <span
                                                         key={tag}
@@ -491,20 +526,20 @@ const DashboardHome = () => {
                                         </div>
                                         <div className="text-right shrink-0">
                                             <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">
-                                                Risco interno
+                                                {t('dashboardHome.sections.projects.internalRisk')}
                                             </div>
                                             <div className="mt-1 font-display text-3xl font-bold text-white leading-none">
                                                 {row.criticalCount}
                                             </div>
                                             <div className="mt-1 font-mono text-[10px] text-zen-text-sec">
-                                                cards críticos
+                                                {t('dashboardHome.sections.projects.criticalCards')}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="mt-4 flex flex-wrap gap-1.5">
                                         {row.stories.length === 0 ? (
                                             <span className="text-xs text-zen-text-sec">
-                                                Sem stories vinculadas a este epic.
+                                                {t('dashboardHome.sections.projects.noStories')}
                                             </span>
                                         ) : (
                                             row.stories.map((story) => (
@@ -526,13 +561,13 @@ const DashboardHome = () => {
                 </SectionCard>
 
                 <SectionCard
-                    title="Operação corrente"
-                    subtitle="Cards em andamento, ordenados por pressão de prazo, etapa e GUT."
+                    title={t('dashboardHome.sections.current.title')}
+                    subtitle={t('dashboardHome.sections.current.subtitle')}
                 >
                     {currentItems.length === 0 ? (
                         <EmptyState
-                            title="Sem itens correntes"
-                            description="Não há cards ativos para monitorar neste momento."
+                            title={t('dashboardHome.sections.current.emptyTitle')}
+                            description={t('dashboardHome.sections.current.emptyDescription')}
                         />
                     ) : (
                         <div className="space-y-2">
@@ -556,11 +591,11 @@ const DashboardHome = () => {
                                                 </span>
                                             </div>
                                             <div className="mt-2 text-sm font-semibold text-white">
-                                                {item.nometarefa || 'Sem nome'}
+                                                {item.nometarefa || t('dashboardHome.common.unnamed')}
                                             </div>
                                             <div className="mt-1 text-xs text-zen-text-sec">
-                                                Responsável:{' '}
-                                                {item.participant?.nomeparticipante || 'Não definido'}
+                                                {t('dashboardHome.sections.current.ownerLabel')}{' '}
+                                                {item.participant?.nomeparticipante || t('dashboardHome.common.notDefined')}
                                             </div>
                                         </div>
                                         <div className="text-right shrink-0">
@@ -574,19 +609,19 @@ const DashboardHome = () => {
                                     </div>
                                     <div className="mt-4 grid grid-cols-2 gap-px sm:grid-cols-4 bg-zen-border text-xs">
                                         {[
-                                            { label: 'Prazo', value: formatDateTime(item.data_fim) },
+                                            { label: t('dashboardHome.sections.current.cells.deadline'), value: formatDateTime(item.data_fim) },
                                             {
-                                                label: 'Status temporal',
+                                                label: t('dashboardHome.sections.current.cells.temporalStatus'),
                                                 value: item.isOverdue
-                                                    ? 'Atrasado'
+                                                    ? t('dashboardHome.sections.current.status.overdue')
                                                     : item.isDueSoon
-                                                    ? 'Vence em 72h'
-                                                    : 'Sem pressão imediata',
+                                                    ? t('dashboardHome.sections.current.status.dueSoon')
+                                                    : t('dashboardHome.sections.current.status.noImmediatePressure'),
                                             },
-                                            { label: 'Progresso', value: `${item.progress}%` },
+                                            { label: t('dashboardHome.sections.current.cells.progress'), value: `${item.progress}%` },
                                             {
-                                                label: 'Story',
-                                                value: item.story?.nome_userstory || 'Não vinculada',
+                                                label: t('dashboardHome.sections.current.cells.story'),
+                                                value: item.story?.nome_userstory || t('dashboardHome.common.unlinked'),
                                             },
                                         ].map((cell) => (
                                             <div
@@ -610,13 +645,13 @@ const DashboardHome = () => {
             {/* ── RADAR + CAPACITY + RECENT ─────────────────────────────────── */}
             <div className="grid gap-px xl:grid-cols-[1fr_1fr_1fr] bg-zen-border">
                 <SectionCard
-                    title="Radar GUT"
-                    subtitle="Prioridades operacionais calculadas pela combinação de GUT e janela temporal."
+                    title={t('dashboardHome.sections.radar.title')}
+                    subtitle={t('dashboardHome.sections.radar.subtitle')}
                 >
                     {priorityItems.length === 0 ? (
                         <EmptyState
-                            title="Sem prioridades ativas"
-                            description="Não há cards suficientes para montar o ranking GUT."
+                            title={t('dashboardHome.sections.radar.emptyTitle')}
+                            description={t('dashboardHome.sections.radar.emptyDescription')}
                         />
                     ) : (
                         <div className="space-y-2">
@@ -628,10 +663,10 @@ const DashboardHome = () => {
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
                                             <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-zen-text-tri">
-                                                Prioridade #{index + 1}
+                                                {t('dashboardHome.sections.radar.priority', { index: index + 1 })}
                                             </div>
                                             <div className="mt-1 text-sm font-semibold text-white">
-                                                {item.nometarefa || 'Sem nome'}
+                                                {item.nometarefa || t('dashboardHome.common.unnamed')}
                                             </div>
                                             <div className="mt-2 flex flex-wrap gap-1.5">
                                                 <span
@@ -656,7 +691,10 @@ const DashboardHome = () => {
                                         </div>
                                     </div>
                                     <div className="mt-3 font-mono text-[10px] text-zen-text-sec">
-                                        Prazo {formatRelativeTime(item.data_fim)} · etapa {item.stageLabel}
+                                        {t('dashboardHome.sections.radar.deadlineStage', {
+                                            deadline: formatRelativeTime(item.data_fim),
+                                            stage: item.stageLabel,
+                                        })}
                                     </div>
                                 </article>
                             ))}
@@ -665,14 +703,14 @@ const DashboardHome = () => {
                 </SectionCard>
 
                 <SectionCard
-                    title="Capacidade e ownership"
-                    subtitle="Quem está operando a carga atual e onde faltam responsáveis."
+                    title={t('dashboardHome.sections.capacity.title')}
+                    subtitle={t('dashboardHome.sections.capacity.subtitle')}
                 >
                     <div className="space-y-2">
                         {ownerLoad.length === 0 ? (
                             <EmptyState
-                                title="Sem distribuição por participante"
-                                description="Ainda não há carga ativa atribuída para participantes."
+                                title={t('dashboardHome.sections.capacity.emptyTitle')}
+                                description={t('dashboardHome.sections.capacity.emptyDescription')}
                             />
                         ) : (
                             ownerLoad.map((owner) => (
@@ -686,33 +724,35 @@ const DashboardHome = () => {
                                                 {owner.nome}
                                             </div>
                                             <div className="mt-1 font-mono text-[10px] text-zen-text-sec">
-                                                {owner.activeCount} card(s) ativos · progresso médio{' '}
-                                                {owner.progress}%
+                                                {t('dashboardHome.sections.capacity.ownerSummary', {
+                                                    activeCount: owner.activeCount,
+                                                    progress: owner.progress,
+                                                })}
                                             </div>
                                         </div>
                                         <div className="text-right font-mono text-[10px] text-zen-text-sec">
-                                            <div>{owner.highRiskCount} alto(s)</div>
-                                            <div>{owner.overdueCount} atrasado(s)</div>
+                                            <div>{t('dashboardHome.sections.capacity.highRisk', { count: owner.highRiskCount })}</div>
+                                            <div>{t('dashboardHome.sections.capacity.overdue', { count: owner.overdueCount })}</div>
                                         </div>
                                     </div>
                                 </article>
                             ))
                         )}
                         <div className="border border-dashed border-zen-border bg-zen-bg/50 px-4 py-3 font-mono text-[10px] text-zen-text-sec">
-                            Cards ativos sem responsável:{' '}
+                            {t('dashboardHome.sections.capacity.withoutOwner')}{' '}
                             <strong className="text-white">{semResponsavel}</strong>
                         </div>
                     </div>
                 </SectionCard>
 
                 <SectionCard
-                    title="Últimos movimentos"
-                    subtitle="Últimos registros lidos nas tabelas operacionais e de projetos."
+                    title={t('dashboardHome.sections.recent.title')}
+                    subtitle={t('dashboardHome.sections.recent.subtitle')}
                 >
                     {recentItems.length === 0 ? (
                         <EmptyState
-                            title="Sem histórico recente"
-                            description="Assim que houver novos registros eles aparecerão aqui."
+                            title={t('dashboardHome.sections.recent.emptyTitle')}
+                            description={t('dashboardHome.sections.recent.emptyDescription')}
                         />
                     ) : (
                         <div className="space-y-2">
@@ -724,11 +764,13 @@ const DashboardHome = () => {
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
                                             <div className="text-sm font-semibold text-white">
-                                                {item.nometarefa || 'Sem nome'}
+                                                {item.nometarefa || t('dashboardHome.common.unnamed')}
                                             </div>
                                             <div className="mt-1 font-mono text-[10px] text-zen-text-sec">
-                                                Criado em {formatDateTime(item.created_at)} · etapa{' '}
-                                                {item.stageLabel}
+                                                {t('dashboardHome.sections.recent.createdStage', {
+                                                    createdAt: formatDateTime(item.created_at),
+                                                    stage: item.stageLabel,
+                                                })}
                                             </div>
                                         </div>
                                         <span

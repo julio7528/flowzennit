@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, CheckCircle, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 
 const MotionH2 = motion.h2
@@ -10,6 +11,7 @@ const MotionButton = motion.button
 const MotionDiv = motion.div
 
 const Contacts = () => {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,16 +28,16 @@ const Contacts = () => {
     message: false,
   })
 
-  const [status, setStatus] = useState('idle') // idle, loading, success, error
+  const [status, setStatus] = useState('idle')
   const [showModal, setShowModal] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
   const validateField = (name, value) => {
     if (!value.trim()) {
-      return 'Este campo e obrigatorio.'
+      return t('contacts.validation.required')
     }
     if (name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return 'E-mail corporativo invalido.'
+      return t('contacts.validation.invalidEmail')
     }
     return ''
   }
@@ -67,7 +69,7 @@ const Contacts = () => {
     setErrors(newErrors)
     setTouched({ name: true, email: true, message: true })
 
-    const hasErrors = Object.values(newErrors).some((err) => err !== '')
+    const hasErrors = Object.values(newErrors).some((errorMessage) => errorMessage !== '')
 
     if (!hasErrors) {
       setShowModal(true)
@@ -90,21 +92,19 @@ const Contacts = () => {
         message: formData.message.trim(),
       }
 
-      const { error } = await supabase
-        .from('tbf_contato')
-        .insert([{ dados_json: payload }])
+      const { error } = await supabase.from('tbf_contato').insert([{ dados_json: payload }])
 
       if (error) {
         throw new Error(error.message)
       }
 
       setStatus('success')
-    } catch (err) {
+    } catch (error) {
       setStatus('error')
       setSubmitError(
-        err instanceof Error && err.message
-          ? `Nao foi possivel enviar sua mensagem: ${err.message}`
-          : 'Nao foi possivel enviar sua mensagem. Tente novamente mais tarde.'
+        error instanceof Error && error.message
+          ? t('contacts.feedback.errorWithReason', { reason: error.message })
+          : t('contacts.feedback.errorGeneric'),
       )
     }
   }
@@ -121,8 +121,8 @@ const Contacts = () => {
 
   return (
     <section id="contato" className="relative overflow-hidden py-32 scroll-mt-24">
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-hotPink/10 blur-[100px] -z-10"></div>
-      <div className="absolute top-0 right-0 w-64 h-64 bg-neonCyan/10 blur-[100px] -z-10"></div>
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-hotPink/10 blur-[100px] -z-10" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-neonCyan/10 blur-[100px] -z-10" />
 
       <div className="max-w-xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-10">
@@ -133,7 +133,7 @@ const Contacts = () => {
             transition={{ duration: 0.6 }}
             className="text-3xl font-bold mb-4 text-white"
           >
-            Fale Conosco
+            {t('contacts.title')}
           </MotionH2>
           <MotionP
             initial={{ opacity: 0, y: 20 }}
@@ -142,7 +142,7 @@ const Contacts = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-textGray"
           >
-            Duvidas sobre o plano Enterprise? Mande uma mensagem.
+            {t('contacts.description')}
           </MotionP>
         </div>
 
@@ -157,7 +157,7 @@ const Contacts = () => {
         >
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-2">
-              Nome Completo <span className="text-red-500">*</span>
+              {t('contacts.fields.name.label')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -166,15 +166,16 @@ const Contacts = () => {
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              placeholder="Seu nome"
+              placeholder={t('contacts.fields.name.placeholder')}
               disabled={isSubmitted}
               className={inputClassName('name')}
             />
             {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
           </div>
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
-              E-mail Corporativo <span className="text-red-500">*</span>
+              {t('contacts.fields.email.label')} <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -183,15 +184,16 @@ const Contacts = () => {
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
-              placeholder="voce@empresa.com"
+              placeholder={t('contacts.fields.email.placeholder')}
               disabled={isSubmitted}
               className={inputClassName('email')}
             />
             {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
           </div>
+
           <div>
             <label htmlFor="message" className="block text-sm font-medium text-gray-400 mb-2">
-              Mensagem <span className="text-red-500">*</span>
+              {t('contacts.fields.message.label')} <span className="text-red-500">*</span>
             </label>
             <textarea
               id="message"
@@ -200,10 +202,10 @@ const Contacts = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               rows={4}
-              placeholder="Como podemos ajudar?"
+              placeholder={t('contacts.fields.message.placeholder')}
               disabled={isSubmitted}
               className={inputClassName('message')}
-            ></textarea>
+            />
             {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
           </div>
 
@@ -213,7 +215,7 @@ const Contacts = () => {
               className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400"
             >
               <CheckCircle className="w-5 h-5 shrink-0" />
-              <p className="text-sm font-medium">Mensagem enviada com sucesso! Agradecemos o contato.</p>
+              <p className="text-sm font-medium">{t('contacts.feedback.success')}</p>
             </div>
           )}
 
@@ -238,7 +240,11 @@ const Contacts = () => {
                 : 'bg-gradient-primary text-white hover:shadow-lg hover:shadow-purple-500/30'
             }`}
           >
-            {status === 'loading' ? 'Processando...' : isSubmitted ? 'Enviado' : 'Enviar Mensagem'}
+            {status === 'loading'
+              ? t('contacts.actions.processing')
+              : isSubmitted
+                ? t('contacts.actions.sent')
+                : t('contacts.actions.submit')}
           </MotionButton>
         </MotionForm>
       </div>
@@ -260,6 +266,7 @@ const Contacts = () => {
               <button
                 onClick={() => setShowModal(false)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                aria-label={t('common.close')}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -268,23 +275,21 @@ const Contacts = () => {
                 <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mb-6">
                   <AlertTriangle className="w-8 h-8 text-yellow-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Confirmacao de envio</h3>
-                <p className="text-gray-400 mb-8">
-                  Tem certeza de que deseja enviar os dados? Esta acao nao podera ser desfeita.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-2">{t('contacts.modal.title')}</h3>
+                <p className="text-gray-400 mb-8">{t('contacts.modal.description')}</p>
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
                   <button
                     onClick={() => setShowModal(false)}
                     className="flex-1 py-3 px-4 rounded-lg bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors"
                   >
-                    Cancelar
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={handleConfirmSubmit}
                     className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold hover:shadow-lg hover:shadow-yellow-500/20 transition-all"
                   >
-                    Confirmar
+                    {t('common.confirm')}
                   </button>
                 </div>
               </div>

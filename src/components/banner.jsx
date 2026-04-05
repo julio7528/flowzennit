@@ -1,7 +1,10 @@
 import { forwardRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const TopBanner = forwardRef(({ isVisible }, ref) => {
+  const { t } = useTranslation()
+
   return (
     <div
       ref={ref}
@@ -10,12 +13,12 @@ const TopBanner = forwardRef(({ isVisible }, ref) => {
       }`}
     >
       <span className="opacity-90 tracking-wide">
-        Cursos e treinamentos personalizados online fale com nossa equipe de suporte{' '}
+        {t('banner.message')}{' '}
         <Link
           to="/treinamentos"
           className="font-bold text-[#67e8f9] hover:underline hover:text-white transition-colors"
         >
-          aqui
+          {t('banner.link')}
         </Link>
         .
       </span>

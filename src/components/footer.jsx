@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Instagram, Linkedin, Youtube } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import logominimal from '../assets/logominimal.png'
 import { useCookieConsent } from './privacy/cookie-consent-context.js'
 
@@ -13,6 +14,7 @@ const TikTokIcon = (props) => (
 )
 
 const Footer = () => {
+  const { t } = useTranslation()
   const { openPreferences } = useCookieConsent()
 
   const socialLinks = [
@@ -34,12 +36,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <img src={logominimal} alt="FlowZenit Minimal Logo" className="h-6 w-auto" />
+              <img src={logominimal} alt={t('brand.minimalLogoAlt')} className="h-6 w-auto" />
             </div>
-            <p className="text-gray-500 text-sm">
-              Plataforma open source para gestao de produtividade pessoal e pequenos negocios para alcancar a alta
-              performance.
-            </p>
+            <p className="text-gray-500 text-sm">{t('footer.description')}</p>
             <div className="mt-5 flex items-center gap-3">
               {socialLinks.map((social) => {
                 const Icon = social.icon
@@ -61,73 +60,73 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">Produto</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">{t('footer.product.title')}</h4>
             <ul className="text-sm text-gray-400 space-y-3">
               <li>
                 <a href="#funcionalidades" className="hover:text-neonCyan transition-colors">
-                  Funcionalidades
+                  {t('footer.product.features')}
                 </a>
               </li>
               <li>
                 <a href="#integracoes" className="hover:text-neonCyan transition-colors">
-                  Integracoes
+                  {t('footer.product.integrations')}
                 </a>
               </li>
               <li>
                 <a href="#novidades" className="hover:text-neonCyan transition-colors">
-                  Changelog
+                  {t('footer.product.changelog')}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">Aprender</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">{t('footer.learn.title')}</h4>
             <ul className="text-sm text-gray-400 space-y-3">
               <li>
                 <a href="/documentacao" className="hover:text-neonCyan transition-colors">
-                  Documentacao
+                  {t('footer.learn.documentation')}
                 </a>
               </li>
               <li>
                 <a href="/treinamentos" className="hover:text-neonCyan transition-colors">
-                  Treinamentos
+                  {t('footer.learn.training')}
                 </a>
               </li>
               <li>
                 <a href="#cta" className="hover:text-neonCyan transition-colors">
-                  Guia API
+                  {t('footer.learn.apiGuide')}
                 </a>
               </li>
               <li>
                 <a href="#contato" className="hover:text-neonCyan transition-colors">
-                  Comunidade
+                  {t('footer.learn.community')}
                 </a>
               </li>
               <li>
-                <a href="#contato" className="hover:text-neonCyan transition-colors">
-                  Blog
+                <a href="/blog" className="hover:text-neonCyan transition-colors">
+                  {t('footer.learn.blog')}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">Legal</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">{t('footer.legal.title')}</h4>
             <ul className="text-sm text-gray-400 space-y-3">
               <li>
                 <Link to="/privacidade" className="hover:text-neonCyan transition-colors">
-                  Privacidade e Cookies
+                  {t('footer.legal.privacy')}
                 </Link>
               </li>
               <li>
                 <a href="/privacidade#solicitacoes" className="hover:text-neonCyan transition-colors">
-                  Solicitações LGPD
+                  {t('footer.legal.requests')}
                 </a>
               </li>
               <li>
                 <button type="button" onClick={openPreferences} className="hover:text-neonCyan transition-colors text-left">
-                  Gerenciar cookies
+                  {t('footer.legal.manageCookies')}
                 </button>
               </li>
             </ul>
@@ -135,7 +134,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/5 pt-8 text-center text-sm text-gray-600">
-          <p>© 2026 FlowZenit. MIT License Open Source.</p>
+          <p>{t('footer.copyright')}</p>
         </div>
       </div>
     </MotionFooter>

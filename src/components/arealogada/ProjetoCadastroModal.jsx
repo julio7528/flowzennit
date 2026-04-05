@@ -1,47 +1,48 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertCircle, Bold, Italic, List, ListOrdered, Link2, Underline, X } from 'lucide-react'
 import { supabase } from '../../lib/supabase.js'
 
 const PROJECT_ALOCADOS = ['taskproj', 'bugproj']
 
-const gravidadeDescriptions = {
-    10: 'Catastrofico - interrupcao total ou risco grave.',
-    9: 'Critico - prejuizo massivo ou perda relevante.',
-    8: 'Severo - compromete operacao em larga escala.',
-    7: 'Relevante - impacta metas e acordos importantes.',
-    6: 'Moderado alto - afeta a produtividade de um time.',
-    5: 'Moderado - impacto localizado e controlavel.',
-    4: 'Limitado - dano pequeno e contornavel.',
-    3: 'Superficial - reclama internamente, sem perda maior.',
-    2: 'Minimo - erro pequeno sem alterar o resultado.',
-    1: 'Irrelevante - quase imperceptivel.',
-}
+const getGravidadeDescriptions = (t) => ({
+    10: t('projectModal.gut.severityScale.10'),
+    9: t('projectModal.gut.severityScale.9'),
+    8: t('projectModal.gut.severityScale.8'),
+    7: t('projectModal.gut.severityScale.7'),
+    6: t('projectModal.gut.severityScale.6'),
+    5: t('projectModal.gut.severityScale.5'),
+    4: t('projectModal.gut.severityScale.4'),
+    3: t('projectModal.gut.severityScale.3'),
+    2: t('projectModal.gut.severityScale.2'),
+    1: t('projectModal.gut.severityScale.1'),
+})
 
-const urgenciaDescriptions = {
-    10: 'Imediato - resolver agora.',
-    9: 'Ate 2 horas - crise instalada.',
-    8: 'Hoje - antes do fim do expediente.',
-    7: '24 horas - prioridade numero 1.',
-    6: 'Ate 3 dias - entra na semana.',
-    5: '1 semana - prazo confortavel.',
-    4: '15 dias - proximo ciclo.',
-    3: '1 mes - impacto baixo no curto prazo.',
-    2: 'Proximo trimestre - acompanha de fundo.',
-    1: 'Sem prazo - so com folga.',
-}
+const getUrgenciaDescriptions = (t) => ({
+    10: t('projectModal.gut.urgencyScale.10'),
+    9: t('projectModal.gut.urgencyScale.9'),
+    8: t('projectModal.gut.urgencyScale.8'),
+    7: t('projectModal.gut.urgencyScale.7'),
+    6: t('projectModal.gut.urgencyScale.6'),
+    5: t('projectModal.gut.urgencyScale.5'),
+    4: t('projectModal.gut.urgencyScale.4'),
+    3: t('projectModal.gut.urgencyScale.3'),
+    2: t('projectModal.gut.urgencyScale.2'),
+    1: t('projectModal.gut.urgencyScale.1'),
+})
 
-const tendenciaDescriptions = {
-    10: 'Explosiva - cresce em poucas horas.',
-    9: 'Muito alta - piora diariamente.',
-    8: 'Alta - em poucos dias vira crise.',
-    7: 'Acelerada - degradacao perceptivel.',
-    6: 'Crescente - agrava de forma constante.',
-    5: 'Lenta - deteriora aos poucos.',
-    4: 'Baixa - piora gradual.',
-    3: 'Controlavel - evolucao pequena.',
-    2: 'Quase estavel - pouca chance de piora.',
-    1: 'Estavel - nao tende a piorar.',
-}
+const getTendenciaDescriptions = (t) => ({
+    10: t('projectModal.gut.trendScale.10'),
+    9: t('projectModal.gut.trendScale.9'),
+    8: t('projectModal.gut.trendScale.8'),
+    7: t('projectModal.gut.trendScale.7'),
+    6: t('projectModal.gut.trendScale.6'),
+    5: t('projectModal.gut.trendScale.5'),
+    4: t('projectModal.gut.trendScale.4'),
+    3: t('projectModal.gut.trendScale.3'),
+    2: t('projectModal.gut.trendScale.2'),
+    1: t('projectModal.gut.trendScale.1'),
+})
 
 const toDateTimeLocalValue = (value) => {
     if (!value) return ''
@@ -74,6 +75,7 @@ const computeTimeWeight = (deadlineValue, nowMs) => {
 }
 
 const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
+    const { t } = useTranslation()
     const safeCadastro = cadastro || {
         id: '',
         titulo: '',
@@ -137,6 +139,17 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
     const [isLink, setIsLink] = useState(false)
     const editorRef = useRef(null)
     const appliedSeedIdRef = useRef(null)
+    const gravidadeDescriptions = useMemo(() => getGravidadeDescriptions(t), [t])
+    const urgenciaDescriptions = useMemo(() => getUrgenciaDescriptions(t), [t])
+    const tendenciaDescriptions = useMemo(() => getTendenciaDescriptions(t), [t])
+    const taskEntityLabel = safeCadastro.id === 'task' ? t('projectsPage.types.task') : t('projectsPage.types.bug')
+    const entityLabel = isEpic
+        ? t('projectsPage.types.epic')
+        : isFeature
+        ? t('projectsPage.types.feature')
+        : isUserStory
+        ? t('projectsPage.types.story')
+        : taskEntityLabel
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {
@@ -413,7 +426,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
 
     const handleNextFromBasic = () => {
         if (!nometarefa.trim()) {
-            setFeedback({ type: 'error', message: 'Informe o nome da atividade.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.activityNameRequired') })
             return
         }
         setFeedback(null)
@@ -422,7 +435,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
 
     const handleNextFromProgresso = () => {
         if (!selectedUserStoryIdForTask) {
-            setFeedback({ type: 'error', message: 'Selecione a User Story vinculada.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.storyRequired') })
             return
         }
         setFeedback(null)
@@ -436,12 +449,12 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         if (!nometarefa.trim()) {
-            setFeedback({ type: 'error', message: 'Informe o nome da atividade.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.activityNameRequired') })
             setStep('basic')
             return
         }
         if (!selectedUserStoryIdForTask) {
-            setFeedback({ type: 'error', message: 'Selecione a User Story vinculada.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.storyRequired') })
             setStep('progresso')
             return
         }
@@ -472,7 +485,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             : await supabase.from('tbf_atividades').insert({ idusuario: userId, 'posicao Kanban': 'backlog', ...payload })
 
         if (result.error) {
-            setFeedback({ type: 'error', message: isEditingTaskBug ? 'Nao foi possivel atualizar o cadastro.' : 'Nao foi possivel salvar o cadastro.' })
+            setFeedback({
+                type: 'error',
+                message: isEditingTaskBug ? t('projectModal.feedback.updateError') : t('projectModal.feedback.saveError'),
+            })
             setSaving(false)
             return
         }
@@ -481,7 +497,9 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
         onSaved?.()
         setFeedback({
             type: 'success',
-            message: isEditingTaskBug ? `${safeCadastro.titulo.replace('Cadastrar ', '')} atualizado com sucesso.` : `${safeCadastro.titulo} salvo com sucesso.`,
+            message: isEditingTaskBug
+                ? t('projectModal.feedback.taskUpdated', { item: taskEntityLabel })
+                : t('projectModal.feedback.taskSaved', { item: taskEntityLabel }),
         })
         setTimeout(() => {
             handleClose()
@@ -494,7 +512,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         if (!nomeEpic.trim()) {
-            setFeedback({ type: 'error', message: 'Informe o nome do Epic.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.epicNameRequired') })
             return
         }
         setSaving(true)
@@ -503,7 +521,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             : supabase.from('tbf_epic').insert({ nome_epic: nomeEpic.trim(), idusuario: userId })
         const { error } = await query
         if (error) {
-            setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar o Epic.' : 'Nao foi possivel cadastrar o Epic.' })
+            setFeedback({
+                type: 'error',
+                message: isEditingEntity ? t('projectModal.feedback.epicUpdateError') : t('projectModal.feedback.epicCreateError'),
+            })
             setSaving(false)
             return
         }
@@ -518,11 +539,11 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         if (!nomeFeature.trim()) {
-            setFeedback({ type: 'error', message: 'Informe o nome da Feature.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.featureNameRequired') })
             return
         }
         if (!selectedEpicIdForFeature) {
-            setFeedback({ type: 'error', message: 'Selecione o Epic vinculado.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.linkedEpicRequired') })
             return
         }
         setSaving(true)
@@ -535,7 +556,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             : supabase.from('tbf_feature').insert({ ...payload, idusuario: userId })
         const { error } = await query
         if (error) {
-            setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar a Feature.' : 'Nao foi possivel cadastrar a Feature.' })
+            setFeedback({
+                type: 'error',
+                message: isEditingEntity ? t('projectModal.feedback.featureUpdateError') : t('projectModal.feedback.featureCreateError'),
+            })
             setSaving(false)
             return
         }
@@ -550,11 +574,11 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             return
         }
         if (!nomeUserStory.trim()) {
-            setFeedback({ type: 'error', message: 'Informe o nome da User Story.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.storyNameRequired') })
             return
         }
         if (!selectedFeatureIdForUserStory) {
-            setFeedback({ type: 'error', message: 'Selecione a Feature vinculada.' })
+            setFeedback({ type: 'error', message: t('projectModal.feedback.linkedFeatureRequired') })
             return
         }
         setSaving(true)
@@ -567,7 +591,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
             : supabase.from('tbf_userstory').insert({ ...payload, idusuario: userId })
         const { error } = await query
         if (error) {
-            setFeedback({ type: 'error', message: isEditingEntity ? 'Nao foi possivel atualizar a User Story.' : 'Nao foi possivel cadastrar a User Story.' })
+            setFeedback({
+                type: 'error',
+                message: isEditingEntity ? t('projectModal.feedback.storyUpdateError') : t('projectModal.feedback.storyCreateError'),
+            })
             setSaving(false)
             return
         }
@@ -575,6 +602,46 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
         onSaved?.()
         setTimeout(() => handleClose(), 350)
     }
+
+    const entityPrimaryActionLabel = saving
+        ? t('projectModal.actions.saving')
+        : isEditingEntity
+        ? t('projectModal.actions.saveChanges')
+        : t('projectModal.actions.create')
+
+    const taskPrimaryActionLabel = saving
+        ? t('projectModal.actions.saving')
+        : isEditingTaskBug
+        ? t('projectModal.actions.saveChanges')
+        : t('projectModal.actions.finish')
+
+    const modalTitle = isTaskOrBug
+        ? isEditingTaskBug
+            ? safeCadastro.id === 'task'
+                ? t('projectModal.title.editTask')
+                : t('projectModal.title.editBug')
+            : step === 'basic'
+            ? safeCadastro.id === 'task'
+                ? t('projectModal.title.createTask')
+                : t('projectModal.title.createBug')
+            : step === 'detalhes'
+            ? t('projectModal.title.details')
+            : step === 'progresso'
+            ? t('projectModal.title.progress')
+            : t('projectModal.title.gut')
+        : isEditingEntity
+        ? t('projectModal.title.editEntity', { entity: entityLabel })
+        : safeCadastro.titulo
+
+    const modalDescription = isTaskOrBug
+        ? step === 'basic'
+            ? t('projectModal.description.basic')
+            : step === 'detalhes'
+            ? t('projectModal.description.details')
+            : step === 'progresso'
+            ? t('projectModal.description.progress')
+            : t('projectModal.description.gut')
+        : safeCadastro.descricao
 
     if (!cadastro) return null
 
@@ -593,34 +660,10 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         </div>
                         <div>
                             <h2 className="font-display text-lg font-semibold text-white">
-                                {isTaskOrBug
-                                    ? isEditingTaskBug
-                                        ? safeCadastro.id === 'task'
-                                            ? 'Editar Task de Projeto'
-                                            : 'Editar Bug de Projeto'
-                                        : step === 'basic'
-                                          ? safeCadastro.id === 'task'
-                                              ? 'Cadastro de Task de Projeto'
-                                              : 'Cadastro de Bug de Projeto'
-                                          : step === 'detalhes'
-                                            ? 'Detalhes da Atividade'
-                                            : step === 'progresso'
-                                              ? 'Progresso da Atividade'
-                                              : 'Priorizacao GUT'
-                                    : isEditingEntity
-                                      ? `Editar ${safeCadastro.titulo}`
-                                      : safeCadastro.titulo}
+                                {modalTitle}
                             </h2>
                             <p className="mt-1 text-sm text-zen-text-sec">
-                                {isTaskOrBug
-                                    ? step === 'basic'
-                                        ? 'Informe os dados iniciais da atividade.'
-                                        : step === 'detalhes'
-                                          ? 'Defina responsavel, datas e categoria.'
-                                          : step === 'progresso'
-                                            ? 'Defina dependencias e progresso manual.'
-                                            : 'Revise a priorizacao antes de salvar.'
-                                    : safeCadastro.descricao}
+                                {modalDescription}
                             </p>
                         </div>
                     </div>
@@ -643,20 +686,20 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                     <>
                         <div className="px-6 py-5">
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Nome do Epic</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.epicName')}</span>
                                 <input
                                     value={nomeEpic}
                                     onChange={(event) => setNomeEpic(event.target.value)}
                                     className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
-                                    placeholder="Ex: Reestruturacao do portal do cliente"
+                                    placeholder={t('projectModal.placeholders.epicName')}
                                     autoFocus
                                 />
                             </label>
                         </div>
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
-                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
+                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.close')}</button>
                             <button type="button" onClick={handleSaveEpic} disabled={saving} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? 'Salvando...' : isEditingEntity ? 'Salvar alteracoes' : 'Cadastrar'}
+                                {entityPrimaryActionLabel}
                             </button>
                         </div>
                     </>
@@ -666,23 +709,23 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                     <>
                         <div className="grid gap-4 px-6 py-5">
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Nome da Feature</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.featureName')}</span>
                                 <input
                                     value={nomeFeature}
                                     onChange={(event) => setNomeFeature(event.target.value)}
                                     className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
-                                    placeholder="Ex: Gestao de dependencias"
+                                    placeholder={t('projectModal.placeholders.featureName')}
                                     autoFocus
                                 />
                             </label>
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Epic vinculado</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.linkedEpic')}</span>
                                 <select
                                     value={selectedEpicIdForFeature}
                                     onChange={(event) => setSelectedEpicIdForFeature(event.target.value)}
                                     className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                                 >
-                                    <option value="">Selecione um Epic...</option>
+                                    <option value="">{t('projectModal.placeholders.selectEpic')}</option>
                                     {epics.map((epic) => (
                                         <option key={epic.id} value={epic.id}>{epic.nome_epic}</option>
                                     ))}
@@ -690,9 +733,9 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                             </label>
                         </div>
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
-                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
+                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.close')}</button>
                             <button type="button" onClick={handleSaveFeature} disabled={saving} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? 'Salvando...' : isEditingEntity ? 'Salvar alteracoes' : 'Cadastrar'}
+                                {entityPrimaryActionLabel}
                             </button>
                         </div>
                     </>
@@ -702,23 +745,23 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                     <>
                         <div className="grid gap-4 px-6 py-5">
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Nome da User Story</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.storyName')}</span>
                                 <input
                                     value={nomeUserStory}
                                     onChange={(event) => setNomeUserStory(event.target.value)}
                                     className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
-                                    placeholder="Ex: Acompanhar impedimentos do projeto"
+                                    placeholder={t('projectModal.placeholders.storyName')}
                                     autoFocus
                                 />
                             </label>
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Feature vinculada</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.linkedFeature')}</span>
                                 <select
                                     value={selectedFeatureIdForUserStory}
                                     onChange={(event) => setSelectedFeatureIdForUserStory(event.target.value)}
                                     className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
                                 >
-                                    <option value="">Selecione uma Feature...</option>
+                                    <option value="">{t('projectModal.placeholders.selectFeature')}</option>
                                     {features.map((feature) => (
                                         <option key={feature.id} value={feature.id}>{feature.nome_feature}</option>
                                     ))}
@@ -726,9 +769,9 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                             </label>
                         </div>
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
-                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
+                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.close')}</button>
                             <button type="button" onClick={handleSaveUserStory} disabled={saving} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? 'Salvando...' : isEditingEntity ? 'Salvar alteracoes' : 'Cadastrar'}
+                                {entityPrimaryActionLabel}
                             </button>
                         </div>
                     </>
@@ -739,12 +782,12 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
                                 <div className="flex items-start gap-2 text-sm text-amber-200">
                                     <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                                    <p>Esta janela nao esta mapeada para cadastro dinamico.</p>
+                                    <p>{t('projectModal.unmapped')}</p>
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
-                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
+                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.close')}</button>
                         </div>
                     </>
                 )}
@@ -754,21 +797,23 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         <div className="grid gap-4 px-6 py-5">
                             <label className="flex flex-col gap-2">
                                 <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">
-                                    {safeCadastro.id === 'task' ? 'Nome da Atividade (Task)' : 'Nome da Atividade (Bug)'}
+                                    {safeCadastro.id === 'task'
+                                        ? t('projectModal.fields.taskActivityName')
+                                        : t('projectModal.fields.bugActivityName')}
                                 </span>
                                 <input
                                     value={nometarefa}
                                     onChange={(event) => setNometarefa(event.target.value)}
                                     className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
-                                    placeholder="Ex: Implementar relatorio de sprint"
+                                    placeholder={t('projectModal.placeholders.activityName')}
                                     autoFocus
                                 />
                             </label>
                             <label className="flex flex-col gap-2">
                                 <span className="flex justify-between text-xs font-semibold uppercase tracking-wider text-zen-text-tri">
-                                    <span>Descricao</span>
+                                    <span>{t('projectModal.fields.description')}</span>
                                     <span className={charCount >= 1000 ? 'text-zen-error' : 'text-zen-text-sec'}>
-                                        {Math.max(0, 1000 - charCount)} caracteres restantes
+                                        {t('projectModal.charactersRemaining', { count: Math.max(0, 1000 - charCount) })}
                                     </span>
                                 </span>
                                 <div className="flex flex-wrap gap-2">
@@ -782,7 +827,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                                         aria-pressed={isLink}
                                         onMouseDown={(event) => event.preventDefault()}
                                         onClick={() => {
-                                            const url = window.prompt('Informe a URL do link')
+                                            const url = window.prompt(t('projectModal.linkPrompt'))
                                             if (url) {
                                                 document.execCommand('createLink', false, url)
                                                 updateToolbar()
@@ -798,8 +843,8 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                             </label>
                         </div>
                         <div className="flex items-center justify-end gap-3 border-t border-zen-border px-6 py-4">
-                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Fechar</button>
-                            <button type="button" onClick={handleNextFromBasic} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600">Proximo</button>
+                            <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.close')}</button>
+                            <button type="button" onClick={handleNextFromBasic} className="rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600">{t('projectModal.actions.next')}</button>
                         </div>
                     </>
                 )}
@@ -808,7 +853,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                     <div className="px-6 py-5">
                         <div className="flex flex-col gap-5">
                             <div className="flex flex-col gap-2">
-                                <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Responsavel</label>
+                                <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.owner')}</label>
                                 <input
                                     value={responsavel}
                                     onChange={(event) => {
@@ -819,7 +864,7 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                                     }}
                                     list="participants-list-projeto"
                                     className="w-full rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue"
-                                    placeholder="Selecione o responsavel"
+                                    placeholder={t('projectModal.placeholders.selectOwner')}
                                 />
                                 <datalist id="participants-list-projeto">
                                     {participants.map((participant) => (
@@ -829,39 +874,39 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                             </div>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Data e Hora Inicio</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.startDateTime')}</label>
                                     <input type="datetime-local" value={dataInicio} onChange={(event) => setDataInicio(event.target.value)} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Data e Hora Finalizacao</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.endDateTime')}</label>
                                     <input type="datetime-local" value={dataFim} onChange={(event) => setDataFim(event.target.value)} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Categoria</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.category')}</label>
                                     <select value={selectedCategoriaId} onChange={(event) => { setSelectedCategoriaId(event.target.value); setSelectedSubcategoriaId('') }} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue">
-                                        <option value="">Selecione uma categoria...</option>
+                                        <option value="">{t('projectModal.placeholders.selectCategory')}</option>
                                         {categories.map((category) => (
                                             <option key={category.id} value={category.id}>{category.nomecategoria}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Subcategoria</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.subcategory')}</label>
                                     <select value={selectedSubcategoriaId} onChange={(event) => setSelectedSubcategoriaId(event.target.value)} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue">
-                                        <option value="">Selecione uma subcategoria...</option>
+                                        <option value="">{t('projectModal.placeholders.selectSubcategory')}</option>
                                         {filteredSubcategories.map((subcategory) => (
                                             <option key={subcategory.id} value={subcategory.id}>{subcategory.nomecategoria}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
-                            {selectedCategory && <div className="text-xs text-zen-text-sec">Categoria selecionada: <span className="text-white">{selectedCategory.nomecategoria}</span></div>}
+                            {selectedCategory && <div className="text-xs text-zen-text-sec">{t('projectModal.selectedCategory')} <span className="text-white">{selectedCategory.nomecategoria}</span></div>}
                             <div className="flex items-center gap-3 pt-2">
-                                <button type="button" onClick={() => setStep('basic')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Voltar</button>
-                                <button type="button" onClick={() => setStep('progresso')} className="min-w-[120px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600">Proximo</button>
-                                <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Cancelar</button>
+                                <button type="button" onClick={() => setStep('basic')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('projectModal.actions.back')}</button>
+                                <button type="button" onClick={() => setStep('progresso')} className="min-w-[120px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600">{t('projectModal.actions.next')}</button>
+                                <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.cancel')}</button>
                             </div>
                         </div>
                     </div>
@@ -871,41 +916,41 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                     <div className="px-6 py-5">
                         <div className="flex flex-col gap-5">
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">User Story vinculada</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.linkedStory')}</span>
                                 <select value={selectedUserStoryIdForTask} onChange={(event) => { setSelectedUserStoryIdForTask(event.target.value); setPredecessor(''); setSucessor('') }} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue">
-                                    <option value="">Selecione uma User Story...</option>
+                                    <option value="">{t('projectModal.placeholders.selectStory')}</option>
                                     {userStories.map((userStory) => (
                                         <option key={userStory.id} value={userStory.id}>{userStory.nome_userstory}</option>
                                     ))}
                                 </select>
                             </label>
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Predecessor</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.predecessor')}</span>
                                 <select value={predecessor} onChange={(event) => setPredecessor(event.target.value)} disabled={!selectedUserStoryIdForTask} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue disabled:cursor-not-allowed disabled:opacity-60">
-                                    <option value="">Selecione uma task...</option>
+                                    <option value="">{t('projectModal.placeholders.selectTask')}</option>
                                     {storyActivities.map((atividade) => (
                                         <option key={atividade.id} value={atividade.id}>{atividade.nometarefa}</option>
                                     ))}
                                 </select>
                             </label>
                             <label className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Sucessor</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.successor')}</span>
                                 <select value={sucessor} onChange={(event) => setSucessor(event.target.value)} disabled={!selectedUserStoryIdForTask} className="rounded-lg border border-zen-border bg-zen-bg px-3 py-2.5 text-sm text-white outline-none transition-all focus:border-zen-blue focus:ring-1 focus:ring-zen-blue disabled:cursor-not-allowed disabled:opacity-60">
-                                    <option value="">Selecione uma task...</option>
+                                    <option value="">{t('projectModal.placeholders.selectTask')}</option>
                                     {storyActivities.map((atividade) => (
                                         <option key={atividade.id} value={atividade.id}>{atividade.nometarefa}</option>
                                     ))}
                                 </select>
                             </label>
                             <div className="flex flex-col gap-2">
-                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Percentual de progresso</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.progressPercent')}</span>
                                 <input type="range" min="0" max="100" step="1" value={percentualProgresso} onChange={(event) => setPercentualProgresso(event.target.value)} className="w-full accent-zen-blue" />
                                 <span className="text-sm text-zen-text-sec">{percentualProgresso}%</span>
                             </div>
                             <div className="flex items-center gap-3 pt-2">
-                                <button type="button" onClick={() => setStep('detalhes')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Voltar</button>
-                                <button type="button" onClick={handleNextFromProgresso} className="min-w-[120px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600">Proximo</button>
-                                <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Cancelar</button>
+                                <button type="button" onClick={() => setStep('detalhes')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('projectModal.actions.back')}</button>
+                                <button type="button" onClick={handleNextFromProgresso} className="min-w-[120px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600">{t('projectModal.actions.next')}</button>
+                                <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.cancel')}</button>
                             </div>
                         </div>
                     </div>
@@ -916,32 +961,32 @@ const ProjetoCadastroModal = ({ cadastro, seedData, onClose, onSaved }) => {
                         <div className="flex flex-col gap-5">
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Gravidade</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.severity')}</label>
                                     <input type="range" min="1" max="10" step="1" value={gutGravidade} onChange={(event) => setGutGravidade(event.target.value)} className="w-full accent-zen-blue" />
                                     <div className="text-xs text-zen-text-sec">{gutGravidade} - {gravidadeDescriptions[Number(gutGravidade)]}</div>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Urgencia</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.urgency')}</label>
                                     <input type="range" min="1" max="10" step="1" value={gutUrgencia} onChange={(event) => setGutUrgencia(event.target.value)} className="w-full accent-zen-blue" />
                                     <div className="text-xs text-zen-text-sec">{gutUrgencia} - {urgenciaDescriptions[Number(gutUrgencia)]}</div>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">Tendencia</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zen-text-tri">{t('projectModal.fields.trend')}</label>
                                     <input type="range" min="1" max="10" step="1" value={gutTendencia} onChange={(event) => setGutTendencia(event.target.value)} className="w-full accent-zen-blue" />
                                     <div className="text-xs text-zen-text-sec">{gutTendencia} - {tendenciaDescriptions[Number(gutTendencia)]}</div>
                                 </div>
                             </div>
                             <div className="grid gap-2 text-sm text-zen-text-sec sm:grid-cols-3">
-                                <div className="rounded-xl border border-zen-border bg-zen-bg/60 p-3">Pontuacao base: <span className="font-semibold text-white">{baseGutScore}</span></div>
-                                <div className="rounded-xl border border-zen-border bg-zen-bg/60 p-3">Peso de prazo: <span className="font-semibold text-white">{timeWeight.toFixed(2)}</span></div>
-                                <div className="rounded-xl border border-zen-border bg-zen-bg/60 p-3">GUT final: <span className="font-semibold text-white">{gutScore.toFixed(2)}</span></div>
+                                <div className="rounded-xl border border-zen-border bg-zen-bg/60 p-3">{t('projectModal.gut.baseScore')}: <span className="font-semibold text-white">{baseGutScore}</span></div>
+                                <div className="rounded-xl border border-zen-border bg-zen-bg/60 p-3">{t('projectModal.gut.deadlineWeight')}: <span className="font-semibold text-white">{timeWeight.toFixed(2)}</span></div>
+                                <div className="rounded-xl border border-zen-border bg-zen-bg/60 p-3">{t('projectModal.gut.finalScore')}: <span className="font-semibold text-white">{gutScore.toFixed(2)}</span></div>
                             </div>
                             <div className="flex items-center gap-3 pt-2">
-                                <button type="button" onClick={() => setStep('progresso')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Voltar</button>
+                                <button type="button" onClick={() => setStep('progresso')} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('projectModal.actions.back')}</button>
                                 <button type="button" onClick={handleSaveTaskBug} disabled={saving} className="min-w-[140px] rounded-lg bg-zen-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60">
-                                    {saving ? 'Salvando...' : isEditingTaskBug ? 'Salvar alteracoes' : 'Finalizar'}
+                                    {taskPrimaryActionLabel}
                                 </button>
-                                <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">Cancelar</button>
+                                <button type="button" onClick={handleClose} className="rounded-lg px-4 py-2.5 text-sm font-medium text-zen-text-sec transition-colors hover:bg-zen-border/30 hover:text-white">{t('common.cancel')}</button>
                             </div>
                         </div>
                     </div>

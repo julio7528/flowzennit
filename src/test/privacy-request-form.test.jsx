@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 
 const { privacyInsertMock, contactInsertMock, fromMock } = vi.hoisted(() => {
   const privacyInsert = vi.fn()
@@ -29,6 +29,7 @@ vi.mock('../lib/supabase', () => ({
 }))
 
 import PrivacyRequestForm from '../components/privacy/PrivacyRequestForm.jsx'
+import { renderWithProviders } from './render-with-providers.jsx'
 
 describe('PrivacyRequestForm', () => {
   beforeEach(() => {
@@ -40,7 +41,7 @@ describe('PrivacyRequestForm', () => {
   it('envia a solicitação LGPD diretamente para privacy_requests quando a tabela existe', async () => {
     privacyInsertMock.mockResolvedValue({ error: null })
 
-    render(<PrivacyRequestForm />)
+    renderWithProviders(<PrivacyRequestForm />)
 
     fireEvent.change(screen.getByLabelText(/^Nome$/i), { target: { value: 'Maria Silva' } })
     fireEvent.change(screen.getByLabelText(/^E-mail$/i), { target: { value: 'maria@empresa.com' } })
@@ -71,7 +72,7 @@ describe('PrivacyRequestForm', () => {
     })
     contactInsertMock.mockResolvedValue({ error: null })
 
-    render(<PrivacyRequestForm />)
+    renderWithProviders(<PrivacyRequestForm />)
 
     fireEvent.change(screen.getByLabelText(/^Nome$/i), { target: { value: 'João Oliveira' } })
     fireEvent.change(screen.getByLabelText(/^E-mail$/i), { target: { value: 'joao@empresa.com' } })

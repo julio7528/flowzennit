@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import AdminRoute from '../components/AdminRoute.jsx'
+import { renderWithProviders } from './render-with-providers.jsx'
 
 const mockUseAdminRole = vi.fn()
 
@@ -20,14 +21,14 @@ describe('AdminRoute', () => {
       isAdmin: true,
     })
 
-    render(
+    renderWithProviders(
       <MemoryRouter initialEntries={['/blog-admin']}>
         <Routes>
           <Route element={<AdminRoute />}>
             <Route path="/blog-admin" element={<div>painel admin</div>} />
           </Route>
         </Routes>
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     expect(screen.getByText('painel admin')).toBeInTheDocument()
@@ -40,7 +41,7 @@ describe('AdminRoute', () => {
       isAdmin: false,
     })
 
-    render(
+    renderWithProviders(
       <MemoryRouter initialEntries={['/blog-admin']}>
         <Routes>
           <Route element={<AdminRoute />}>
@@ -48,7 +49,7 @@ describe('AdminRoute', () => {
           </Route>
           <Route path="/dashboard" element={<div>dashboard</div>} />
         </Routes>
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     expect(screen.getByText('dashboard')).toBeInTheDocument()

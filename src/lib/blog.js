@@ -28,9 +28,9 @@ export function buildExcerpt(html, maxLength = 180) {
   return `${text.slice(0, maxLength).trimEnd()}...`
 }
 
-export function formatBlogDate(value) {
+export function formatBlogDate(value, locale = 'pt-BR') {
   if (!value) return ''
-  return new Intl.DateTimeFormat('pt-BR', {
+  return new Intl.DateTimeFormat(locale, {
     day: '2-digit',
     month: 'long',
     year: 'numeric',

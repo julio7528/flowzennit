@@ -1,0 +1,2382 @@
+{
+  "brand": {
+    "logoAlt": "FlowZenit logo",
+    "minimalLogoAlt": "FlowZenit minimal logo"
+  },
+  "common": {
+    "user": "User",
+    "search": "Search...",
+    "refresh": "Refresh",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "all": {
+      "feminine": "All",
+      "masculine": "All"
+    }
+  },
+  "languageSwitcher": {
+    "aria": "Select application language",
+    "options": {
+      "pt-BR": {
+        "label": "Switch language to Brazilian Portuguese"
+      },
+      "en": {
+        "label": "Switch language to English"
+      }
+    }
+  },
+  "nav": {
+    "features": "Features",
+    "methodology": "Methodology",
+    "science": "Science",
+    "blog": "Blog",
+    "about": "About",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "auth": {
+    "accessAccount": "Access your account",
+    "startFree": "Start for free",
+    "logout": "Sign out",
+    "loading": "Loading...",
+    "validatingAccess": "Validating access...",
+    "processingAuthentication": "Processing authentication..."
+  },
+  "login": {
+    "hero": {
+      "subtitle": "Enter the vacuum. Focus like never before.",
+      "orEmail": "or continue with email"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "placeholders": {
+      "email": "your@email.com",
+      "password": "........"
+    },
+    "actions": {
+      "google": "Continue with Google",
+      "login": "Sign in",
+      "loggingIn": "Signing in...",
+      "forgotPassword": "Forgot my password",
+      "createAccount": "Create new account"
+    },
+    "signUp": {
+      "title": "Join the Flow",
+      "description": "Create your account and enter the cockpit.",
+      "fields": {
+        "name": "Full name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm password"
+      },
+      "placeholders": {
+        "name": "Your name"
+      },
+      "termsPrefix": "I have read and accept the",
+      "termsLink": "Terms of use",
+      "termsAnd": "and",
+      "privacyLink": "Privacy policy",
+      "footer": "Already have an account?",
+      "actions": {
+        "submit": "Create account",
+        "creating": "Creating...",
+        "backToLogin": "Sign in"
+      }
+    },
+    "reset": {
+      "title": "Recover access",
+      "description": "Enter the email associated with your account to receive the reset link.",
+      "placeholder": "name@example.com",
+      "actions": {
+        "submit": "Send recovery link",
+        "sending": "Sending...",
+        "back": "Back to login"
+      }
+    },
+    "errors": {
+      "missingAuthConfig": "Authentication configuration is missing. Define VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
+      "invalidEmail": "Please enter a valid email.",
+      "passwordMinLength": "Password must be at least 8 characters long.",
+      "passwordMismatch": "Passwords do not match.",
+      "controlRegistry": "Account created, but the user could not be registered in the control table."
+    },
+    "feedback": {
+      "accessDenied": "Access denied",
+      "successTitle": "Success",
+      "successDefault": "Operation completed successfully.",
+      "errorTitle": "Error",
+      "errorDefault": "Something went wrong. Please try again.",
+      "backToLogin": "Back to login",
+      "tryAgain": "Try again",
+      "verifyEmail": "Check your email to confirm your account.",
+      "resetLinkSent": "We sent a recovery link to your email. Check your inbox."
+    }
+  },
+  "banner": {
+    "message": "Online custom courses and training. Talk to our support team",
+    "link": "here"
+  },
+  "hero": {
+    "eyebrow": "The definitive productivity engine",
+    "titleLine1": "Master the chaos.",
+    "titleLine2": "Scale your",
+    "titleAccent": "execution.",
+    "description": "A system that orchestrates your demands with <strong>GTD</strong>, prioritizes with <strong>GUT</strong>, and solves problems using <strong>MASP</strong> inside a continuous <strong>PDCA</strong> cycle.",
+    "primaryAction": "Start integrated system",
+    "diagram": {
+      "demands": "DEMANDS",
+      "organization": "ORGANIZATION",
+      "prioritizes": "PRIORITIZES",
+      "pdcaCycle": "PDCA CYCLE"
+    }
+  },
+  "featureStrip": {
+    "learnMore": "Click to learn more",
+    "items": {
+      "opensource": {
+        "shortTitle": "OPEN SOURCE",
+        "title": "100% open code",
+        "description": "Total transparency is our foundation. You keep control over your data and the community can audit security at any time. Contribute, fork or self-host."
+      },
+      "methodology": {
+        "shortTitle": "METHODOLOGIES",
+        "title": "Pragmatic Agile and Scrum",
+        "description": "We use the best Agile and Scrum principles without excessive bureaucracy. We remove unnecessary ceremonies to focus on value and continuous delivery."
+      },
+      "ai": {
+        "shortTitle": "EMBEDDED AI",
+        "title": "Assistive intelligence",
+        "description": "Our algorithms analyze your work patterns to suggest priorities and estimate deadlines. AI does not replace your decisions; it organizes initial chaos and reduces decision fatigue."
+      },
+      "interface": {
+        "shortTitle": "INTUITIVE INTERFACE",
+        "title": "Cognitive design",
+        "description": "An interface designed to reduce cognitive load. Colors, contrast and layout keep you in flow for longer without visual distraction."
+      }
+    }
+  },
+  "mainFeatures": {
+    "eyebrow": "Technology stack",
+    "titlePrefix": "High-performance",
+    "titleAccent": "features",
+    "description": "Every pixel was designed to remove cognitive friction. Powerful tools hidden beneath a minimalist interface.",
+    "items": {
+      "prioritization": {
+        "title": "Algorithmic prioritization",
+        "description": "Do more than list tasks. Our digital GUT matrix automatically calculates severity and urgency to suggest what should be done now.",
+        "tag": "GUT Matrix"
+      },
+      "pdca": {
+        "title": "Continuous PDCA cycle",
+        "description": "Turn continuous improvement into a habit. Plan, do, check and act inside every sprint with native frameworks.",
+        "tag": "Continuous improvement"
+      },
+      "copilot": {
+        "title": "Neural copilot",
+        "description": "AI trained to identify bottlenecks. It learns your pace and adjusts time estimates automatically to avoid burnout.",
+        "tag": "Powered by AI"
+      },
+      "analytics": {
+        "title": "Deep analytics",
+        "description": "Dashboards that reveal the truth. Visualize flow metrics, lead time and cycle time without complex spreadsheets.",
+        "tag": "Real-time"
+      },
+      "gitops": {
+        "title": "GitOps workflow",
+        "description": "Code is the source of truth. Link commits to tasks and move cards automatically based on pull requests and merges.",
+        "tag": "GitHub · GitLab"
+      },
+      "security": {
+        "title": "Military-grade security",
+        "description": "Your data is end-to-end encrypted. Granular access control and full auditability for compliance.",
+        "tag": "End-to-end encrypted"
+      }
+    }
+  },
+  "newFeatures": {
+    "title": "New features",
+    "cards": {
+      "calendar": {
+        "title": "Google Calendar integration",
+        "description": "Sync your tasks directly with your calendar slots. Never miss a meeting or delivery deadline again.",
+        "imageAlt": "Google Calendar interface integrated with FlowZenit"
+      },
+      "whatsapp": {
+        "title": "WhatsApp integration",
+        "description": "Capture tasks by voice, receive daily summaries, and check your schedule directly from your favorite messaging app.",
+        "imageAlt": "WhatsApp interface integrated with FlowZenit"
+      }
+    }
+  },
+  "contacts": {
+    "title": "Talk to us",
+    "description": "Questions about the Enterprise plan? Send us a message.",
+    "fields": {
+      "name": {
+        "label": "Full name",
+        "placeholder": "Your name"
+      },
+      "email": {
+        "label": "Business email",
+        "placeholder": "you@company.com"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "How can we help?"
+      }
+    },
+    "validation": {
+      "required": "This field is required.",
+      "invalidEmail": "Invalid business email."
+    },
+    "feedback": {
+      "success": "Message sent successfully. Thank you for reaching out.",
+      "errorGeneric": "We could not send your message. Please try again later.",
+      "errorWithReason": "We could not send your message: {{reason}}"
+    },
+    "actions": {
+      "processing": "Processing...",
+      "sent": "Sent",
+      "submit": "Send message"
+    },
+    "modal": {
+      "title": "Submission confirmation",
+      "description": "Are you sure you want to send this data? This action cannot be undone."
+    }
+  },
+  "cta": {
+    "title": "we are just getting started.",
+    "description": "Join our community and help us build an ecosystem of innovation and organization for our projects and daily work.",
+    "primary": "Create free account",
+    "secondary": "Read documentation",
+    "community": "Join the community"
+  },
+  "footer": {
+    "description": "Open-source platform for personal productivity and small businesses pursuing high performance.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "integrations": "Integrations",
+      "changelog": "Changelog"
+    },
+    "learn": {
+      "title": "Learn",
+      "documentation": "Documentation",
+      "training": "Training",
+      "apiGuide": "API guide",
+      "community": "Community",
+      "blog": "Blog"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy and cookies",
+      "requests": "LGPD requests",
+      "manageCookies": "Manage cookies"
+    },
+    "copyright": "© 2026 FlowZenit. Open source under MIT license."
+  },
+  "cookieConsent": {
+    "banner": {
+      "eyebrow": "Privacy and cookies",
+      "title": "You decide whether platform measurement can be enabled.",
+      "description": "We use cookies and similar technologies to keep the site working, store your privacy preferences and, with your authorization, measure platform usage for continuous improvements.",
+      "link": "Read privacy and cookies policy"
+    },
+    "modal": {
+      "eyebrow": "Cookie preferences",
+      "title": "Configure what can be activated in your browsing.",
+      "description": "Necessary cookies stay active at all times. Analytics remains disabled until you authorize it.",
+      "closeAria": "Close cookie preferences",
+      "privacyByDefault": "Privacy by default",
+      "localStorageNotice": "This preference is saved locally in your browser with versioning for future policy revisions.",
+      "statusLine": "Necessary active • Analytics {{analytics}}",
+      "authorized": "authorized",
+      "blocked": "blocked"
+    },
+    "actions": {
+      "accept": "Accept optionals",
+      "reject": "Reject optionals",
+      "configure": "Configure preferences",
+      "save": "Save preferences"
+    },
+    "category": {
+      "alwaysOn": "Always on",
+      "active": "Active",
+      "blocked": "Blocked"
+    }
+  },
+  "privacy": {
+    "lastUpdated": "April 05, 2026",
+    "stickyHeader": "PRIVACY // LGPD // ACTIVE CONTROL",
+    "stickyItems": ["Data", "Cookies", "LGPD requests"],
+    "statusBadges": [
+      "Privacy by default",
+      "Optional cookies under consent",
+      "LGPD requests inside the site"
+    ],
+    "hero": {
+      "eyebrow": "Privacy and cookies policy",
+      "titleLine1": "Privacy with",
+      "titleLine2": "real control",
+      "titleAccent": "for the user.",
+      "description": "This page summarizes how FlowZenit handles account data, records entered by the user, cookies and privacy preferences, and opens a direct channel for LGPD-related requests.",
+      "formAction": "Open LGPD form"
+    },
+    "heroPoints": [
+      {
+        "label": "Processed data",
+        "value": "Account, user records and consent preference"
+      },
+      {
+        "label": "Relevant third parties",
+        "value": "Supabase, Google Analytics and YouTube embed"
+      },
+      {
+        "label": "Data subject control",
+        "value": "Banner, preference center and LGPD form"
+      }
+    ],
+    "runtime": {
+      "lastReview": "// Last review:",
+      "controllerTitle": "Controller / project",
+      "controllerText": "FlowZenit processes personal data only to the extent necessary to operate authentication, keep the logged-in area running and store records created by the user inside the platform.",
+      "channelTitle": "Privacy channel",
+      "channelText": "The main channel for LGPD requests at this stage is the form available on this page. It is prepared for real integration with the current project stack.",
+      "updatesTitle": "Policy updates",
+      "updatesText": "This policy may evolve as the product matures. Relevant changes may require a new confirmation for optional cookie consent."
+    },
+    "sections": {
+      "data": {
+        "eyebrow": "What data we process",
+        "title": "Minimum data inventory for this version",
+        "description": "The policy reflects only what has already been confirmed in the project, without expanding scope with nonexistent categories."
+      },
+      "purposes": {
+        "eyebrow": "Processing purposes",
+        "title": "Why this data is processed",
+        "description": "The purposes below follow the platform's real usage and make clear when processing depends on consent."
+      },
+      "thirdParties": {
+        "eyebrow": "Sharing with third parties",
+        "title": "Relevant third parties at this stage",
+        "description": "The sharing and external support considered in this policy are limited to services actually identified in the project."
+      },
+      "cookies": {
+        "eyebrow": "Cookie policy",
+        "title": "Categories used on the site",
+        "description": "In this version, the site works only with strictly necessary cookies and optional measurement for analytics. No extra category was created without actual use.",
+        "alwaysOn": "Always on",
+        "defaultOff": "Disabled by default until consent",
+        "manageNotice": "You can review your preference at any time. Google Analytics is only loaded after explicit consent for the measurement and analytics category."
+      },
+      "rights": {
+        "eyebrow": "Data subject rights",
+        "title": "How the user can act on their data",
+        "description": "The rights below can be exercised through the form on this page, without depending on an external legal channel for the first contact."
+      },
+      "retention": {
+        "eyebrow": "Retention and deletion",
+        "title": "How we handle permanence and disposal",
+        "description": "The initial governance was written for the project's real scenario, without promising automations that do not exist yet."
+      }
+    },
+    "dataGroups": [
+      {
+        "title": "Account data",
+        "accent": "#00F0FF",
+        "description": "Basic data used to create, authenticate and maintain the user's FlowZenit account.",
+        "items": ["Name", "Email", "Identifiers required for authentication and profile"]
+      },
+      {
+        "title": "Data entered by the user",
+        "accent": "#BD00FF",
+        "description": "Operational records, internal registries and other information entered by the user to organize work inside the platform.",
+        "items": ["Internal registries", "Operational records", "Content created for management and system usage"]
+      },
+      {
+        "title": "Privacy technical data",
+        "accent": "#00FF41",
+        "description": "Information required to register privacy preferences and keep the site technically running.",
+        "items": [
+          "Consent preference stored locally in the browser",
+          "Cookies and similar technologies required for authentication and operation",
+          "Usage measurement only when analytics authorization exists"
+        ]
+      }
+    ],
+    "purposes": [
+      "Create and maintain the user's account.",
+      "Authenticate access and protect the logged-in area.",
+      "Store and organize records entered by the user.",
+      "Ensure basic service operation, stability and security.",
+      "Register the user's privacy choice.",
+      "Measure platform usage for continuous improvement only when analytics consent exists.",
+      "Display third-party embedded content when the site uses embedded media such as YouTube."
+    ],
+    "thirdParties": [
+      {
+        "name": "Supabase",
+        "accent": "#00F0FF",
+        "summary": "Backend infrastructure, authentication and storage used to operate the platform and account-linked data."
+      },
+      {
+        "name": "Google Analytics",
+        "accent": "#BD00FF",
+        "summary": "Usage measurement and analytics tool activated only after explicit consent for the measurement and analytics category."
+      },
+      {
+        "name": "YouTube embed",
+        "accent": "#00FF41",
+        "summary": "It may be used when videos are embedded on the site. In those cases, content loading depends on YouTube infrastructure."
+      }
+    ],
+    "cookieCategories": [
+      {
+        "key": "necessary",
+        "title": "Necessary",
+        "accent": "#00F0FF",
+        "alwaysOn": true,
+        "description": "They keep authentication, navigation, basic technical persistence and your privacy preference record working."
+      },
+      {
+        "key": "analytics",
+        "title": "Measurement and analytics",
+        "accent": "#BD00FF",
+        "alwaysOn": false,
+        "description": "They control Google Analytics loading to measure usage and support product improvements."
+      }
+    ],
+    "rights": [
+      "Request confirmation about the processing of your data.",
+      "Request access to personal data processed on the platform.",
+      "Request correction of outdated or incomplete information.",
+      "Request account deletion and deletion of applicable data.",
+      "Revoke consent for optional cookies.",
+      "Ask for additional information about purposes and third parties involved."
+    ],
+    "retentionRules": [
+      {
+        "title": "Account data",
+        "text": "They are kept while the account is active or while they are necessary for authentication, service support and operational security."
+      },
+      {
+        "title": "User-entered data",
+        "text": "They remain available while they are part of the platform's normal usage. For valid deletion requests, processing goes through case-by-case analysis and execution."
+      },
+      {
+        "title": "Consent and cookies",
+        "text": "The consent preference stays saved in the browser until the user changes it, clears local data or a new policy version requires a new choice."
+      }
+    ],
+    "governance": {
+      "eyebrow": "Minimum governance",
+      "title": "Initial foundation for future privacy evolution.",
+      "description": "This delivery already organizes the minimum inventory, the consent collection point and the initial trail for future evolutions without major structural rework."
+    },
+    "governanceItems": [
+      "Initial inventory limited to account data, user-created records and technical consent data.",
+      "Initial third-party inventory limited to Supabase, Google Analytics and YouTube embed.",
+      "Consent persisted locally with versioning for future policy review.",
+      "Structure prepared for future evolution with audit trail, refined retention and consent backend."
+    ],
+    "footerCard": {
+      "eyebrow": "Last update",
+      "description": "This policy may be revised to reflect new integrations, new processing bases or governance improvements.",
+      "requestsAction": "Go to LGPD requests"
+    },
+    "requestTypes": [
+      { "value": "confirm_processing", "label": "Confirm data processing" },
+      { "value": "access_data", "label": "Request data access" },
+      { "value": "correct_data", "label": "Request data correction" },
+      { "value": "delete_data", "label": "Request data deletion" },
+      { "value": "privacy_information", "label": "Request information about processing" },
+      { "value": "revoke_cookie_consent", "label": "Revoke optional cookie consent" }
+    ],
+    "form": {
+      "eyebrow": "LGPD requests",
+      "title": "Current privacy channel of the platform.",
+      "description": "While the project does not yet have a dedicated privacy email address, this form is the official channel for LGPD-related requests.",
+      "scopeTitle": "Support scope",
+      "scopeItems": [
+        "Account and authentication data.",
+        "Records entered by the user on the platform.",
+        "Information about processing, correction, access and deletion."
+      ],
+      "immediateControlTitle": "Immediate control",
+      "immediateControlDescription": "To revoke optional cookies, you can also adjust your preference right now.",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "requestType": "Request type",
+        "details": "Details"
+      },
+      "placeholders": {
+        "name": "Your name",
+        "email": "you@company.com",
+        "details": "Explain the request context to speed up the analysis.",
+        "cookieDetails": "Describe whether you want to revoke analytics only or receive additional feedback about the preference."
+      },
+      "genericRequest": "Request",
+      "confirmDeletionLabel": "I confirm that I want to register a data deletion request and understand that the request will be analyzed before execution.",
+      "validation": {
+        "nameRequired": "Enter your name.",
+        "emailInvalid": "Enter a valid email.",
+        "requestTypeInvalid": "Select a valid request type.",
+        "messageMin": "Describe your request with at least 12 characters.",
+        "messageMax": "The 4000-character limit was exceeded.",
+        "deletionConfirmation": "Confirm that you want to request deletion before sending."
+      },
+      "errors": {
+        "supabaseUnavailable": "Supabase configuration unavailable.",
+        "fallbackTooLong": "Request details exceed the limit supported by the current fallback channel."
+      },
+      "feedback": {
+        "success": "Request sent successfully. Our team will review it and reply to the provided email.",
+        "error": "We could not register your request right now.",
+        "errorWithReason": "We could not register your request right now: {{reason}}"
+      },
+      "fallbackHeader": "[LGPD] Request received through the privacy page",
+      "fallbackSelectedType": "Selected type: {{requestLabel}}",
+      "fallbackInternalCode": "Internal code: {{requestType}}",
+      "fallbackDeletionConfirmation": "Deletion confirmation: yes",
+      "actions": {
+        "submit": "Send request",
+        "sending": "Sending request..."
+      }
+    }
+  },
+  "methodology": {
+    "hero": {
+      "badge": "FLOWZENIT METHODOLOGY",
+      "titleLine1": "Method to get out",
+      "titleLine2": "of operational noise.",
+      "description": "The platform combines GTD, GUT, MASP and PDCA to turn loose inputs into execution guided by priority, analysis and continuous improvement."
+    },
+    "labels": {
+      "what": "What:",
+      "how": "How:"
+    },
+    "explainers": {
+      "gtd": {
+        "title": "GTD",
+        "what": "Captures and organizes everything that enters the system.",
+        "how": "Turns loose pending items into reliable next actions and reviews."
+      },
+      "gut": {
+        "title": "GUT",
+        "what": "Prioritizes by severity, urgency and trend.",
+        "how": "Distinguishes what needs an immediate response from what can wait."
+      },
+      "masp": {
+        "title": "MASP",
+        "what": "Structures problem solving in stages.",
+        "how": "Moves from root cause identification to standardized learning."
+      },
+      "pdca": {
+        "title": "PDCA",
+        "what": "Closes the continuous improvement loop.",
+        "how": "Plans, executes, checks and adjusts the operation on every iteration."
+      }
+    },
+    "gtdSection": {
+      "eyebrow": "GTD // CAPTURE FLOW",
+      "title": "Clarity before execution.",
+      "description": "GTD works as an operational trust layer: everything can be captured, clarified and repositioned without depending on the user's memory."
+    },
+    "gtdSteps": [
+      {
+        "title": "Capture",
+        "what": "Register demands, ideas and interruptions as soon as they appear.",
+        "how": "The initial backlog absorbs inputs without forcing an immediate decision."
+      },
+      {
+        "title": "Clarify",
+        "what": "Understand whether the input requires action, reference or disposal.",
+        "how": "Each item receives context, action type and next step."
+      },
+      {
+        "title": "Organize",
+        "what": "Place the information in the correct system structure.",
+        "how": "Categories, projects, boxes and states avoid operational ambiguity."
+      },
+      {
+        "title": "Reflect",
+        "what": "Review the flow to keep the system reliable.",
+        "how": "Reviews verify priorities, pending items and deviations."
+      },
+      {
+        "title": "Engage",
+        "what": "Execute with focus on what makes the most sense now.",
+        "how": "Prioritization guides the choice of the next action."
+      }
+    ],
+    "gutSection": {
+      "eyebrow": "GUT // PRIORITIZATION",
+      "title": "Criteria for decisions under pressure.",
+      "description": "Severity, urgency and trend become a common language to order the backlog and avoid decisions driven only by impulse."
+    },
+    "gutFactors": [
+      {
+        "title": "Severity",
+        "score": "WT: 5",
+        "width": "w-[80%]",
+        "what": "Measures the real impact if nothing is done.",
+        "how": "Considers operational damage, risk and effect on outcomes."
+      },
+      {
+        "title": "Urgency",
+        "score": "WT: 4",
+        "width": "w-[60%]",
+        "what": "Measures deadline pressure for response.",
+        "how": "Brings time directly into the prioritization decision."
+      },
+      {
+        "title": "Trend",
+        "score": "WT: 3",
+        "width": "w-[40%]",
+        "what": "Measures the chance of the problem getting worse.",
+        "how": "Helps anticipate bottlenecks before they become a crisis."
+      }
+    ],
+    "maspSection": {
+      "eyebrow": "MASP // STRUCTURED RESOLUTION",
+      "title": "Problems treated with method.",
+      "description": "MASP organizes analysis, action and verification so the operation does not just react, but learns from every deviation."
+    },
+    "maspSteps": [
+      {
+        "title": "Identification",
+        "what": "Clearly define the observed problem.",
+        "how": "Delimits scope, impact and context before acting."
+      },
+      {
+        "title": "Observation",
+        "what": "Gather data from the problem in the real environment.",
+        "how": "Collects signals, recurrences and associated conditions."
+      },
+      {
+        "title": "Analysis",
+        "what": "Investigate likely causes and origin relationships.",
+        "how": "Separates symptom from root cause to avoid rework."
+      },
+      {
+        "title": "Action plan",
+        "what": "Define the structured response for correction.",
+        "how": "Organizes owners, deadlines and execution strategy."
+      },
+      {
+        "title": "Execution",
+        "what": "Apply the actions defined in the plan.",
+        "how": "Moves the issue from diagnosis to real intervention."
+      },
+      {
+        "title": "Verification",
+        "what": "Check whether the expected effect happened.",
+        "how": "Compares before and after to validate the result."
+      },
+      {
+        "title": "Standardization",
+        "what": "Consolidate what worked as practice.",
+        "how": "Prevents the same cause from reappearing in the flow."
+      },
+      {
+        "title": "Conclusion",
+        "what": "Record the learning and close the cycle.",
+        "how": "Ends the trail with documentation and future reference."
+      }
+    ],
+    "pdcaSection": {
+      "eyebrow": "PDCA // CONTINUOUS IMPROVEMENT",
+      "title": "The cycle that keeps operations evolving."
+    },
+    "pdcaPhases": [
+      {
+        "title": "PLAN",
+        "what": "Plan the path and success criteria.",
+        "how": "Defines objective, scope and how delivery will be validated."
+      },
+      {
+        "title": "DO",
+        "what": "Execute the plan in the operational flow.",
+        "how": "Turns strategy into tracked activity."
+      },
+      {
+        "title": "CHECK",
+        "what": "Verify adherence, outcome and deviations.",
+        "how": "Checks whether execution matches the plan."
+      },
+      {
+        "title": "ACT",
+        "what": "Act on learnings and required adjustments.",
+        "how": "Standardizes improvements and repositions the next cycle."
+      }
+    ],
+    "footer": {
+      "title": "Method visible inside the platform.",
+      "description": "The goal is not to teach isolated frameworks, but to show how they structure the real flow of work inside the product."
+    }
+  },
+  "about": {
+    "statusBar": {
+      "title": "JULIO GOMES // STATUS: AVAILABLE FOR PROJECTS",
+      "items": ["9+ YEARS_EXP", "LATAM REMOTE", "RPA + AI + FULLSTACK"]
+    },
+    "hero": {
+      "firstName": "Julio",
+      "lastName": "Gomes",
+      "linkedinAction": "Contact",
+      "githubAction": "GitHub",
+      "linkedinAlt": "LinkedIn",
+      "githubAlt": "GitHub"
+    },
+    "terminal": {
+      "fileName": "julio_gomes_profile.js",
+      "roleLabel": "role",
+      "roleValue": "RPA Developer & Automation Specialist",
+      "experienceLabel": "experience",
+      "experienceValue": "9+ years",
+      "locationLabel": "location",
+      "locationValue": "Mato Grosso, Brazil",
+      "stackLabel": "stack",
+      "stack": ["Python", "Automation Anywhere", "UiPath", "LLM / AI Automation", "React / Next.js"],
+      "currentRoleLabel": "currentRole",
+      "currentRoleValue": "Semantix AI - LATAM",
+      "missionLabel": "mission",
+      "missionValue": "Automate to unlock human potential.",
+      "bootMessage": "// Running initialization..."
+    },
+    "timeline": {
+      "title": "Trajectory:",
+      "items": [
+        {
+          "period": "[INIT] :: 2014 - 2021",
+          "company": "34 INVESTIMENTOS",
+          "role": "Controller & RPA Dev - Power Automate, WinAutomation"
+        },
+        {
+          "period": "[UPDATE] :: 2021 - 2023",
+          "company": "VIAFLOW",
+          "role": "AMS Analyst & RPA Dev - AA, Power Automate, IBM RPA"
+        },
+        {
+          "period": "[UPDATE] :: 2023 - 2025",
+          "company": "MAASLO",
+          "role": "RPA Developer - AA, Python, QA & Architecture"
+        },
+        {
+          "period": "[CURRENT] :: 2025 - Today",
+          "company": "SEMANTIX AI",
+          "role": ">> RPA Support LATAM - Python, UiPath, AA"
+        }
+      ]
+    },
+    "featureCard": {
+      "badge": "SPECIALTY: RPA & AI",
+      "titleLine1": "9 years automating what matters.",
+      "titleLine2": "So humans can focus on what really matters.",
+      "description": "Specialist in RPA and business process automation, with a strong track record in tax, financial and operational areas. Today he also develops solutions with LLMs and AI to expand the reach of automation.",
+      "projectsLabel": "PROJECTS IN PROGRESS",
+      "projectsValue": "FLOWZENIT PLATFORM",
+      "yearsLabel": "YEARS EXP"
+    },
+    "focusAreas": [
+      {
+        "title": "RPA",
+        "description": "UiPath, Automation Anywhere, IBM RPA, Power Automate, BotCity."
+      },
+      {
+        "title": "AI & LLM",
+        "description": "Intelligent automation with language models and AI agents."
+      },
+      {
+        "title": "FULL STACK",
+        "description": "React, Next.js, Python and Docker for modern web products."
+      },
+      {
+        "title": "FINANCE",
+        "description": "Treasury automation, billing, reconciliations and management reporting."
+      }
+    ],
+    "workflowSteps": [
+      {
+        "title": "MAPPING",
+        "description": "Process analysis and requirements gathering"
+      },
+      {
+        "title": "DEVELOPMENT",
+        "description": "Automation with Python, RPA and AI integrations"
+      },
+      {
+        "title": "DELIVERY & QA",
+        "description": "Documentation, code review and continuous improvement"
+      }
+    ],
+    "certifications": {
+      "title": "Certifications & Credentials",
+      "items": [
+        { "label": "AA Advanced RPA Professional", "sub": "A360", "color": "#00F0FF" },
+        { "label": "AA Master RPA Professional", "sub": "Automation Anywhere", "color": "#00F0FF" },
+        { "label": "UiPath Advanced Developer", "sub": "UiPath", "color": "#BD00FF" },
+        { "label": "IBM RPA", "sub": "IBM", "color": "#BD00FF" },
+        { "label": "Blue Prism Developer", "sub": "Blue Prism", "color": "#00FF41" },
+        { "label": "BotCity Python RPA", "sub": "BotCity", "color": "#00FF41" }
+      ]
+    },
+    "education": {
+      "title": "Academic Background",
+      "items": [
+        { "status": "[x]", "color": "#00FF41", "label": "Bachelor in Software Engineering - Estacio" },
+        { "status": "[x]", "color": "#00FF41", "label": "Bachelor in Accounting - Unopar" },
+        { "status": "[ ]", "color": "#BD00FF", "label": "Postgraduate in Management & Innovation in Business and Technology - UNEMAT (12/2026)" },
+        { "status": "[ ]", "color": "#BD00FF", "label": "Postgraduate in Agrocomputing - UFMT (06/2026)" }
+      ]
+    },
+    "highlightProjects": {
+      "title": "Highlighted Projects",
+      "items": [
+        "FlowZenit - Organization and productivity platform",
+        "ServCasa - Web system with automation and AI",
+        "ModeloMarketingTop - Marketing automation",
+        "UFMT - Plant analysis via remote sensing with AI"
+      ]
+    }
+  },
+  "science": {
+    "hero": {
+      "eyebrow": "INIT_SEQUENCE",
+      "titleLine1": "THE FORMULA",
+      "titleLine2": "OF THE MIND.",
+      "paragraphs": [
+        "We were not designed for the information age. Our biological hardware evolved to handle immediate threats and tangible rewards.",
+        "Today we operate in an environment of infinite inputs. The result is cognitive anxiety, mental loops and an overloaded operating system."
+      ],
+      "quote": "The mind is for having ideas, not holding them.",
+      "quoteSource": "David Allen // GTD Origin"
+    },
+    "gut": {
+      "badge": "MODULE_02",
+      "titlePrefix": "G.U.T.",
+      "titleAccent": "MATRIX",
+      "description": "When everything feels urgent, the answer is not intuition. The GUT matrix decomposes chaos into measurable vectors that guide priority.",
+      "cards": [
+        {
+          "title": "Severity",
+          "weight": "WT: 5",
+          "description": "Impact if nothing is done. Damage, losses and system collapse.",
+          "barWidth": "w-[80%]"
+        },
+        {
+          "title": "Urgency",
+          "weight": "WT: 4",
+          "description": "Available time for resolution. Is the deadline expiring now?",
+          "barWidth": "w-[60%]"
+        },
+        {
+          "title": "Trend",
+          "weight": "WT: 3",
+          "description": "Potential growth of the problem. Will it worsen progressively?",
+          "barWidth": "w-[40%]"
+        }
+      ]
+    },
+    "mentalFlow": {
+      "badge": "MODULE_03",
+      "titlePrefix": "MENTAL",
+      "titleAccent": "FLOW",
+      "paragraphs": [
+        "Getting Things Done (GTD) is not about doing more. It is about building a proportional response state for every new input.",
+        "When you trust the system, the brain stops spending RAM trying to remember pending items and starts operating strategy."
+      ],
+      "algorithmTitle": "CORE_ALGORITHM:",
+      "algorithmSteps": [
+        "CAPTURE: Empty the mind.",
+        "CLARIFY: Is it actionable? (Y/N)",
+        "ORGANIZE: Put it in the right place.",
+        "REFLECT: Weekly review.",
+        "ENGAGE: Execute."
+      ]
+    },
+    "visibility": {
+      "badge": "MODULE_04",
+      "titlePrefix": "TOTAL",
+      "titleAccent": "VISIBILITY",
+      "paragraphs": [
+        "The human brain processes images much faster than text. Kanban turns abstract work into visual objects moving through space.",
+        "Limiting WIP (Work In Progress) is the only way to avoid bottlenecks. If everything is a priority, nothing is a priority."
+      ]
+    },
+    "analysis": {
+      "eyebrow": "SECTION 02 // ANALYSIS",
+      "titlePrefix": "COMPARATIVE",
+      "titleAccent": "DYNAMICS",
+      "paragraphs": [
+        "Efficiency is not monolithic. It emerges from the balance between cognitive load and throughput.",
+        "Visual systems reduce immediate anxiety, while structured list-based systems maximize long-term retrieval accuracy."
+      ],
+      "tableTitle": "METHODS x FOCUS",
+      "tableSubtitle": "LIVE DATA FEED • REAL-TIME COMPARATIVE ANALYSIS",
+      "tableHeaders": ["Methodology", "Focus Area", "Core Mechanic", "Impact"],
+      "tableRows": [
+        { "methodology": "GTD", "focusArea": "Individual", "coreMechanic": "Mental Flow", "impact": "0.85", "barWidth": "w-[85%]", "color": "#8b5cf6" },
+        { "methodology": "KANBAN", "focusArea": "Visual", "coreMechanic": "Workflow", "impact": "0.72", "barWidth": "w-[72%]", "color": "#3be1f7", "highlight": true },
+        { "methodology": "MASP", "focusArea": "Problem", "coreMechanic": "Root Cause", "impact": "0.91", "barWidth": "w-[91%]", "color": "#ff4fd8" }
+      ],
+      "dataset": "DATASET: SYS_OPT_24",
+      "legend": ["Speed", "Quality", "Cost"],
+      "closing": "Kanban, highlighted above, optimizes flow visibility, but often sacrifices the capture of granular details."
+    },
+    "visualizer": {
+      "speed": "SPEED",
+      "quality": "QUALITY",
+      "cost": "COST",
+      "highVelocity": "High Vel.",
+      "mediumQuality": "Med Qual.",
+      "stateLabel": "VISUALIZER_STATE",
+      "stateValue": "SYNCED: KANBAN",
+      "gutIndex": "G.U.T. INDEX",
+      "kanbanState": "KANBAN_STATE"
+    },
+    "final": {
+      "title": "FINAL_OUTPUT //",
+      "sessionLog": "SESSION LOG ID: #88X-GAMMA",
+      "tipBadge": "PRO TIP_LOG",
+      "tipTitle": "OPTIMIZATION_STRATEGY",
+      "tipText": "To sell this methodology to stakeholders, emphasize 'Risk Reduction' (MASP) instead of 'Speed' (Kanban).",
+      "referencesTitle": "REFERENCE_LOG",
+      "references": [
+        { "ref": "[REF-01]", "title": "GTD: The Art of Stress-Free Productivity", "src": "David Allen Co." },
+        { "ref": "[REF-02]", "title": "Kanban: Successful Evolutionary Change", "src": "David J. Anderson" },
+        { "ref": "[REF-03]", "title": "The Toyota Way (Lean Principles)", "src": "Jeffrey Liker" },
+        { "ref": "[REF-04]", "title": "Atomic Habits: Tiny Changes", "src": "James Clear" }
+      ],
+      "cta": "ACCESS SYSTEM",
+      "status": "V2.4.0 // SYS_READY"
+    }
+  },
+  "training": {
+    "statusBar": {
+      "title": "COURSES & TRAINING // STATUS: AVAILABLE",
+      "items": ["3 MODULES", "GUT + GTD + PDCA + MASP", "LIVE + VOD"]
+    },
+    "hero": {
+      "badge": "> INIT TRAINING_MODULE",
+      "titleLine1": "Knowledge,",
+      "titleLine2": "method and",
+      "titleAccent": "results.",
+      "exploreAction": "Explore modules",
+      "startAction": "Start training"
+    },
+    "highlights": [
+      { "label": "Structured tracks", "value": "3", "unit": "modules" },
+      { "label": "Methodologies", "value": "5+", "unit": "frameworks" },
+      { "label": "Learning formats", "value": "2", "unit": "modalities" }
+    ],
+    "journey": {
+      "fileName": "training_journey.log",
+      "goalLabel": "goal",
+      "goalValue": "From concept to execution",
+      "methodologiesLabel": "methodologies",
+      "platformLabel": "platform",
+      "platformValue": "FlowZenit",
+      "formatLabel": "format",
+      "formatValue": "Live + VOD",
+      "loading": "// Loading training track..."
+    },
+    "pillarsSection": {
+      "eyebrow": "Why learn before operating",
+      "title": "The tool alone does not guarantee results."
+    },
+    "pillars": [
+      {
+        "title": "Method before the click",
+        "description": "The platform organizes the operation, but the best outcomes appear when the user understands the logic behind decisions, priorities and routines."
+      },
+      {
+        "title": "Theory applied in the system",
+        "description": "Each training path connects concept, screen and practical action to reduce errors, speed up execution and improve team adoption."
+      },
+      {
+        "title": "Continuous enablement",
+        "description": "Structured learning helps standardize processes, raise productivity and sustain continuous improvement over time."
+      }
+    ],
+    "modulesSection": {
+      "eyebrow": "Module organization",
+      "title": "Three fronts to build real mastery of the platform."
+    },
+    "modules": [
+      {
+        "id": "01",
+        "title": "Science Module",
+        "badge": "Methodological foundation",
+        "objective": "Present the conceptual foundations that sustain analysis, prioritization and continuous improvement.",
+        "relation": "Translates the reasoning behind tasks, projects, priorities and evolution cycles reflected in the platform.",
+        "items": [
+          "GUT matrix to define priorities with criteria.",
+          "GTD to capture, organize and execute with clarity.",
+          "Galley de Fingstone to structure analysis and guidance.",
+          "PDCA to drive continuous improvement in system usage.",
+          "MASP to investigate causes and correct problems methodically."
+        ]
+      },
+      {
+        "id": "02",
+        "title": "Features Module",
+        "badge": "System operation",
+        "objective": "Present the operational resources and show how each feature supports day-to-day execution.",
+        "relation": "Shows how planning, tracking, recording and delivery leave theory and become routine inside the platform.",
+        "items": [
+          "Task scheduler for commitments, recurrences and follow-up.",
+          "Registry types to sustain flows with standardized data.",
+          "Kanban boards for status, stage and progress visibility.",
+          "Project management to organize owners, priorities and deliveries."
+        ]
+      },
+      {
+        "id": "03",
+        "title": "Methodology Flow Module",
+        "badge": "Connection between theory and practice",
+        "objective": "Demonstrate how theory, process and feature set participate in the same operational flow.",
+        "relation": "Explains how demands enter, are organized, tracked, executed, checked and improved inside the platform.",
+        "items": [
+          "Relationship between methodology and feature set in daily work.",
+          "Operational flow from intake to standardization.",
+          "User journey in a method-guided process.",
+          "Connection between PDCA, MASP, Kanban and task management."
+        ]
+      }
+    ],
+    "flowSection": {
+      "eyebrow": "Integration between methodology and system"
+    },
+    "flowSteps": [
+      {
+        "title": "Input and understanding",
+        "description": "A demand is born, gains context and starts being understood with criteria before turning into just another task.",
+        "tag": "PHASE_01"
+      },
+      {
+        "title": "Organization and classification",
+        "description": "Registries, types and rules organize work to preserve standards, visibility and operational consistency.",
+        "tag": "PHASE_02"
+      },
+      {
+        "title": "Tracked execution",
+        "description": "Kanban, tasks and projects show progress clearly and help keep focus on next actions.",
+        "tag": "PHASE_03"
+      },
+      {
+        "title": "Review and improvement",
+        "description": "Indicators, reviews and method close the cycle to adjust direction, standardize learnings and improve continuously.",
+        "tag": "PHASE_04"
+      }
+    ],
+    "modalitiesSection": {
+      "eyebrow": "Learning modalities",
+      "title": "Flexibility to learn with support or at your own pace.",
+      "description": "The proposal combines live sessions with recorded content to support teams at different moments of maturity and operational need."
+    },
+    "modalities": [
+      {
+        "title": "Live classes",
+        "description": "Training sessions guided over Google Meet with direct interaction, real-time questions and practical alignment on usage.",
+        "tag": "LIVE"
+      },
+      {
+        "title": "Recorded content",
+        "description": "Videos organized in YouTube playlists for on-demand consumption, fast review and self-paced learning.",
+        "tag": "VOD"
+      }
+    ],
+    "benefitsSection": {
+      "title": "Benefits of the learning formats"
+    },
+    "benefits": [
+      "Flexibility for different learning profiles.",
+      "Content review whenever needed.",
+      "Scalability to train entire teams.",
+      "Combination of theory, process and operational practice.",
+      "Live follow-up when the context requires guided support."
+    ],
+    "cta": {
+      "eyebrow": "> NEXT_STEP",
+      "titlePrefix": "Training connects method,",
+      "titleAccent": "system and operational outcome.",
+      "description": "By understanding concepts and features together, the user starts operating the platform with more efficiency, clarity and strategy.",
+      "primary": "Start training",
+      "secondary": "View available modules"
+    }
+  },
+  "documentation": {
+    "hero": {
+      "eyebrow": "Project Documentation",
+      "title": "Functional guide to the FlowZenit platform",
+      "description": "This page summarizes the methodology applied in the system, the functional architecture of the logged-in area and the role of each main module. Blocks marked as placeholders were left for later screenshot insertion."
+    },
+    "coverAlt": "Documentation cover",
+    "methodologySection": {
+      "eyebrow": "Methodology",
+      "title": "Conceptual foundation of the project",
+      "aside": "The system combines personal organization, prioritization and continuous improvement to control backlog, operations and portfolio."
+    },
+    "methodologyItems": [
+      {
+        "title": "GTD",
+        "summary": "Organizes the capture and execution of demands to turn loose inputs into objective actions.",
+        "usage": "The project logic separates captures, backlog, operational flow and helper boxes to keep the view clear."
+      },
+      {
+        "title": "GUT",
+        "summary": "Prioritizes items based on severity, urgency and trend.",
+        "usage": "Prioritization appears in analytical and operational screens to highlight risk and support decisions."
+      },
+      {
+        "title": "MASP",
+        "summary": "Structures problem solving in stages of identification, analysis, action and standardization.",
+        "usage": "Kanban and reports reflect an evolution trail that helps move from the problem to the final record."
+      },
+      {
+        "title": "PDCA",
+        "summary": "Keeps continuous improvement active through plan, do, check and act cycles.",
+        "usage": "The macro-stage distribution in the flow reinforces follow-up, validation and knowledge consolidation."
+      }
+    ],
+    "projectLabel": "In the project",
+    "pagesSection": {
+      "eyebrow": "Logged-in Area",
+      "title": "Features by page",
+      "description": "Functional documentation for components under src/components/arealogada."
+    },
+    "pageSections": [
+      {
+        "title": "AreaLogadaLayout",
+        "objective": "Main structure of the authenticated area.",
+        "features": [
+          "Sidebar with access to dashboard, projects, tasks, kanban and boxes modules.",
+          "Header with breadcrumb, workspace indicators, notifications and manual refresh.",
+          "Global modal for quick item creation from any screen."
+        ]
+      },
+      {
+        "title": "DashboardHome",
+        "objective": "Executive panel with consolidated workspace reading.",
+        "features": [
+          "Indicators for active volume, GUT risk, planning, portfolio and progress.",
+          "Quantitative and qualitative analysis cards for quick scenario reading.",
+          "Blocks for projects in operation, current execution, GUT radar, capacity and latest movements."
+        ]
+      },
+      {
+        "title": "CadCategorias",
+        "objective": "Registry and maintenance of system categories.",
+        "features": [
+          "Creation, editing and deletion of categories.",
+          "Color association for visual identification.",
+          "Ordered list with visual feedback for save and delete operations."
+        ]
+      },
+      {
+        "title": "CadSubcategoria",
+        "objective": "Registry of subcategories linked to categories.",
+        "features": [
+          "Creation and editing of subcategories linked directly to an existing category.",
+          "Modal to create a category without leaving the screen.",
+          "Listing with relationship between parent category and subcategory."
+        ]
+      },
+      {
+        "title": "CadParticipantes",
+        "objective": "Management of participants responsible for activities.",
+        "features": [
+          "Creation, editing and removal of participants.",
+          "Image upload with base64 conversion and immediate preview.",
+          "Participant list to support ownership assignment across screens."
+        ]
+      },
+      {
+        "title": "Tarefas",
+        "objective": "Tabular view of operational backlog activities.",
+        "features": [
+          "Filters by allocation, participant, category and date range.",
+          "Sorting by name, participant, category, dates and dynamic GUT.",
+          "Edit and delete actions with summarized desktop and mobile reading."
+        ]
+      },
+      {
+        "title": "Reports",
+        "objective": "Analytical and operational Kanban focused on flow consistency.",
+        "features": [
+          "Macro-columns aligned to backlog, plan, do, check, act and done.",
+          "Card movement across states with transition rules and definition modal.",
+          "Consistency audit, macro-column distribution and filters by state and textual search."
+        ]
+      },
+      {
+        "title": "Projetos",
+        "objective": "Projects module with product and execution hierarchy.",
+        "features": [
+          "Epic > Feature > User Story > Task/Bug structure.",
+          "Tabs for backlog, Gantt and project Kanban.",
+          "Metrics, hierarchical view, next deliveries and quick portfolio artifact creation."
+        ]
+      },
+      {
+        "title": "Stuff",
+        "objective": "Helper boxes for items outside the main flow.",
+        "features": [
+          "Separation between Stuff, Trash, Someday / Maybe and Future reference.",
+          "Fast recovery of items through activation action.",
+          "Record removal without polluting the main operational flow."
+        ]
+      }
+    ],
+    "placeholder": {
+      "label": "Placeholder",
+      "description": "Replace with the corresponding screen capture."
+    },
+    "footerSections": {
+      "architectureEyebrow": "Functional architecture",
+      "architectureTitle": "System pillars",
+      "architectureItems": [
+        "Authentication and persistence with Supabase.",
+        "Protected navigation with React Router and shared logged-in layout.",
+        "Interface oriented around indicators, operational lists, Kanban flow and project portfolio."
+      ],
+      "evidenceEyebrow": "Future evidence",
+      "evidenceTitle": "Suggested attachments",
+      "evidenceItems": [
+        "Complete authenticated user flow: dashboard, projects, tasks and kanban.",
+        "Comparative captures of registries to demonstrate design system consistency.",
+        "Evidence of methodology usage in analytical and operational screens."
+      ]
+    }
+  },
+  "detailedFeatures": {
+    "hero": {
+      "status": "SYSTEM ONLINE",
+      "titleLine1": "Intelligent",
+      "titleAccent": "Task",
+      "titleLine2": "Management",
+      "descriptionLine1": "Automatic orchestration. From chaos to execution in milliseconds.",
+      "descriptionLine2": "A living operating system for your workflow.",
+      "primaryAction": "Start System",
+      "secondaryAction": "Watch Demo",
+      "imageAlt": "Futuristic dashboard with neon analytics on a dark background",
+      "capabilities": "Capabilities",
+      "introTitle": "ABSOLUTE MODULARITY",
+      "systemCheck": "SYSTEM_CHECK:",
+      "latency": "LATENCY:"
+    },
+    "introCards": [
+      {
+        "icon": "inbox",
+        "title": "Infinite Backlog",
+        "desc": "Capture everything without friction. A centralized repository that processes raw inputs into actionable tasks.",
+        "module": "Stuff",
+        "color": "primary"
+      },
+      {
+        "icon": "view_kanban",
+        "title": "Kinetic Flow",
+        "desc": "A breathing Kanban view. Cards move like living data, not static sticky notes.",
+        "module": "Kanban",
+        "color": "secondary"
+      },
+      {
+        "icon": "insights",
+        "title": "Predictive Analytics",
+        "desc": "Automated GUT matrix. The system decides what is urgent before it becomes a fire.",
+        "module": "Intel",
+        "color": "accent"
+      }
+    ],
+    "stuff": {
+      "label": "Stuff Module",
+      "titleLine1": "The",
+      "titleAccent": "Central Bank",
+      "description": "Capture everything. Process later. Stuff works like a gravitational well for raw thoughts, instantly removing cognitive load.",
+      "input": "INPUT: 12 ITEMS",
+      "status": "STATUS: ACTIVE",
+      "incomingLabel": "Incoming Data",
+      "cardTitle": "Fix Vercel Deployment",
+      "cardDescription": "Build failed due to missing environmental variables in the production branch.",
+      "cardTag": "DevOps",
+      "cardSeverity": "Critical"
+    },
+    "kanban": {
+      "label": "Kanban Module",
+      "titleLine1": "Visual",
+      "titleAccent": "Flow",
+      "description": "Algorithmic orchestration. Visualize energy moving from chaos to completion through crystalline glass columns.",
+      "velocity": "Velocity",
+      "cycleTime": "Cycle Time",
+      "todo": "To Do",
+      "doing": "Doing",
+      "done": "Done",
+      "ghostCardId": "#SYS-102",
+      "ghostCardTitle": "Refactor Auth Middleware",
+      "todoCardId": "#UI-204",
+      "todoCardTitlePast": "Review Design System",
+      "todoCardTitle": "Update Icon Set",
+      "doingCardId": "#API-88",
+      "doingCardTitle": "Optimize Database Queries",
+      "doingCardProgress": "65% Complete",
+      "doingCardRemaining": "2h left",
+      "doneCards": [
+        { "id": "#MKT-12", "title": "Q4 Planning Deck" },
+        { "id": "#BUG-02", "title": "Fix Header z-index" }
+      ]
+    },
+    "calendar": {
+      "label": "Temporal Sync",
+      "titleLine1": "Synchronize",
+      "titleAccent": "Reality",
+      "description": "Where the 'what' meets the 'when'. A granular view of commitments with real-time updates.",
+      "activeEvents": "Active Events",
+      "onSchedule": "On Schedule",
+      "weekdays": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+      "popoverTitle": "Product Launch",
+      "popoverStatus": "NOW",
+      "popoverTime": "14:00 - 15:30",
+      "popoverTeam": "Design Team",
+      "popoverAction": "View Details"
+    },
+    "gantt": {
+      "label": "Advanced Orchestration",
+      "titleLine1": "Visualize the",
+      "titleAccent": "Domino Effect",
+      "description": "Manage critical dependencies with surgical precision. See how a single delay propagates through the whole timeline in real time.",
+      "headerTitle": "Project Alpha Timeline",
+      "weeks": ["WK 41", "WK 42", "WK 43", "WK 44"],
+      "tracks": {
+        "strategy": "Strategy",
+        "strategyItem": "Initial Scope",
+        "design": "Design",
+        "designItem": "UI & Prototyping",
+        "dev": "Dev",
+        "devItem": "Frontend Impl.",
+        "qa": "QA",
+        "qaItem": "Review"
+      },
+      "featureOneTitle": "Dependency Mapping",
+      "featureOneDescription": "Timelines that adjust automatically after blockers are resolved.",
+      "featureTwoTitle": "Critical Path Analysis",
+      "featureTwoDescription": "Identify bottlenecks before they become blockers."
+    }
+  },
+  "blog": {
+    "masthead": {
+      "title": "FlowZenit Blog - By Julio Gomes",
+      "postsCount": "{{count}} posts",
+      "live": "live"
+    },
+    "states": {
+      "supabaseMissing": "Supabase not configured.",
+      "loadingPosts": "Loading published posts...",
+      "empty": "No published posts at the moment.",
+      "notFound": "Post not found or not published yet."
+    },
+    "sidebar": {
+      "index": "Blog Index",
+      "archive": "Archive"
+    },
+    "indexView": {
+      "latest": "Latest post",
+      "readFull": "Read full post",
+      "historyEyebrow": "History",
+      "historyTitle": "Other published posts"
+    },
+    "postView": {
+      "backToIndex": "Back to index",
+      "publishedAt": "Published on {{date}}",
+      "engagement": "Engagement",
+      "engagementTitle": "Enjoyed the content?",
+      "likeRegistered": "Like recorded",
+      "likeAction": "Like post",
+      "commentsEyebrow": "Comments",
+      "commentsTitle": "Join the conversation",
+      "namePlaceholder": "Your name",
+      "commentPlaceholder": "Share your comment",
+      "commentRule": "Each browser can submit one comment and one like per post.",
+      "commentRegistered": "Comment recorded",
+      "commentAction": "Send comment",
+      "emptyComments": "There are no published comments on this post yet."
+    },
+    "feedback": {
+      "duplicateLike": "This browser has already liked this post.",
+      "requiredCommentFields": "Name and comment are required.",
+      "duplicateComment": "This browser has already submitted a comment for this post."
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "workspace": "Workspace",
+      "boxes": "Boxes",
+      "records": "Records",
+      "items": {
+        "dashboard": "Dashboard",
+        "projects": "Projects",
+        "tasks": "Tasks",
+        "kanban": "Kanban",
+        "categories": "Categories",
+        "subcategories": "Subcategories",
+        "participants": "Participants",
+        "stuff": "Stuff",
+        "trash": "Trash",
+        "someday": "Someday / maybe",
+        "reference": "Future reference"
+      }
+    },
+    "headerMetrics": {
+      "active": "Active",
+      "alerts": "Alerts",
+      "portfolio": "Portfolio"
+    },
+    "actions": {
+      "newItem": "New item",
+      "refreshIndicators": "Refresh indicators",
+      "blogAdmin": "Blog Admin",
+      "openSidebar": "Open sidebar",
+      "closeSidebar": "Close sidebar",
+      "expandSidebar": "Expand sidebar",
+      "minimizeSidebar": "Minimize sidebar",
+      "notifications": "Notifications"
+    }
+  },
+  "tasks": {
+    "header": {
+      "eyebrow": "Backlog · tbf_atividades",
+      "title": "Tasks",
+      "description": "Backlog entries by allocation type, filters, and dynamic GUT ordering."
+    },
+    "filters": {
+      "sectionTitle": "Filters",
+      "allocation": "Allocation filter",
+      "participant": "Participant",
+      "allParticipants": "All participants",
+      "category": "Category",
+      "allCategories": "All categories",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "options": {
+        "all": "All",
+        "delegate": "Delegate",
+        "schedule": "Schedule",
+        "completed": "Completed",
+        "inProgress": "In progress"
+      }
+    },
+    "metrics": {
+      "total": "Total",
+      "delegate": "Delegate",
+      "schedule": "Schedule",
+      "averageGut": "Average GUT"
+    },
+    "list": {
+      "title": "Activity list",
+      "records": "{{count}} record(s)",
+      "loading": "Loading records...",
+      "emptyTitle": "No records found.",
+      "emptyDescription": "There are no activities for the selected filters.",
+      "uncategorized": "Uncategorized",
+      "columns": {
+        "name": "Name",
+        "participant": "Participant",
+        "category": "Category",
+        "allocation": "Allocated",
+        "start": "Start",
+        "end": "End",
+        "gut": "GUT",
+        "createdAt": "Created at",
+        "actions": "Actions"
+      }
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "feedback": {
+      "loadError": "Could not load the activities.",
+      "editLoadError": "Could not load the data for editing.",
+      "deleteConfirm": "Delete task \"{{name}}\"?",
+      "deleteError": "Could not delete the task.",
+      "deleteSuccess": "Task deleted successfully."
+    }
+  },
+  "dashboardAnalytics": {
+    "defaults": {
+      "pulseLabel": "No data",
+      "pulseDescription": "Connect the workspace to build the indicators.",
+      "headline": "No operational data loaded."
+    },
+    "stages": {
+      "backlog": "Backlog",
+      "analysis": "Analysis (Plan)",
+      "doing": "Doing (Do)",
+      "check": "Checking (Check)",
+      "review": "Review and Standardization (Act)",
+      "done": "Done",
+      "unassigned": "No stage"
+    },
+    "riskBuckets": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Moderate",
+      "low": "Controlled",
+      "empty": "No GUT"
+    },
+    "allocation": {
+      "task": "Task",
+      "bug": "Bug",
+      "schedule": "Schedule",
+      "delegate": "Delegate",
+      "unknown": "No type"
+    },
+    "relativeTime": {
+      "inMinutes": "in {{count}} min",
+      "minutesAgo": "{{count}} min ago",
+      "inHours": "in {{count}} h",
+      "hoursAgo": "{{count}} h ago",
+      "inDays": "in {{count}} days",
+      "daysAgo": "{{count}} days ago"
+    },
+    "pulse": {
+      "critical": {
+        "label": "Operation under pressure",
+        "description": "There are delays or cards with critical GUT requiring immediate response."
+      },
+      "warning": {
+        "label": "Flow needs attention",
+        "description": "The pipeline is active, but still has planning or structuring bottlenecks."
+      },
+      "healthy": {
+        "label": "Stable operation",
+        "description": "The workspace has consistent operational coverage and low immediate pressure."
+      },
+      "neutral": {
+        "label": "Operation forming",
+        "description": "There is still not enough historical data to define an operational trend."
+      }
+    },
+    "insights": {
+      "empty": {
+        "title": "Empty workspace",
+        "text": "There are not enough cards to generate an operational reading. The first gain is to structure tasks, owners, and dates."
+      },
+      "riskPressure": {
+        "title": "Risk pressure",
+        "text": "{{overdueCount}} overdue item(s) and {{criticalCount}} critical GUT card(s) indicate immediate operational risk."
+      },
+      "highPriority": {
+        "title": "High priorities",
+        "text": "{{highCount}} high GUT card(s) require careful sequencing to avoid impact escalation."
+      },
+      "backlogAccumulation": {
+        "title": "Backlog accumulation",
+        "text": "{{backlogRate}} of the volume is still stuck in the backlog. The current bottleneck is before execution."
+      },
+      "deliveryFlow": {
+        "title": "Delivery flow",
+        "text": "{{doneRate}} of the funnel has already been completed in Done, signaling the ability to close cycles."
+      },
+      "governance": {
+        "title": "Operational governance",
+        "text": "Planning coverage at {{planning}} and ownership at {{ownership}}. Some of the active portfolio still lacks a deadline or owner."
+      },
+      "incompleteHierarchy": {
+        "title": "Incomplete project hierarchy",
+        "text": "{{storyLink}} of project cards are linked to user stories. {{unlinkedProjectItems}} item(s) still do not connect to the epic > feature > story chain."
+      },
+      "connectedPortfolio": {
+        "title": "Connected portfolio",
+        "text": "The project chain is active and the average progress of project cards is {{avgProgress}}."
+      },
+      "currentLoad": {
+        "title": "Current load",
+        "text": "{{activeTotal}} item(s) are operating right now. Focus should stay on cards with the highest GUT and shortest deadline."
+      }
+    },
+    "headline": {
+      "noActive": "There are no active items at the moment. The dashboard is ready to monitor the next operational cycle.",
+      "critical": "{{criticalCount}} critical card(s) and {{dueSoonCount}} upcoming delivery(ies) bring focus to short-term response.",
+      "withHierarchy": "{{activeTotal}} active item(s) connect daily operation with the registered project hierarchy.",
+      "default": "{{activeTotal}} active item(s) in execution, with flow reading, GUT risk, and operational coverage."
+    },
+    "errors": {
+      "supabaseMissing": "Supabase not configured.",
+      "loadActivities": "Could not load dashboard activities.",
+      "partialSources": "Part of the auxiliary sources failed. KPIs were built with the data that was available."
+    }
+  },
+  "dashboardHome": {
+    "loading": "Loading workspace analytical reading...",
+    "greetings": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "meta": {
+      "lastRead": "Last read:",
+      "updatedAt": "Updated:",
+      "alerts": "Alerts: {{count}}"
+    },
+    "quickActions": {
+      "projects": "Open projects",
+      "tasks": "Open tasks",
+      "reports": "Open reports",
+      "records": "Records"
+    },
+    "heroStats": {
+      "activeNow": "Active now",
+      "activeNowSupport": "{{inFlow}} in flow · {{backlog}} in backlog",
+      "gutRisk": "GUT risk",
+      "gutRiskSupport": "{{criticalCount}} critical · {{highCount}} high",
+      "portfolio": "Portfolio",
+      "portfolioSupport": "Epics, features and stories"
+    },
+    "kpis": {
+      "activeVolume": {
+        "label": "Active volume",
+        "support": "{{workspaceTotal}} valid cards in the workspace and {{doneTotal}} already closed."
+      },
+      "flowOutput": {
+        "label": "Flow output",
+        "support": "{{done}} cards in Done. Backlog today: {{backlogRate}}% of the active portfolio."
+      },
+      "averageRisk": {
+        "label": "Average GUT risk",
+        "support": "{{overdueCount}} overdue, {{dueSoonCount}} due within 72h, and {{criticalCount}} critical."
+      },
+      "planning": {
+        "label": "Planning",
+        "support": "Ownership {{ownership}}% and project cards linked to stories at {{storyLink}}%."
+      },
+      "portfolio": {
+        "label": "Portfolio",
+        "support": "Hierarchy consolidated at {{hierarchyDepth}}% of the expected depth."
+      },
+      "projectProgress": {
+        "label": "Project progress",
+        "support": "{{projectActive}} active project card(s) and {{unlinkedProjectItems}} without a story link."
+      }
+    },
+    "common": {
+      "unnamed": "Unnamed",
+      "notDefined": "Not defined",
+      "unlinked": "Not linked"
+    },
+    "sections": {
+      "quantitative": {
+        "title": "Quantitative analysis",
+        "subtitle": "Flow distribution and GUT matrix based on database tables.",
+        "from": "From:",
+        "to": "To:",
+        "stages": "Macro stages",
+        "cardsShare": "{{count}} cards · {{share}}%",
+        "gutBands": "GUT bands",
+        "activePortfolioShare": "{{share}}% of the active portfolio"
+      },
+      "qualitative": {
+        "title": "Qualitative analysis",
+        "subtitle": "Interpretive reading of the database, crossing volume, risk, coverage, and hierarchy."
+      },
+      "projects": {
+        "title": "Projects and tasks in operation",
+        "subtitle": "Epic > feature > story hierarchy with counts of active cards, risk, and progress.",
+        "action": "Open projects",
+        "emptyTitle": "Portfolio not structured yet",
+        "emptyDescription": "Create epics, features, and user stories to connect daily operation to the project module.",
+        "emptyAction": "Go to projects",
+        "epicLabel": "Epic",
+        "internalRisk": "Internal risk",
+        "criticalCards": "critical cards",
+        "noStories": "No stories linked to this epic.",
+        "tags": {
+          "features": "{{count}} features",
+          "stories": "{{count}} stories",
+          "cards": "{{count}} cards",
+          "active": "{{count}} active",
+          "progress": "{{count}}% progress"
+        }
+      },
+      "current": {
+        "title": "Current operation",
+        "subtitle": "Cards in progress, ordered by deadline pressure, stage, and GUT.",
+        "emptyTitle": "No current items",
+        "emptyDescription": "There are no active cards to monitor right now.",
+        "ownerLabel": "Owner:",
+        "cells": {
+          "deadline": "Deadline",
+          "temporalStatus": "Temporal status",
+          "progress": "Progress",
+          "story": "Story"
+        },
+        "status": {
+          "overdue": "Overdue",
+          "dueSoon": "Due in 72h",
+          "noImmediatePressure": "No immediate pressure"
+        }
+      },
+      "radar": {
+        "title": "GUT radar",
+        "subtitle": "Operational priorities calculated from the combination of GUT and time window.",
+        "emptyTitle": "No active priorities",
+        "emptyDescription": "There are not enough cards to build the GUT ranking.",
+        "priority": "Priority #{{index}}",
+        "deadlineStage": "Deadline {{deadline}} · stage {{stage}}"
+      },
+      "capacity": {
+        "title": "Capacity and ownership",
+        "subtitle": "Who is carrying the current load and where owners are missing.",
+        "emptyTitle": "No distribution by participant",
+        "emptyDescription": "There is still no active load assigned to participants.",
+        "ownerSummary": "{{activeCount}} active card(s) · average progress {{progress}}%",
+        "highRisk": "{{count}} high",
+        "overdue": "{{count}} overdue",
+        "withoutOwner": "Active cards without owner:"
+      },
+      "recent": {
+        "title": "Latest movements",
+        "subtitle": "Latest records read from the operational and project tables.",
+        "emptyTitle": "No recent history",
+        "emptyDescription": "As soon as there are new records, they will appear here.",
+        "createdStage": "Created on {{createdAt}} · stage {{stage}}"
+      }
+    }
+  },
+  "kanbanCommon": {
+    "defaults": {
+      "title": "Kanban board",
+      "description": "Drag cards between columns to move through macro stages."
+    },
+    "viewOptions": {
+      "all": {
+        "label": "All",
+        "description": "Shows all valid workspace cards."
+      },
+      "projects": {
+        "label": "Projects",
+        "description": "Shows only taskproj and bugproj cards."
+      },
+      "initial": {
+        "label": "Schedule and delegate",
+        "description": "Focuses on the initial schedule and delegate flow."
+      }
+    },
+    "stages": {
+      "backlog": "Backlog",
+      "analysis": "Analysis (Plan)",
+      "doing": "Doing (Do)",
+      "check": "Checking (Check)",
+      "review": "Review and Standardization (Act)",
+      "done": "Done",
+      "unassigned": "No stage"
+    },
+    "states": {
+      "none": "No state",
+      "backlog": "Backlog",
+      "problemIdentification": "Problem identification",
+      "observation": "Observation",
+      "analysis": "Analysis",
+      "actionPlanning": "Action planning",
+      "waitingPlan": "Waiting Plan",
+      "blockedPlan": "Blocked Plan",
+      "inExecution": "In execution",
+      "waitingDoing": "Waiting Doing",
+      "blockedDoing": "Blocked Doing",
+      "verification": "Verification",
+      "validation": "Validation",
+      "adherenceCheck": "Adherence check",
+      "standardization": "Standardization",
+      "conclusion": "Conclusion",
+      "documented": "Documented",
+      "knowledgeConsolidated": "Knowledge consolidated",
+      "done": "Done"
+    },
+    "allocation": {
+      "task": "Task",
+      "bug": "Bug",
+      "schedule": "Schedule",
+      "delegate": "Delegate"
+    },
+    "actions": {
+      "move": "Move",
+      "edit": "Edit"
+    },
+    "feedback": {
+      "loadError": "Could not load Kanban cards.",
+      "cannotReturnToBacklog": "A card cannot return to backlog after leaving that state.",
+      "updateError": "Could not update the Kanban position.",
+      "moveSuccess": "Card moved to \"{{state}}\"."
+    },
+    "cardsCount": "{{count}} card(s)",
+    "loading": "Loading Kanban cards...",
+    "statesLabel": "States:",
+    "emptyStage": "No cards in this stage.",
+    "noDescription": "No description.",
+    "modal": {
+      "moveToStage": "Move to macro stage",
+      "selectExactState": "Select the exact state",
+      "chooseStage": "Choose the destination macro stage.",
+      "select": "Select...",
+      "selectState": "Select the state...",
+      "multipleStates": "The stage \"{{stage}}\" has multiple states."
+    }
+  },
+  "projects": {
+    "kanban": {
+      "title": "Project Kanban",
+      "description": "Operational flow for tasks and bugs in the project module."
+    }
+  },
+  "projectModal": {
+    "actions": {
+      "back": "Back",
+      "create": "Create",
+      "finish": "Finish setup",
+      "next": "Next",
+      "saveChanges": "Save changes",
+      "saving": "Saving..."
+    },
+    "charactersRemaining": "{{count}} characters remaining",
+    "description": {
+      "basic": "Define the base record before continuing to the operational details.",
+      "details": "Connect owner, dates, and taxonomy to integrate the activity into the workspace.",
+      "gut": "Set the GUT priority considering severity, urgency, trend, and deadline.",
+      "progress": "Link the activity to the product hierarchy and record the current progress."
+    },
+    "feedback": {
+      "activityNameRequired": "Enter the activity name.",
+      "epicCreateError": "Could not create the epic.",
+      "epicNameRequired": "Enter the epic name.",
+      "epicUpdateError": "Could not update the epic.",
+      "featureCreateError": "Could not create the feature.",
+      "featureNameRequired": "Enter the feature name.",
+      "featureUpdateError": "Could not update the feature.",
+      "linkedEpicRequired": "Select the linked epic.",
+      "linkedFeatureRequired": "Select the linked feature.",
+      "saveError": "Could not save the activity.",
+      "storyCreateError": "Could not create the user story.",
+      "storyNameRequired": "Enter the user story name.",
+      "storyRequired": "Select the linked user story.",
+      "storyUpdateError": "Could not update the user story.",
+      "taskSaved": "{{item}} created successfully.",
+      "taskUpdated": "{{item}} updated successfully.",
+      "updateError": "Could not update the activity."
+    },
+    "fields": {
+      "bugActivityName": "Bug name",
+      "category": "Category",
+      "description": "Detailed description",
+      "endDateTime": "Planned end",
+      "epicName": "Epic name",
+      "featureName": "Feature name",
+      "linkedEpic": "Linked epic",
+      "linkedFeature": "Linked feature",
+      "linkedStory": "Linked user story",
+      "owner": "Owner",
+      "predecessor": "Predecessor",
+      "progressPercent": "Progress (%)",
+      "severity": "Severity",
+      "startDateTime": "Planned start",
+      "storyName": "User story name",
+      "subcategory": "Subcategory",
+      "successor": "Successor",
+      "taskActivityName": "Task name",
+      "trend": "Trend",
+      "urgency": "Urgency"
+    },
+    "gut": {
+      "baseScore": "Base GUT score",
+      "deadlineWeight": "Deadline weight",
+      "finalScore": "Final score",
+      "severityScale": {
+        "1": "1 · Minimal and easily reversible impact",
+        "2": "2 · Very low localized impact",
+        "3": "3 · Low impact with little spread",
+        "4": "4 · Controlled impact in one front",
+        "5": "5 · Moderate delivery impact",
+        "6": "6 · Relevant impact with visible rework",
+        "7": "7 · High impact across multiple fronts",
+        "8": "8 · Severe impact on the operational flow",
+        "9": "9 · Critical impact with broad stoppage",
+        "10": "10 · Immediate critical collapse"
+      },
+      "trendScale": {
+        "1": "1 · Likely to remain stable",
+        "2": "2 · Barely perceptible growth",
+        "3": "3 · Slow and predictable growth",
+        "4": "4 · Gradual increase with low pressure",
+        "5": "5 · Moderate increase over time",
+        "6": "6 · Consistent growth without intervention",
+        "7": "7 · Accelerating during this sprint",
+        "8": "8 · Strong and recurring escalation",
+        "9": "9 · Critical escalation in a short window",
+        "10": "10 · Explosive and inevitable escalation"
+      },
+      "urgencyScale": {
+        "1": "1 · Can wait without relevant impact",
+        "2": "2 · Low operational urgency",
+        "3": "3 · Resolve when capacity allows",
+        "4": "4 · Needs follow-up soon",
+        "5": "5 · Requires moderate prioritization",
+        "6": "6 · Must enter the current plan",
+        "7": "7 · Requires fast action this sprint",
+        "8": "8 · Requires immediate team response",
+        "9": "9 · Critical within the next hours",
+        "10": "10 · Immediate with no wait margin"
+      }
+    },
+    "linkPrompt": "Enter the URL to insert into the text:",
+    "placeholders": {
+      "activityName": "Ex: Validate onboarding flow",
+      "epicName": "Ex: Structure the onboarding journey",
+      "featureName": "Ex: Operational health panel",
+      "selectCategory": "Select a category...",
+      "selectEpic": "Select an epic...",
+      "selectFeature": "Select a feature...",
+      "selectOwner": "Select an owner...",
+      "selectStory": "Select a user story...",
+      "selectSubcategory": "Select a subcategory...",
+      "selectTask": "Select a task or bug...",
+      "storyName": "Ex: As a manager, I want to view bottlenecks..."
+    },
+    "selectedCategory": "Selected category:",
+    "title": {
+      "createBug": "Create bug",
+      "createTask": "Create task",
+      "details": "Operational details",
+      "editBug": "Edit bug",
+      "editEntity": "Edit {{entity}}",
+      "editTask": "Edit task",
+      "gut": "GUT prioritization",
+      "progress": "Links and progress"
+    },
+    "unmapped": "Register participants and categories to complete the activity details."
+  },
+  "projectsPage": {
+    "actions": {
+      "manageRecords": "Manage records",
+      "newBug": "New bug",
+      "newEpic": "New epic",
+      "newFeature": "New feature",
+      "newStory": "New user story",
+      "newTask": "New task"
+    },
+    "backlog": {
+      "bugsCount_one": "{{count}} bug",
+      "bugsCount_other": "{{count}} bugs",
+      "columns": {
+        "dueDate": "Due date",
+        "item": "Item",
+        "owner": "Owner",
+        "progress": "Progress",
+        "state": "State"
+      },
+      "emptyDescription": "Create epics, features, and user stories to build the hierarchy tree.",
+      "emptyTitle": "Empty backlog",
+      "featuresCount_one": "{{count}} feature",
+      "featuresCount_other": "{{count}} features",
+      "itemsCount_one": "{{count}} item",
+      "itemsCount_other": "{{count}} items",
+      "noDescription": "No description.",
+      "noItemsFound": "No items found.",
+      "noLinkedCards": "No linked task or bug.",
+      "noOwner": "Not defined",
+      "openOnly": "Open only",
+      "searchPlaceholder": "Search item, state, or owner...",
+      "storiesCount_one": "{{count}} story",
+      "storiesCount_other": "{{count}} stories"
+    },
+    "badge": "Portfolio · delivery",
+    "description": "Tactical panel to structure epics, features, stories, tasks, and bugs in a single view from backlog to execution flow.",
+    "feedback": {
+      "deleteConfirm": "Delete {{entity}} \"{{item}}\"?",
+      "deleteError": "Could not delete {{entity}}.",
+      "deleteSuccess": "{{entity}} deleted successfully.",
+      "loadError": "Could not load the projects workspace.",
+      "noName": "Unnamed"
+    },
+    "gantt": {
+      "columns": {
+        "item": "Item"
+      },
+      "emptyDescription": "The Gantt shows tasks and bugs outside Done. Add start and end dates to visualize the schedule.",
+      "emptyTitle": "No items for the Gantt",
+      "itemsCount_one": "{{count}} item",
+      "itemsCount_other": "{{count}} items",
+      "sprintLabel": "Sprint {{number}}",
+      "subtitle": "Click the bar to edit the item.",
+      "title": "Gantt planning · Scrum"
+    },
+    "hierarchy": {
+      "chain": {
+        "delivery": "Task / Bug",
+        "epic": "Epic",
+        "feature": "Feature",
+        "project": "Project",
+        "story": "User Story"
+      },
+      "title": "Hierarchy view"
+    },
+    "hierarchyPanel": {
+      "counts": {
+        "features_one": "{{count}} feature",
+        "features_other": "{{count}} features",
+        "items_one": "{{count}} item",
+        "items_other": "{{count}} items",
+        "stories_one": "{{count}} story",
+        "stories_other": "{{count}} stories"
+      },
+      "emptyDescription": "Create the first epic to structure the backlog through Epic → Feature → User Story → Task/Bug.",
+      "emptyTitle": "No epics found",
+      "noLinkedFeatures": "No linked features.",
+      "noLinkedStories": "No linked user stories."
+    },
+    "loading": "Loading projects workspace...",
+    "manager": {
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "description": "CRUD for epic, feature, and user story with hierarchical view.",
+      "edit": "Edit",
+      "noLinkedFeatures": "No linked features.",
+      "noLinkedStories": "No linked user stories.",
+      "noResults": "No records found for the current filter.",
+      "searchPlaceholder": "Search by epic, feature, or user story name...",
+      "title": "Record maintenance panel"
+    },
+    "metrics": {
+      "avgProgress": {
+        "label": "Average progress",
+        "support": "Consolidated average progress of project tasks and bugs."
+      },
+      "epics": {
+        "label": "Epics",
+        "support": "Macro portfolio structures registered in the workspace."
+      },
+      "features": {
+        "label": "Features",
+        "support": "Functional fronts connected to active epics."
+      },
+      "stories": {
+        "label": "User stories",
+        "support": "Demand descriptions registered before execution."
+      }
+    },
+    "overview": {
+      "sprintHealth": {
+        "backlog": "Backlog",
+        "bugs": "Bugs",
+        "done": "Done",
+        "flowing": "In flow",
+        "title": "Sprint health"
+      },
+      "upcoming": {
+        "empty": "No deliveries with a defined deadline.",
+        "title": "Upcoming deliveries"
+      }
+    },
+    "tabs": {
+      "backlog": {
+        "support": "Product hierarchy",
+        "title": "Backlog"
+      },
+      "gantt": {
+        "support": "Sprint planning",
+        "title": "Gantt"
+      },
+      "kanban": {
+        "support": "Operational flow",
+        "title": "Kanban"
+      }
+    },
+    "title": "Projects",
+    "types": {
+      "bug": "Bug",
+      "epic": "Epic",
+      "feature": "Feature",
+      "story": "User Story",
+      "task": "Task"
+    }
+  },
+  "reportsPage": {
+    "audit": {
+      "ambiguous": "Cards in an ambiguous state across macro stages: {{count}}",
+      "missing": "Cards without a Kanban state: {{count}}",
+      "noIssues": "No inconsistencies found in the current snapshot.",
+      "title": "Consistency audit",
+      "unknown": "Cards in a state outside the model: {{count}}"
+    },
+    "board": {
+      "closeBoard": "Close Kanban",
+      "description": "Macro stages on the board · internal state shown as the card label.",
+      "emptyStage": "No cards in this stage.",
+      "eyebrow": "Visualization",
+      "openBoard": "Open Kanban",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right",
+      "title": "Classic Kanban"
+    },
+    "card": {
+      "gut": "GUT",
+      "noParticipant": "No participant",
+      "participantAlt": "Participant"
+    },
+    "classification": {
+      "ambiguousStage": "Ambiguous ({{stages}})",
+      "noStage": "No stage",
+      "unmappedStage": "Unmapped"
+    },
+    "distribution": {
+      "countSummary": "{{count}} card(s) ({{percent}}%)",
+      "mappedCards": "{{count}} uniquely mapped cards",
+      "title": "Distribution by macro stage"
+    },
+    "feedback": {
+      "loadError": "Could not load report data.",
+      "moveError": "Could not move the card in Kanban.",
+      "moveSuccess": "Card moved to {{stage}} with state \"{{state}}\"."
+    },
+    "filtered": {
+      "columns": {
+        "createdAt": "Created at",
+        "stage": "Macro stage",
+        "state": "Internal state",
+        "task": "Task"
+      },
+      "empty": "No cards found for the current filters.",
+      "results_one": "{{count}} result",
+      "results_other": "{{count}} results",
+      "title": "Filtered cards"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Name, description, state...",
+      "stage": "Macro stage",
+      "state": "Internal state",
+      "title": "Filters"
+    },
+    "header": {
+      "description": "Fixed macro stages: Backlog, Analysis (Plan), Doing (Do), Checking (Check), Review and Standardization (Act), Done.",
+      "eyebrow": "PDCA · MASP · State flow",
+      "title": "PDCA + MASP Flow Report"
+    },
+    "loading": "Loading report data...",
+    "metrics": {
+      "activeStages": "Active macro stages",
+      "cards": "Cards",
+      "inconsistencies": "Inconsistencies",
+      "stateCoverage": "State coverage"
+    },
+    "moveModal": {
+      "description": "Select the internal state that will be saved in the Kanban position field.",
+      "stageLabel": "Kanban column",
+      "stagePlaceholder": "Select the macro stage...",
+      "stateLabel": "Kanban state",
+      "statePlaceholder": "Select the state...",
+      "title": "Set column state",
+      "transition": "Move from \"{{from}}\" to \"{{to}}\"."
+    },
+    "transitionRules": {
+      "rule1": "No item enters Doing without passing through Analysis.",
+      "rule2": "Every item must pass through Checking before Review.",
+      "rule3": "Review and Standardization consolidate the improvement.",
+      "rule4": "Done represents formal closure and organizational record.",
+      "title": "Transition rules"
+    }
+  },
+  "categories": {
+    "title": "Category registry",
+    "description": "Create and manage system categories.",
+    "form": {
+      "name": "Category name",
+      "namePlaceholder": "Ex: Support, Sales, Operations...",
+      "color": "Color"
+    },
+    "actions": {
+      "new": "New category",
+      "save": "Save category",
+      "update": "Update",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "feedback": {
+      "loadError": "Could not load categories.",
+      "nameRequired": "Enter the category name.",
+      "createError": "Could not create the category.",
+      "createSuccess": "Category created successfully.",
+      "updateError": "Could not update the category.",
+      "updateSuccess": "Category updated successfully.",
+      "deleteConfirm": "Do you want to delete this category?",
+      "deleteError": "Could not delete the category.",
+      "deleteSuccess": "Category deleted successfully."
+    },
+    "list": {
+      "title": "Registered categories",
+      "color": "Color",
+      "name": "Name",
+      "actions": "Actions",
+      "loading": "Loading categories...",
+      "emptyTitle": "No categories found.",
+      "emptyDescription": "Click \"New category\" to start organizing."
+    }
+  },
+  "participants": {
+    "title": "Participant registry",
+    "description": "Create and manage system participants.",
+    "form": {
+      "name": "Participant name",
+      "namePlaceholder": "Ex: Ana Silva",
+      "image": "Participant image",
+      "previewAlt": "Participant preview"
+    },
+    "actions": {
+      "new": "New participant",
+      "save": "Save participant",
+      "update": "Update",
+      "edit": "Edit",
+      "delete": "Delete",
+      "chooseImage": "Choose image",
+      "removeImage": "Remove"
+    },
+    "feedback": {
+      "loadError": "Could not load participants.",
+      "imageError": "Could not load the image.",
+      "nameRequired": "Enter the participant name.",
+      "createError": "Could not create the participant.",
+      "createSuccess": "Participant created successfully.",
+      "updateError": "Could not update the participant.",
+      "updateSuccess": "Participant updated successfully.",
+      "deleteConfirm": "Do you want to delete this participant?",
+      "deleteError": "Could not delete the participant.",
+      "deleteSuccess": "Participant deleted successfully."
+    },
+    "list": {
+      "title": "Registered participants",
+      "profile": "Profile",
+      "name": "Name",
+      "actions": "Actions",
+      "loading": "Loading participants...",
+      "emptyTitle": "No participants found.",
+      "emptyDescription": "Click \"New participant\" to add one."
+    }
+  },
+  "subcategories": {
+    "title": "Subcategory registry",
+    "description": "Create and manage subcategories linked to categories.",
+    "form": {
+      "name": "Subcategory name",
+      "namePlaceholder": "Ex: VIP support",
+      "category": "Linked category",
+      "categoryPlaceholder": "Select a category...",
+      "color": "Subcategory color",
+      "inherited": "Inherited from:"
+    },
+    "categoryModal": {
+      "title": "New category",
+      "description": "Create a category to link it.",
+      "name": "Category name",
+      "namePlaceholder": "Ex: Support",
+      "color": "Color",
+      "submit": "Create"
+    },
+    "actions": {
+      "new": "New subcategory",
+      "save": "Save subcategory",
+      "update": "Update",
+      "edit": "Edit",
+      "delete": "Delete",
+      "newCategory": "New category"
+    },
+    "feedback": {
+      "categoriesLoadError": "Could not load categories.",
+      "loadError": "Could not load subcategories.",
+      "nameRequired": "Enter the subcategory name.",
+      "categoryRequired": "Select a linked category.",
+      "createError": "Could not create the subcategory.",
+      "createSuccess": "Subcategory created successfully.",
+      "updateError": "Could not update the subcategory.",
+      "updateSuccess": "Subcategory updated successfully.",
+      "deleteConfirm": "Do you want to delete this subcategory?",
+      "deleteError": "Could not delete the subcategory.",
+      "deleteSuccess": "Subcategory deleted successfully.",
+      "newCategoryNameRequired": "Enter the category name.",
+      "newCategoryCreateError": "Could not create the category.",
+      "newCategoryCreateSuccess": "Category created successfully."
+    },
+    "list": {
+      "title": "Registered subcategories",
+      "color": "Color",
+      "subcategory": "Subcategory",
+      "category": "Linked category",
+      "actions": "Actions",
+      "loading": "Loading subcategories...",
+      "emptyTitle": "No subcategories found.",
+      "emptyDescription": "Click \"New subcategory\" to start."
+    }
+  },
+  "boxes": {
+    "description": "Activities allocated to {{allocation}}.",
+    "feedback": {
+      "loadError": "Could not load {{box}} records.",
+      "activateAuthError": "Unauthenticated user cannot load this activity.",
+      "removeAuthError": "Unauthenticated user cannot remove this activity.",
+      "deleting": "Deleting record {{id}}...",
+      "deleteError": "Failed to delete record {{id}}.",
+      "deleteSuccess": "Record {{id}} deleted successfully.",
+      "removeConfirm": "Do you really want to delete this record?"
+    },
+    "actions": {
+      "activate": "Activate",
+      "remove": "Remove"
+    },
+    "list": {
+      "name": "Name",
+      "createdAt": "Created at",
+      "loading": "Loading records...",
+      "emptyTitle": "No records found.",
+      "emptyDescription": "There are no activities allocated to \"{{allocation}}\"."
+    },
+    "items": {
+      "stuff": {
+        "title": "Stuff",
+        "allocation": "Stuff",
+        "listTitle": "Stuff list"
+      },
+      "trash": {
+        "title": "Trash",
+        "allocation": "Trash",
+        "listTitle": "Trash list"
+      },
+      "someday": {
+        "title": "Someday / maybe",
+        "allocation": "Incubated",
+        "listTitle": "Incubated list"
+      },
+      "reference": {
+        "title": "Future reference",
+        "allocation": "Reference",
+        "listTitle": "Reference list"
+      }
+    }
+  },
+  "routes": {
+    "dashboard": "Dashboard",
+    "projetos": "Projects",
+    "tarefas": "Tasks",
+    "reports": "Reports",
+    "cad-categorias": "Categories",
+    "cad-subcategorias": "Subcategories",
+    "cad-participantes": "Participants",
+    "blog-admin": "Blog Admin",
+    "boxes": "Boxes",
+    "stuff": "Stuff",
+    "trash": "Trash",
+    "algum-dia": "Someday / maybe",
+    "referencia": "Future reference"
+  }
+}
