@@ -33,7 +33,7 @@ const Footer = () => {
               <img src={logominimal} alt="FlowZenit Minimal Logo" className="h-6 w-auto" />
             </div>
             <p className="text-gray-500 text-sm">
-              Plataforma open source para gestão de produtividade pessoal e pequenos negócios para alcançar a alta
+              Plataforma open source para gestao de produtividade pessoal e pequenos negocios para alcancar a alta
               performance.
             </p>
             <div className="mt-5 flex items-center gap-3">
@@ -66,7 +66,7 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#integracoes" className="hover:text-neonCyan transition-colors">
-                  Integrações
+                  Integracoes
                 </a>
               </li>
               <li>
@@ -82,7 +82,12 @@ const Footer = () => {
             <ul className="text-sm text-gray-400 space-y-3">
               <li>
                 <a href="/documentacao" className="hover:text-neonCyan transition-colors">
-                  Documentação
+                  Documentacao
+                </a>
+              </li>
+              <li>
+                <a href="/treinamentos" className="hover:text-neonCyan transition-colors">
+                  Treinamentos
                 </a>
               </li>
               <li>
@@ -118,7 +123,7 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#sobre" className="hover:text-neonCyan transition-colors">
-                  Segurança
+                  Seguranca
                 </a>
               </li>
             </ul>

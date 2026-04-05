@@ -246,7 +246,7 @@ const Login = () => {
             className="group relative mb-7 flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/5 text-base font-display font-medium text-[#f8fafc] transition-all duration-300 hover:scale-[1.01] hover:border-white/20 hover:bg-white/10 active:scale-[0.99]"
           >
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            <span className="relative z-10 text-sm">G</span>
+            <span className="relative z-10"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" className="h-5 w-5" /></span>
             <span className="relative z-10">Acessar com Google</span>
           </button>
 

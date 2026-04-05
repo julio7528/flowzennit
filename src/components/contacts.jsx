@@ -25,17 +25,17 @@ const Contacts = () => {
     email: false,
     message: false,
   })
-  
+
   const [status, setStatus] = useState('idle') // idle, loading, success, error
   const [showModal, setShowModal] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
   const validateField = (name, value) => {
     if (!value.trim()) {
-      return 'Este campo é obrigatório.'
+      return 'Este campo e obrigatorio.'
     }
     if (name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return 'E-mail corporativo inválido.'
+      return 'E-mail corporativo invalido.'
     }
     return ''
   }
@@ -43,7 +43,7 @@ const Contacts = () => {
   const handleChange = (event) => {
     const { name, value } = event.target
     setFormData((current) => ({ ...current, [name]: value }))
-    
+
     if (touched[name]) {
       setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }))
     }
@@ -57,19 +57,18 @@ const Contacts = () => {
 
   const handleSubmitRequest = (event) => {
     event.preventDefault()
-    
-    // Validate all fields on submit
+
     const newErrors = {
       name: validateField('name', formData.name),
       email: validateField('email', formData.email),
       message: validateField('message', formData.message),
     }
-    
+
     setErrors(newErrors)
     setTouched({ name: true, email: true, message: true })
 
     const hasErrors = Object.values(newErrors).some((err) => err !== '')
-    
+
     if (!hasErrors) {
       setShowModal(true)
     }
@@ -81,10 +80,19 @@ const Contacts = () => {
     setSubmitError('')
 
     try {
+      if (!supabase) {
+        throw new Error('Supabase client is not configured.')
+      }
+
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        message: formData.message.trim(),
+      }
+
       const { error } = await supabase
         .from('tbf_contato')
-        .insert([{ dados_json: formData }])
-        .select('id')
+        .insert([{ dados_json: payload }])
 
       if (error) {
         throw new Error(error.message)
@@ -93,16 +101,20 @@ const Contacts = () => {
       setStatus('success')
     } catch (err) {
       setStatus('error')
-      setSubmitError('Não foi possível enviar sua mensagem. Tente novamente mais tarde.')
+      setSubmitError(
+        err instanceof Error && err.message
+          ? `Nao foi possivel enviar sua mensagem: ${err.message}`
+          : 'Nao foi possivel enviar sua mensagem. Tente novamente mais tarde.'
+      )
     }
   }
 
   const isSubmitted = status === 'success'
 
   const inputClassName = (fieldName) => `w-full px-4 py-3 rounded-lg border transition-all focus:outline-none focus:ring-1 ${
-    isSubmitted 
-      ? 'bg-white/5 border-white/10 text-gray-500 cursor-not-allowed' 
-      : errors[fieldName] 
+    isSubmitted
+      ? 'bg-white/5 border-white/10 text-gray-500 cursor-not-allowed'
+      : errors[fieldName]
         ? 'bg-red-500/10 border-red-500 text-white placeholder-red-300 focus:border-red-500 focus:ring-red-500'
         : 'bg-white/5 border-white/20 text-white placeholder-gray-500 focus:border-neonPurple focus:ring-neonPurple'
   }`
@@ -130,7 +142,7 @@ const Contacts = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-textGray"
           >
-            Dúvidas sobre o plano Enterprise? Mande uma mensagem.
+            Duvidas sobre o plano Enterprise? Mande uma mensagem.
           </MotionP>
         </div>
 
@@ -194,16 +206,22 @@ const Contacts = () => {
             ></textarea>
             {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
           </div>
-          
+
           {isSubmitted && (
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400">
+            <div
+              role="status"
+              className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400"
+            >
               <CheckCircle className="w-5 h-5 shrink-0" />
               <p className="text-sm font-medium">Mensagem enviada com sucesso! Agradecemos o contato.</p>
             </div>
           )}
-          
+
           {status === 'error' && (
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
+            <div
+              role="alert"
+              className="flex items-center gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400"
+            >
               <AlertTriangle className="w-5 h-5 shrink-0" />
               <p className="text-sm font-medium">{submitError}</p>
             </div>
@@ -215,8 +233,8 @@ const Contacts = () => {
             type="submit"
             disabled={isSubmitted || status === 'loading'}
             className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
-              isSubmitted 
-                ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/10' 
+              isSubmitted
+                ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/10'
                 : 'bg-gradient-primary text-white hover:shadow-lg hover:shadow-purple-500/30'
             }`}
           >
@@ -225,7 +243,6 @@ const Contacts = () => {
         </MotionForm>
       </div>
 
-      {/* Confirmation Modal */}
       <AnimatePresence>
         {showModal && (
           <MotionDiv
@@ -251,9 +268,9 @@ const Contacts = () => {
                 <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mb-6">
                   <AlertTriangle className="w-8 h-8 text-yellow-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Confirmação de envio</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Confirmacao de envio</h3>
                 <p className="text-gray-400 mb-8">
-                  Tem certeza de que deseja enviar os dados? Esta ação não poderá ser desfeita.
+                  Tem certeza de que deseja enviar os dados? Esta acao nao podera ser desfeita.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full">

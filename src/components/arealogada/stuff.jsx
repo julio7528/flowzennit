@@ -138,7 +138,7 @@ const Stuff = () => {
     }
 
     return (
-        <div className="p-6 flex flex-col gap-6 max-w-6xl mx-auto w-full animate-in fade-in duration-300">
+        <div className="flex w-full max-w-none flex-col gap-6 p-6 animate-in fade-in duration-300">
             <div className="flex flex-col gap-1">
                 <h1 className="text-xl font-display font-semibold text-white tracking-tight">{currentBox.titulo}</h1>
                 <p className="text-sm text-zen-text-sec">Atividades com alocacao em {currentBox.alocado}.</p>

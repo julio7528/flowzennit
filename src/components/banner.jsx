@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { Link } from 'react-router-dom'
 
 const TopBanner = forwardRef(({ isVisible }, ref) => {
   return (
@@ -10,12 +11,12 @@ const TopBanner = forwardRef(({ isVisible }, ref) => {
     >
       <span className="opacity-90 tracking-wide">
         Cursos e treinamentos personalizados online fale com nossa equipe de suporte{' '}
-        <a
-          href="#"
+        <Link
+          to="/treinamentos"
           className="font-bold text-[#67e8f9] hover:underline hover:text-white transition-colors"
         >
           aqui
-        </a>
+        </Link>
         .
       </span>
     </div>

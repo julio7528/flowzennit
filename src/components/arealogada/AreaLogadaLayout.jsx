@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import CadAtividades from './CadAtividades.jsx'
 import { supabase } from '../../lib/supabase.js'
+import useAdminRole from '../../hooks/useAdminRole.js'
 import logominimal from '../../assets/logominimal.png'
 import {
     DashboardAnalyticsContext,
@@ -26,6 +27,7 @@ import {
     Lightbulb,
     Folder,
     RefreshCw,
+    FileText,
 } from 'lucide-react'
 
 const workspaceItems = [
@@ -62,6 +64,7 @@ const AreaLogadaLayout = () => {
     const [collapsed, setCollapsed] = useState(false)
     const [user, setUser] = useState(null)
     const [atividadeModalOpen, setAtividadeModalOpen] = useState(false)
+    const { isAdmin } = useAdminRole()
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {
@@ -298,6 +301,21 @@ const AreaLogadaLayout = () => {
                                 <span className="inline-flex items-center gap-2">
                                     <RefreshCw className={`h-4 w-4 ${analytics.refreshing ? 'animate-spin' : ''}`} />
                                     Atualizar indicadores
+                                </span>
+                            </button>
+                        )}
+                        {isAdmin && (
+                            <button
+                                type="button"
+                                onClick={() => navigate('/blog-admin')}
+                                title={collapsed && !mobileOpen ? 'Blog Admin' : undefined}
+                                className={`w-full rounded-lg border border-zen-border bg-zen-surface py-2 text-sm text-zen-text-sec transition-colors hover:bg-zen-surface-hl hover:text-white ${
+                                    collapsed && !mobileOpen ? 'px-2' : 'px-3'
+                                }`}
+                            >
+                                <span className={`inline-flex items-center gap-2 ${collapsed && !mobileOpen ? 'justify-center w-full' : ''}`}>
+                                    <FileText className="h-4 w-4" />
+                                    {(!collapsed || mobileOpen) && 'Blog Admin'}
                                 </span>
                             </button>
                         )}

@@ -14,7 +14,7 @@ const Header = ({ offsetTop = 0 }) => {
     { label: 'Funcionalidades', href: '/detailedfeatures', isRoute: true },
     { label: 'Metodologia', href: '/metodologia', isRoute: true },
     { label: 'Ciência', href: '/ciencia', isRoute: true },
-    { label: 'Blog', href: '#blog' },
+    { label: 'Blog', href: '/blog', isRoute: true },
     { label: 'Sobre', href: '/sobre', isRoute: true },
   ]
 

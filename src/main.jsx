@@ -7,11 +7,15 @@ import DetailedFeatures from './components/detailedfeatures.jsx'
 import Metodologia from './components/metodologia.jsx'
 import Ciencia from './components/ciencia.jsx'
 import Sobre from './components/sobre.jsx'
+import TrainingPage from './components/treinamentos.jsx'
 import Documentacao from './components/documentacao.tsx'
 import Login from './components/login.jsx'
 import AuthCallback from './components/AuthCallback.jsx'
+import AdminRoute from './components/AdminRoute.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Blog from './components/blog.jsx'
 import AreaLogadaLayout from './components/arealogada/AreaLogadaLayout.jsx'
+import BlogAdmin from './components/arealogada/BlogAdmin.jsx'
 import DashboardHome from './components/arealogada/DashboardHome.jsx'
 import CadCategorias from './components/arealogada/CadCategorias.jsx'
 import CadSubcategoria from './components/arealogada/CadSubcategoria.jsx'
@@ -42,7 +46,10 @@ createRoot(document.getElementById('root')).render(
         <Route path="/metodologia" element={<Metodologia />} />
         <Route path="/ciencia" element={<Ciencia />} />
         <Route path="/sobre" element={<Sobre />} />
+        <Route path="/treinamentos" element={<TrainingPage />} />
         <Route path="/documentacao" element={<Documentacao />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<Blog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 
@@ -60,6 +67,9 @@ createRoot(document.getElementById('root')).render(
             <Route path="/tarefas" element={<Tarefas />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/projetos" element={<Projetos />} />
+            <Route element={<AdminRoute />}>
+              <Route path="/blog-admin" element={<BlogAdmin />} />
+            </Route>
             {/* Futuras páginas da área logada: */}
             {/* <Route path="/projetos" element={<Projetos />} /> */}
             {/* <Route path="/analytics" element={<Analytics />} /> */}

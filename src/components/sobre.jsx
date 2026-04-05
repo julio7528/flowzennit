@@ -119,10 +119,12 @@ const Sobre = () => {
                             </div>
                             <div className="flex gap-4">
                                 <a
-                                    href="mailto:julio@pointec.dev"
+                                    href="https://www.linkedin.com/in/juliofgomes"
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className="flex-1 bg-[#00F0FF] text-[#050508] hover:bg-white transition-colors sobre-mono font-bold py-3 px-6 rounded text-sm uppercase flex items-center justify-center gap-2 group"
                                 >
-                                    <Download className="h-5 w-5 group-hover:animate-bounce" />
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Linkedin_logo.svg" alt="LinkedIn" className="h-5 w-5 animate-bounce" />
                                     Contato
                                 </a>
                                 <a
@@ -131,7 +133,7 @@ const Sobre = () => {
                                     rel="noreferrer"
                                     className="flex-1 bg-[#0E1016] border border-[#00F0FF]/30 text-[#00F0FF] hover:bg-[#00F0FF]/10 transition-colors sobre-mono font-bold py-3 px-6 rounded text-sm uppercase flex items-center justify-center gap-2"
                                 >
-                                    <Code className="h-5 w-5" />
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/GitHub_Invertocat_Logo_invert.svg" alt="GitHub" className="h-5 w-5" />
                                     GitHub
                                 </a>
                             </div>
