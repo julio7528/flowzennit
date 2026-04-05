@@ -4,9 +4,11 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Pencil, Trash2 } from 'lucide
 import { supabase } from '../../lib/supabase.js'
 
 const FILTER_OPTIONS = [
-    { value: 'todos',   label: 'Todos'   },
-    { value: 'delegar', label: 'Delegar' },
-    { value: 'agendar', label: 'Agendar' },
+    { value: 'todos',          label: 'Todos'           },
+    { value: 'delegar',        label: 'Delegar'         },
+    { value: 'agendar',        label: 'Agendar'         },
+    { value: 'concluidas',     label: 'Concluidas'      },
+    { value: 'em_andamento',   label: 'Em Andamento'    },
 ]
 
 const HEADER_GRID_CLASS =
@@ -36,6 +38,14 @@ const Tarefas = () => {
     const [nowMs, setNowMs]                     = useState(() => Date.now())
 
     const normalizeAlocado   = (alocado) => (alocado || '').toLowerCase()
+    const normalizeKanbanPosition = (value) => (value || '').toLowerCase().trim()
+    const DONE_STATES = ['done', 'documentado', 'conhecimento consolidado']
+    const isDoneState = (atividade) => DONE_STATES.includes(normalizeKanbanPosition(atividade['posicao Kanban']))
+    const isBacklogState = (atividade) => normalizeKanbanPosition(atividade['posicao Kanban']) === 'backlog'
+    const isInProgressState = (atividade) => {
+        const position = normalizeKanbanPosition(atividade['posicao Kanban'])
+        return Boolean(position) && position !== 'backlog' && !DONE_STATES.includes(position)
+    }
     const formatAlocadoLabel = (alocado) => {
         const normalized = normalizeAlocado(alocado)
         if (normalized === 'delegar') return 'Delegar'
@@ -125,16 +135,10 @@ const Tarefas = () => {
 
         const atividadesQuery = supabase
             .from('tbf_atividades')
-            .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, created_at, idcategoria')
+            .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, created_at, idcategoria, "posicao Kanban"')
             .eq('idusuario', currentUserId)
-            .eq('posicao Kanban', 'backlog')
             .not('alocado', 'in', '("Stuff","Trash","Referencia","Incubado")')
             .order('created_at', { ascending: false })
-
-        if (alocadoFilter !== 'todos') {
-            const legacyValue = alocadoFilter.charAt(0).toUpperCase() + alocadoFilter.slice(1)
-            atividadesQuery.in('alocado', [alocadoFilter, legacyValue])
-        }
 
         const [
             { data: atividadesData,   error: atividadesError   },
@@ -173,7 +177,7 @@ const Tarefas = () => {
         )
 
         setLoading(false)
-    }, [alocadoFilter, getGutScore])
+    }, [getGutScore])
 
     useEffect(() => {
         if (!userId) return
@@ -258,8 +262,16 @@ const Tarefas = () => {
             })
             : byCategory
 
+        const byAlocado = alocadoFilter === 'todos'
+            ? byDateRange.filter((a) => isBacklogState(a))
+            : alocadoFilter === 'concluidas'
+                ? byDateRange.filter((a) => isDoneState(a))
+                : alocadoFilter === 'em_andamento'
+                    ? byDateRange.filter((a) => isInProgressState(a))
+                    : byDateRange.filter((a) => normalizeAlocado(a.alocado) === alocadoFilter && isBacklogState(a))
+
         const compareText = (first, second) => first.localeCompare(second, 'pt-BR', { sensitivity: 'base' })
-        return byDateRange.slice().sort((a, b) => {
+        return byAlocado.slice().sort((a, b) => {
             const dir = sortConfig.direction === 'asc' ? 1 : -1
             const getComparable = (atividade) => {
                 if (sortConfig.key === 'nome')         return (atividade.nometarefa || '').trim()
@@ -276,7 +288,7 @@ const Tarefas = () => {
             if (typeof aValue === 'number' && typeof bValue === 'number') return (aValue - bValue) * dir
             return compareText(String(aValue), String(bValue)) * dir
         })
-    }, [atividades, categoriesById, categoryFilter, endDateFilter, getDynamicGutScore, nowMs, participantFilter, participantsById, sortConfig.direction, sortConfig.key, startDateFilter])
+    }, [atividades, categoriesById, categoryFilter, endDateFilter, getDynamicGutScore, nowMs, participantFilter, participantsById, sortConfig.direction, sortConfig.key, startDateFilter, alocadoFilter])
 
     const handleSortChange = (key) => {
         setSortConfig((current) => {

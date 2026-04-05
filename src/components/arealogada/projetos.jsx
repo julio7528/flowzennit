@@ -517,7 +517,7 @@ const BacklogPanel = ({
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto scrollbar-flowzenit">
                 <div className="min-w-[860px]">
                     {/* Header row */}
                     <div className="grid grid-cols-[minmax(300px,1.8fr)_1fr_0.9fr_0.8fr_0.8fr] border-b border-zen-border bg-zen-bg/60 px-4 py-2.5 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
@@ -1122,7 +1122,7 @@ const Projetos = () => {
                                 className="inline-flex items-center gap-2 border border-zen-border bg-zen-bg/50 px-3 py-2 font-mono text-[10px] font-semibold text-zen-text-sec transition-all hover:bg-zen-border/30 hover:text-white"
                             >
                                 <Settings2 className="h-3.5 w-3.5" />
-                                Manter Cadastros
+                                Gerenciar Cadastros
                             </button>
                             {acoesOrdenadas.map((acao) => {
                                 const Icone = acao.icone

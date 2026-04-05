@@ -1,30 +1,16 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Activity, ArrowRight, BriefcaseBusiness, CalendarDays, CheckCircle2, CircleDot, FolderKanban, Gauge, Layers3, ListTodo, RefreshCw, ShieldAlert, Target, TimerReset, Users, Workflow, } from 'lucide-react'
 import {
-    Activity,
-    ArrowRight,
-    BriefcaseBusiness,
-    CheckCircle2,
-    CircleDot,
-    FolderKanban,
-    Gauge,
-    Layers3,
-    ListTodo,
-    RefreshCw,
-    ShieldAlert,
-    Target,
-    TimerReset,
-    Users,
-    Workflow,
-} from 'lucide-react'
-import {
-    DashboardAnalyticsContext,
-    fallbackWorkspaceAnalytics,
-    formatCompactNumber,
-    formatDateTime,
-    formatRelativeTime,
-    getInsightToneClass,
-    getPulseToneClass,
+  buildRiskBreakdown,
+  DashboardAnalyticsContext,
+  fallbackWorkspaceAnalytics,
+  formatCompactNumber,
+  formatDateTime,
+  formatRelativeTime,
+  getDynamicGutScore,
+  getInsightToneClass,
+  getPulseToneClass,
 } from './dashboard-analytics.js'
 
 
@@ -106,18 +92,67 @@ const EmptyState = ({ title, description, ctaLabel, onClick }) => (
 
 
 const DashboardHome = () => {
+    const today = new Date()
+    const sevenDaysAgo = new Date(today)
+    sevenDaysAgo.setDate(today.getDate() - 7)
+
+    const toDateString = (d) => d.toISOString().slice(0, 10) // "YYYY-MM-DD"
+
+    const [gutDateFrom, setGutDateFrom] = useState(toDateString(sevenDaysAgo))
+    const [gutDateTo,   setGutDateTo]   = useState(toDateString(today))
+
+    const handleDateFromChange = (value) => {
+        setGutDateFrom(value)
+        analyticsFromContext?.refresh(value, gutDateTo)
+    }
+
+    const handleDateToChange = (value) => {
+        setGutDateTo(value)
+        analyticsFromContext?.refresh(gutDateFrom, value)
+    }
+
+    // Date input handlers - use the handleDateFromChange and handleDateToChange functions
+    const onGutDateFromChange = (e) => handleDateFromChange(e.target.value)
+    const onGutDateToChange = (e) => handleDateToChange(e.target.value)
+
     const navigate = useNavigate()
     const analyticsFromContext = useContext(DashboardAnalyticsContext)
     const analytics = analyticsFromContext ?? fallbackWorkspaceAnalytics
     const user = analyticsFromContext?.user || null
+    const { pulse, counts, flow, coverage, projects, risks } = analytics.summary
+    const { currentItems, ownerLoad, portfolioRows, priorityItems, qualitativeInsights, recentItems, semResponsavel } = analytics.cards
 
     const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuario'
     const firstName = displayName.trim().split(' ')[0] || 'Usuario'
     const hour = new Date().getHours()
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
 
-    const { counts, flow, coverage, projects, pulse, risks } = analytics.summary
-    const { currentItems, ownerLoad, portfolioRows, priorityItems, qualitativeInsights, recentItems, semResponsavel } = analytics.cards
+  // Filtro de datas → recalcula riskBreakdown local para o painel "Faixas GUT"
+    const nowRef = new Date().getTime()
+    const dfMs = gutDateFrom ? new Date(`${gutDateFrom}T00:00:00`).getTime() : null
+    const dtMs = gutDateTo ? new Date(`${gutDateTo}T23:59:59`).getTime() : null
+
+  const rangeActive = (analytics.snapshot?.atividades ?? [])
+        .map((a) => ({ ...a, dynamicGut: getDynamicGutScore(a, nowRef) }))
+        .filter((a) => {
+        // exclui itens finalizados
+        const isDoneItem = (analytics.cards.currentItems ?? []).find((c) => c.id === a.id)?.isDone
+            ?? (analytics.cards.priorityItems ?? []).find((c) => c.id === a.id)?.isDone
+            ?? false
+        if (isDoneItem) return false
+        // Filtra por data_inicio e data_fim
+        const inicioMs = a.data_inicio ? new Date(a.data_inicio).getTime() : null
+        const fimMs = a.data_fim ? new Date(a.data_fim).getTime() : null
+        if (dfMs && inicioMs && inicioMs < dfMs) return false
+        if (dtMs && fimMs && fimMs > dtMs) return false
+        return true
+        })
+
+    const filteredRiskBreakdown = buildRiskBreakdown(rangeActive)
+        // Recalcula riskBreakdown local aplicando o filtro de datas sobre as atividades ativas
+
+    // Importar utilitários necessários do arquivo de analytics
+    // getDynamicGutScore, getRiskBucket e buildRiskBreakdown precisam ser reexportados (ver passo 6)
     const pulseToneClass = getPulseToneClass(pulse.level)
 
     const quickActions = [
@@ -304,6 +339,31 @@ const DashboardHome = () => {
                 <SectionCard
                     title="Análise quantitativa"
                     subtitle="Distribuição do fluxo e matriz GUT a partir das tabelas do banco."
+                    action={
+                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                            <CalendarDays className="h-3 w-3 text-zen-text-sec shrink-0" />
+                            <label className="font-mono text-[9px] uppercase tracking-[0.18em] text-zen-text-sec">
+                                De:
+                            </label>
+                            <input
+                                type="date"
+                                value={gutDateFrom}
+                                max={gutDateTo}
+                                onChange={onGutDateFromChange}
+                                className="border border-zen-border bg-zen-bg/70 px-2 py-1 font-mono text-[10px] text-white focus:border-zen-blue focus:outline-none"
+                            />
+                            <label className="font-mono text-[9px] uppercase tracking-[0.18em] text-zen-text-sec">
+                                Até:
+                            </label>
+                            <input
+                                type="date"
+                                value={gutDateTo}
+                                min={gutDateFrom}
+                                onChange={onGutDateToChange}
+                                className="border border-zen-border bg-zen-bg/70 px-2 py-1 font-mono text-[10px] text-white focus:border-zen-blue focus:outline-none"
+                            />
+                        </div>
+                    }
                 >
                     <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
                         {/* stage breakdown */}
@@ -333,24 +393,17 @@ const DashboardHome = () => {
 
                         {/* risk buckets */}
                         <div>
-                            <div className="mb-4 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
+                            <div className="mb-3 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-zen-text-tri">
                                 Faixas GUT
                             </div>
                             <div className="space-y-2">
-                                {risks.riskBreakdown.map((bucket) => (
-                                    <div
-                                        key={bucket.id}
-                                        className="border border-zen-border bg-zen-bg/60 p-3"
-                                    >
+                                {filteredRiskBreakdown.map((bucket) => (
+                                    <div key={bucket.id} className="border border-zen-border bg-zen-bg/60 p-3">
                                         <div className="flex items-center justify-between gap-3">
-                                            <span
-                                                className={`inline-flex border px-2 py-1 font-mono text-[10px] font-semibold ${bucket.tone}`}
-                                            >
+                                            <span className={`inline-flex border px-2 py-1 font-mono text-[10px] font-semibold ${bucket.tone}`}>
                                                 {bucket.label}
                                             </span>
-                                            <span className="text-sm font-bold text-white">
-                                                {bucket.count}
-                                            </span>
+                                            <span className="text-sm font-bold text-white">{bucket.count}</span>
                                         </div>
                                         <div className="mt-1.5 font-mono text-[10px] text-zen-text-sec">
                                             {bucket.share}% da carteira ativa

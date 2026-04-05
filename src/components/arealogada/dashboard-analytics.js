@@ -198,7 +198,7 @@ export const getDynamicGutScore = (atividade, referenceNowMs) => {
     return Math.round(baseScore * temporalWeight)
 }
 
-const getRiskBucket = (score) => {
+export const getRiskBucket = (score) => {
     if (!score) return RISK_BUCKETS[RISK_BUCKETS.length - 1]
     return RISK_BUCKETS.find((bucket, index) => {
         if (index === RISK_BUCKETS.length - 1) return true
@@ -425,7 +425,7 @@ const buildStageBreakdown = (items, totalCount) => {
         .filter(Boolean)
 }
 
-const buildRiskBreakdown = (items) =>
+export const buildRiskBreakdown = (items) =>
     RISK_BUCKETS.map((bucket, index) => {
         const next = RISK_BUCKETS[index - 1]
         const count = items.filter((item) => {
@@ -496,13 +496,13 @@ const buildOwnerLoad = ({ activeActivities, participantsById }) => {
     return { rows: rows.slice(0, 5), semResponsavel }
 }
 
-export const useWorkspaceAnalytics = (userId) => {
+export const useWorkspaceAnalytics = (userId, { dateFrom, dateTo } = {}) => {
     const [snapshot, setSnapshot] = useState(emptySnapshot)
     const [loading, setLoading] = useState(Boolean(userId))
     const [refreshing, setRefreshing] = useState(false)
     const [error, setError] = useState(null)
     const [lastLoadedAt, setLastLoadedAt] = useState(null)
-    const [nowMs, setNowMs] = useState(() => Date.now())
+    const [nowMs, setNowMs] = useState(Date.now)
     const hasLoadedRef = useRef(false)
 
     useEffect(() => {
@@ -517,7 +517,7 @@ export const useWorkspaceAnalytics = (userId) => {
         hasLoadedRef.current = false
     }, [userId])
 
-    const loadAnalytics = useCallback(async () => {
+    const loadAnalytics = useCallback(async (dateFrom = null, dateTo = null) => {
         if (!supabase) {
             setError('Supabase nao configurado.')
             setLoading(false)
@@ -538,6 +538,18 @@ export const useWorkspaceAnalytics = (userId) => {
         setRefreshing(hasLoadedRef.current)
         setLoading(!hasLoadedRef.current)
 
+        let queryAtividades = supabase
+            .from('tbf_atividades')
+            .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, created_at, idcategoria, idsubcategoria, predecessor, sucessor, percentual_progresso, userhistory, "posicao Kanban"')
+            .eq('idusuario', userId)
+
+        if (dateFrom) {
+            queryAtividades = queryAtividades.gte('data_inicio', dateFrom)
+        }
+        if (dateTo) {
+            queryAtividades = queryAtividades.lte('data_fim', dateTo)
+        }
+
         const [
             { data: atividadesData, error: atividadesError },
             { data: categoriasData, error: categoriasError },
@@ -547,11 +559,7 @@ export const useWorkspaceAnalytics = (userId) => {
             { data: featuresData, error: featuresError },
             { data: userStoriesData, error: userStoriesError },
         ] = await Promise.all([
-            supabase
-                .from('tbf_atividades')
-                .select('id, nometarefa, descricao, alocado, participante, data_inicio, data_fim, gravidade, urgencia, tendencia, created_at, idcategoria, idsubcategoria, predecessor, sucessor, percentual_progresso, userhistory, "posicao Kanban"')
-                .eq('idusuario', userId)
-                .order('created_at', { ascending: false }),
+            queryAtividades.order('created_at', { ascending: false }),
             supabase.from('tbf_categorias').select('id, nomecategoria, corcategoria, created_at').eq('idusuario', userId),
             supabase.from('tbf_subcategorias').select('id, idcategorias, nomecategoria, corsubcategoria, created_at').eq('idusuario', userId),
             supabase.from('tbf_participantes').select('id, nomeparticipante, fotobase64, created_at').eq('idusuario', userId),
@@ -689,7 +697,18 @@ export const useWorkspaceAnalytics = (userId) => {
         const linkedProjectItems = projectActivities.filter((item) => item.userhistory)
 
         const stageBreakdown = buildStageBreakdown(workspaceActivities, workspaceActivities.length)
-        const riskBreakdown = buildRiskBreakdown(activeActivities)
+          const dateFromMs = dateFrom ? new Date(dateFrom).setHours(0, 0, 0, 0) : null
+            const dateToMs   = dateTo   ? new Date(dateTo).setHours(23, 59, 59, 999) : null
+
+            const rangeFilteredActivities = activeActivities.filter((item) => {
+                const ref = item.createdMs ?? item.dueMs ?? null
+                if (!ref) return true
+                if (dateFromMs && ref < dateFromMs) return false
+                if (dateToMs   && ref > dateToMs)   return false
+                return true
+            })
+
+        const riskBreakdown = buildRiskBreakdown(rangeFilteredActivities)
 
         const activitiesByStory = projectActivities.reduce((map, item) => {
             if (!item.userhistory) return map
@@ -842,9 +861,8 @@ export const useWorkspaceAnalytics = (userId) => {
                 qualitativeInsights,
             },
         }
-    }, [error, lastLoadedAt, loadAnalytics, loading, nowMs, refreshing, snapshot])
+    }, [error, lastLoadedAt, loadAnalytics, loading, nowMs, refreshing, snapshot, dateFrom, dateTo])
 }
-
 export const getPulseToneClass = (level) => {
     if (level === 'critical') return 'border-rose-400/40 bg-rose-500/10 text-rose-200'
     if (level === 'warning') return 'border-amber-400/40 bg-amber-500/10 text-amber-200'
