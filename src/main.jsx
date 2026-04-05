@@ -24,6 +24,8 @@ import Stuff from './components/arealogada/stuff.jsx'
 import Tarefas from './components/arealogada/Tarefas.jsx'
 import Reports from './components/arealogada/reports.jsx'
 import Projetos from './components/arealogada/projetos.jsx'
+import CookieConsentProvider from './components/privacy/CookieConsentProvider.jsx'
+import PrivacyPage from './pages/Privacidade.jsx'
 
 const ScrollToTop = () => {
   const { pathname } = useLocation()
@@ -38,44 +40,47 @@ const ScrollToTop = () => {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<App />} />
-        <Route path="/detailedfeatures" element={<DetailedFeatures />} />
-        <Route path="/metodologia" element={<Metodologia />} />
-        <Route path="/ciencia" element={<Ciencia />} />
-        <Route path="/sobre" element={<Sobre />} />
-        <Route path="/treinamentos" element={<TrainingPage />} />
-        <Route path="/documentacao" element={<Documentacao />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<Blog />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+      <CookieConsentProvider>
+        <ScrollToTop />
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<App />} />
+          <Route path="/detailedfeatures" element={<DetailedFeatures />} />
+          <Route path="/metodologia" element={<Metodologia />} />
+          <Route path="/ciencia" element={<Ciencia />} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/treinamentos" element={<TrainingPage />} />
+          <Route path="/documentacao" element={<Documentacao />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<Blog />} />
+          <Route path="/privacidade" element={<PrivacyPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
 
-        {/* Protected routes — all use AreaLogadaLayout */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AreaLogadaLayout />}>
-            <Route path="/dashboard" element={<DashboardHome />} />
-            <Route path="/cad-categorias" element={<CadCategorias />} />
-            <Route path="/cad-subcategorias" element={<CadSubcategoria />} />
-            <Route path="/cad-participantes" element={<CadParticipantes />} />
-            <Route path="/boxes/stuff" element={<Stuff />} />
-            <Route path="/boxes/trash" element={<Stuff />} />
-            <Route path="/boxes/algum-dia" element={<Stuff />} />
-            <Route path="/boxes/referencia" element={<Stuff />} />
-            <Route path="/tarefas" element={<Tarefas />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/projetos" element={<Projetos />} />
-            <Route element={<AdminRoute />}>
-              <Route path="/blog-admin" element={<BlogAdmin />} />
+          {/* Protected routes — all use AreaLogadaLayout */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AreaLogadaLayout />}>
+              <Route path="/dashboard" element={<DashboardHome />} />
+              <Route path="/cad-categorias" element={<CadCategorias />} />
+              <Route path="/cad-subcategorias" element={<CadSubcategoria />} />
+              <Route path="/cad-participantes" element={<CadParticipantes />} />
+              <Route path="/boxes/stuff" element={<Stuff />} />
+              <Route path="/boxes/trash" element={<Stuff />} />
+              <Route path="/boxes/algum-dia" element={<Stuff />} />
+              <Route path="/boxes/referencia" element={<Stuff />} />
+              <Route path="/tarefas" element={<Tarefas />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/projetos" element={<Projetos />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/blog-admin" element={<BlogAdmin />} />
+              </Route>
+              {/* Futuras páginas da área logada: */}
+              {/* <Route path="/projetos" element={<Projetos />} /> */}
+              {/* <Route path="/analytics" element={<Analytics />} /> */}
             </Route>
-            {/* Futuras páginas da área logada: */}
-            {/* <Route path="/projetos" element={<Projetos />} /> */}
-            {/* <Route path="/analytics" element={<Analytics />} /> */}
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
+      </CookieConsentProvider>
     </BrowserRouter>
   </StrictMode>,
 )

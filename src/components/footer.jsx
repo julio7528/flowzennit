@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Instagram, Linkedin, Youtube } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import logominimal from '../assets/logominimal.png'
+import { useCookieConsent } from './privacy/cookie-consent-context.js'
 
 const MotionFooter = motion.footer
 
@@ -11,6 +13,8 @@ const TikTokIcon = (props) => (
 )
 
 const Footer = () => {
+  const { openPreferences } = useCookieConsent()
+
   const socialLinks = [
     { label: 'YouTube', href: 'https://youtube.com', icon: Youtube },
     { label: 'LinkedIn', href: 'https://linkedin.com', icon: Linkedin },
@@ -112,19 +116,19 @@ const Footer = () => {
             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-4">Legal</h4>
             <ul className="text-sm text-gray-400 space-y-3">
               <li>
-                <a href="#sobre" className="hover:text-neonCyan transition-colors">
-                  Privacidade
+                <Link to="/privacidade" className="hover:text-neonCyan transition-colors">
+                  Privacidade e Cookies
+                </Link>
+              </li>
+              <li>
+                <a href="/privacidade#solicitacoes" className="hover:text-neonCyan transition-colors">
+                  Solicitações LGPD
                 </a>
               </li>
               <li>
-                <a href="#sobre" className="hover:text-neonCyan transition-colors">
-                  Termos
-                </a>
-              </li>
-              <li>
-                <a href="#sobre" className="hover:text-neonCyan transition-colors">
-                  Seguranca
-                </a>
+                <button type="button" onClick={openPreferences} className="hover:text-neonCyan transition-colors text-left">
+                  Gerenciar cookies
+                </button>
               </li>
             </ul>
           </div>

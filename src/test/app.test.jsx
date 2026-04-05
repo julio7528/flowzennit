@@ -10,7 +10,7 @@ describe('App', () => {
       </BrowserRouter>,
     )
 
-    expect(screen.getByRole('heading', { name: /transforme o caos em/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /domine o caos\. escale a execução\./i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /novas funcionalidades/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /fale conosco/i })).toBeInTheDocument()
   })
